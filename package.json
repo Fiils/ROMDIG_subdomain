@@ -1,6 +1,7 @@
 {
   "name": "subdomain",
   "version": "0.1.0",
+  "proxy": "https://romdig.herokuapp.com",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.6.1",
     "autoprefixer": "^10.4.4",
     "axios": "^0.26.1",
     "cssnano": "^5.1.7",

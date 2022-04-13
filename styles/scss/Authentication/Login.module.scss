@@ -14,6 +14,7 @@ $primary-color: #A71D31;
 @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap');
 
 .form {
+    position: relative;
     width: 450px;
     height: 550px;
     background-color: rgb(250, 250, 250);
@@ -51,7 +52,7 @@ $primary-color: #A71D31;
     }
 
     input {
-        padding: 1em 0 1em calc(.5em + 28px);
+        padding: 1em 0 1em calc(.5em + 33px);
         border-radius: 5px;
         border: 2px solid rgb(200, 200, 200);
         box-shadow: inset 5px 3px 4px rgb(240, 240, 240);
@@ -64,7 +65,7 @@ $primary-color: #A71D31;
     .svg_container {
         position: absolute;
         display: inline;
-        margin-left: 5px;
+        margin-left: 10px;
         margin-top: 31px;
 
         [id=pass] {
@@ -99,18 +100,9 @@ $primary-color: #A71D31;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    padding-right: 20px;
-
-    span {
-        font-weight: bolder;
-        font-size: 1rem;
-        letter-spacing: .2em;
-        margin-left: .2em;
-        color: #6CAE75;
-        opacity: .8;
-    }
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
 
 .copyright {
@@ -123,6 +115,7 @@ $primary-color: #A71D31;
     opacity: .4; 
     padding-top: 20px;
     color: white;
+    font-size: .9rem;
 
     &::before {
         content: '';
@@ -132,5 +125,16 @@ $primary-color: #A71D31;
         top: 0;
         left: 25%;
         background: rgb(200, 200, 200);
+    }
+}
+
+.wrong_input {
+    input {
+        border-color: red;
+        outline-color: red;
+
+        &:focus {
+            outline-color: red !important;
+        }
     }
 }

@@ -6,9 +6,6 @@ interface User {
     user: {
         isLoggedIn: boolean;
         userId: string;
-        active: boolean;
-        profilePicture: string;
-        comuna: string;
     }
     setUser: any;
 }
@@ -17,14 +14,14 @@ interface User {
 const AuthContext = React.createContext<any>({})
 
 export function AuthProvider(props: any) {
-    const [user, setUser] = useState({ isLoggedIn: false, userId: '', active: false, profilePicture: '/', comuna: '' })
+    const [ user, setUser ] = useState({ isLoggedIn: false, userId: '', type: '' })
 
     async function login() {
         const response = await axios.get(`${server}/api/functionalities/cookie-ax`, { withCredentials: true })
                             .then(res => res.data)
                             .catch(err => err.response)    
         if(response){
-            setUser({ isLoggedIn: response.isLoggedIn, userId: response.userId, active: response.active, profilePicture: response.profilePicture, comuna: response.comuna })
+            setUser({ isLoggedIn: response.isLoggedIn, userId: response.userId, type: response.type  })
         }
     }
     useEffect(() => {

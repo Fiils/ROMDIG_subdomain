@@ -45,3 +45,23 @@ a {
   font-weight: 400;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Anonymous Pro';
+  src: url('/fonts/AnonymousPro/AnonymousPro.woff2') format('woff2'),
+       url('/fonts/AnonymousPro/AnonymousPro.woff') format('woff'),
+       url('/fonts/AnonymousPro/AnonymousPro.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Belleza';
+  src: url('/fonts/Belleza/Belleza.woff2') format('woff2'),
+       url('/fonts/Belleza/Belleza.woff') format('woff'),
+       url('/fonts/Belleza/Belleza.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

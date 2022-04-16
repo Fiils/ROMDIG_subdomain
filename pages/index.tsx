@@ -89,7 +89,7 @@ const Home: NextPage = () => {
               {!loading ?
                 <button type='submit'>Loghează-te</button>
               :
-                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649873008/FIICODE/Spinner-1s-200px_1_aifrmm.svg' width={100} height={100} />
+                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649873008/FIICODE/Spinner-1s-200px_1_aifrmm.svg' alt='Loader' width={100} height={100} />
               }
             </div>
 

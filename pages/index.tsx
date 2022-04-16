@@ -38,7 +38,7 @@ const Home: NextPage = () => {
       return;
     }
 
-    const result = await axios.post(`${server}/api/sd/login`, auth, { withCredentials: true })
+    const result = await axios.post(`${server}/api/sd/authentication/login`, auth, { withCredentials: true })
                           .then(res => res.data)
                           .catch(err => {
                             console.log(err);

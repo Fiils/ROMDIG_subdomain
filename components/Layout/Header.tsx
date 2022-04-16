@@ -1,15 +1,23 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
+import type { GetServerSideProps } from 'next'
+import axios from 'axios'
 
 import styles from '../../styles/scss/Layout/Header.module.scss';
 import { useAuth } from '../../utils/useAuth'
+import { server } from '../../config/server'
 
 
 const Header = () => {
+    const router = useRouter()
+
     const [ menu, setMenu ] = useState<null | boolean>(null)
     const [ subSec, setSubSec ] = useState<null | boolean>(null)
     const [ border, setBorder ] = useState(false)
+    const [ ppBox, setPpBox ] = useState<null | boolean>(null)
 
     const user = useAuth()
 
@@ -20,11 +28,20 @@ const Header = () => {
 
      useEffect(() => {
         if(!subSec) {
-        setTimeout(() => {
-            setBorder(false)
-        }, 500)
+            setTimeout(() => {
+                setBorder(false)
+            }, 500)
         } else setBorder(true)
      }, [subSec])
+
+     const Logout = async (e: any) => {
+         e.preventDefault()
+
+         if(Cookies.get('Allow-Authorization')) {
+            Cookies.remove('Allow-Authorization')
+         }
+         router.reload()
+     }
 
     return (
         <div>
@@ -34,7 +51,18 @@ const Header = () => {
                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649946541/FIICODE/list-6225_kdxr8j.svg' width={30} height={30} onClick={() => {  setMenu(!menu); if(subSec !== null) { setTimeout(() => setSubSec(false), 300); } }} />
                     <span id='#title'>Dashboard ROMDIG</span>
                     <div className={styles.profile_picture}>
-                        <Image id='#profile-picture' src={user.user.profilePicture === '/' ? 'https://res.cloudinary.com/multimediarog/image/upload/v1650018340/FIICODE/manage-260_dfu9dg.svg' : user.user.profilePicture } width={40} height={40} />
+                        <Image id='#profile-picture' src={(user.user.profilePicture === '/' || !user.user.profilePicture) ? 'https://res.cloudinary.com/multimediarog/image/upload/v1650018340/FIICODE/manage-260_dfu9dg.svg' : user.user.profilePicture } width={40} height={40} onBlur={() => setPpBox(false)} onClick={() => setPpBox(!ppBox) } />
+                            <div className={`${styles.pp_box} ${ppBox ? styles.open_box : styles.close_box }`}>
+                                <h3>Bună, Alex!</h3>
+                                {/* O sa inlocuiesc cu numele administratorului */}
+                                <div style={{ marginInline: 10}} className={styles.info_admin}>
+                                    <h5>Autorizatie: General</h5>
+                                    <h5>Judet: Iasi</h5>
+                                </div>
+                                <div className={styles.logout}>
+                                    <button onClick={(e) => Logout(e)}>Deconectează-te</button>
+                                </div>
+                            </div>
                     </div>
                 </div>
 
@@ -65,3 +93,28 @@ const Header = () => {
     )
 }
 export default Header;
+
+
+export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
+    const { req } = ctx;
+
+    let redirect = 0;
+
+    console.log('aasydga8ysgiu')
+
+    const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { headers: { Cookies: req.headers.cookie || 'a' } })
+                            .then(res => res.data)
+                            .catch(err => {
+                                console.log(err)
+                                redirect = 1
+                            }) 
+
+    if(redirect === 1 || !response.isLoggedIn) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/'
+            }
+        }
+    } else return { props: {} }
+}   

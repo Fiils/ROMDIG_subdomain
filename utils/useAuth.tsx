@@ -19,7 +19,7 @@ export function AuthProvider(props: any) {
     const [ user, setUser ] = useState({ isLoggedIn: false, userId: '', type: '', profilePicture: '/' })
 
     async function login() {
-        const response = await axios.get(`${server}/api/functionalities/cookie-ax`, { withCredentials: true })
+        const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true })
                             .then(res => res.data)
                             .catch(err => err.response)    
         if(response){

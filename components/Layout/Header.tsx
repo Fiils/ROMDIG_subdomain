@@ -3,12 +3,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
-import type { GetServerSideProps } from 'next'
-import axios from 'axios'
+
 
 import styles from '../../styles/scss/Layout/Header.module.scss';
 import { useAuth } from '../../utils/useAuth'
-import { server } from '../../config/server'
 
 
 const Header = () => {
@@ -93,28 +91,3 @@ const Header = () => {
     )
 }
 export default Header;
-
-
-export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
-    const { req } = ctx;
-
-    let redirect = 0;
-
-    console.log('aasydga8ysgiu')
-
-    const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { headers: { Cookies: req.headers.cookie || 'a' } })
-                            .then(res => res.data)
-                            .catch(err => {
-                                console.log(err)
-                                redirect = 1
-                            }) 
-
-    if(redirect === 1 || !response.isLoggedIn) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: '/'
-            }
-        }
-    } else return { props: {} }
-}   

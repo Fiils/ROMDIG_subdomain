@@ -1,5 +1,4 @@
 import type { NextPage, GetServerSideProps } from 'next'
-import Head from 'next/head'
 import { useState } from 'react'
 import axios from 'axios'
 import Image from 'next/image'
@@ -71,7 +70,7 @@ const Home: NextPage = () => {
 
             <div className={`${styles.input} ${error ? styles.wrong_input : ''}`}>
               <label htmlFor='id'>Cod de autentificare</label>
-              <input type='string' maxLength={321} autoComplete='id' placeholder='ID-ul personalizat' id='od' name='id' value={id} onChange={e => { setError(false); setId(e.target.value) } } />
+              <input type='string' maxLength={24} autoComplete='id' placeholder='ID-ul personalizat' id='od' name='id' value={id} onChange={e => { setError(false); setId(e.target.value) } } />
               <div className={styles.svg_container}>
                   <VpnKeyIcon style={{ color: 'rgb(150, 150, 150)'}} />
               </div>
@@ -79,7 +78,7 @@ const Home: NextPage = () => {
             
             <div className={`${styles.input} ${error ? styles.wrong_input : ''}`}>
               <label htmlFor='password'>Parolă</label>
-              <input type={!showPassword ? 'password' : 'text'} autoComplete='password' minLength={8} placeholder='Parola' id='password' name='password' value={password} onChange={e => { setError(false); setPassword(e.target.value) } } />
+              <input type={!showPassword ? 'password' : 'text'} autoComplete='password' minLength={8} maxLength={20} placeholder='Parola' id='password' name='password' value={password} onChange={e => { setError(false); setPassword(e.target.value) } } />
               <div className={styles.svg_container}>
                   {!showPassword ? <LockOutlinedIcon style={{ color: 'rgb(150, 150, 150)'}} id='pass' onClick={() => setShowPassword(!showPassword)}/> : <LockOpenOutlinedIcon style={{ color: 'rgb(150, 150, 150)'}} id='pass' onClick={() => setShowPassword(!showPassword)}/> }
               </div>
@@ -111,6 +110,23 @@ const Home: NextPage = () => {
 export default Home;
 
 
-// const getServerSideProps: GetServerSideProps = async (ctx: any) => {
+export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
+  const { req } = ctx;
+  
+  let redirect = 0;
 
-// }
+  const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { headers: { Cookies: req.headers.cookie || 'a' } })
+                          .then(res => res.data)
+                          .catch(err => {
+                              redirect = 1
+                          })
+
+  if(redirect === 0 || (response && response.isLoggedIn)) {
+      return {
+          redirect: {
+              permanent: true,
+              destination: '/menu'
+          }
+      }
+  } else return { props: {} }
+}   

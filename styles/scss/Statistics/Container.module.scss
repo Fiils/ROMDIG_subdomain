@@ -1,0 +1,93 @@
+.grid {
+    display: grid;
+    grid-template-columns: .6fr .4fr;
+    margin-inline: clamp(100px, 7.5vw, 1000px);
+    margin-top: 80px;
+    gap: 60px;
+    row-gap: 100px;
+}
+
+.grid_reverse {
+    grid-template-columns: .4fr .6fr !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro&display=swap');
+
+.basic_info {
+    position: relative;
+    background: rgb(230, 230, 230);
+    height: 300px;
+    padding-inline: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    border-radius: 2px;
+    padding-top: 40px;
+
+    h1 {
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        font-family: 'Crimson Pro';
+        letter-spacing: 1px;
+        font-size: 1.6rem;
+    }
+}
+
+.flex_info {
+    display: flex;
+    flex-flow: column wrap;
+    font-family: 'Baloo Bhai 2';
+
+    h2 {
+        margin-bottom: 0;
+        margin-left: -20px;
+    }
+
+    h3 {
+        margin: 0;
+        width: 100%;
+        font-size: 1.1rem;
+    }
+}
+
+.legend {
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+    display: flex;
+    gap: 1.3em;
+    font-family: 'Baloo Bhai 2';
+
+    span {
+        font-size: .9rem;
+
+        &::before {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: -13px;
+            width: 10px;
+            height: 10px;
+        }
+    }
+
+    .city::before, .rural::before, .county_2::before, .men::before, .active::before, .ph::before, .com::before {
+        background-color: #E38627;
+    }
+
+    .comuna::before, .urban::before, .city_2::before, .women::before, .inactive::before, .nph::before, .ncom::before {
+        background-color: #C13C37;
+    }
+
+    .village::before, .comuna_2::before {
+        background-color: #6A2135;
+    }
+
+    .village_2::before {
+        background-color: #BA5A31;
+    }
+}

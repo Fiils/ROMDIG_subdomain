@@ -1,0 +1,97 @@
+.container {
+    padding: 50px 15vw 40px 15vw;
+    position: relative;
+}
+
+.go_back {
+    position: absolute;
+    font-family: 'Baloo Bhai 2';
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    top: 40px;
+    left: calc(15vw + 10px);
+
+    span[id='#text'] {
+        margin-top: 4px;
+    }
+
+    span[id='#text']:hover {
+        text-decoration: underline;
+        cursor: pointer;
+        opacity: .8;
+    }
+}
+
+.profile_picture {
+    margin-top: 50px;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    font-family: 'Baloo Bhai 2';
+    gap: .5em;
+    
+    
+    img {
+        border-radius: 10px;
+        padding: 10px !important;
+        border: 2px solid rgb(200, 200, 200) !important;
+        cursor: pointer;
+    }
+
+    img:hover {
+        filter: opacity(.8);
+    }
+}
+
+.account_title {
+    font-family: 'Baloo Bhai 2';
+    font-size: 1.6rem;
+}
+
+.profile {
+    display: grid;
+    width: 80%;
+    margin-left: 10%;
+
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    column-gap: 10%;
+    row-gap: 60px;
+    margin-top: 80px;
+}
+
+.google_input {
+    border-radius: 5px;
+    padding-left: 5px;
+    border: 1.5px solid #949494;
+    background-color: rgb(250, 250, 250);
+}
+
+.container_button {
+    margin-top: 50px;
+    display: flex;
+    justify-content: flex-end;
+    background: rgb(250, 250, 250);
+    width: 100%;
+    padding-block: 10px;
+
+    button {
+        background: #A71D31;
+        border: 0;
+        border-radius: 2px;
+        padding: .5em 1.5em;
+        font-family: 'Baloo Bhai 2';
+        font-size: 1.1rem;
+        color: white;
+        cursor: pointer;
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &:active {
+            opacity: .8;
+        }
+    }
+}

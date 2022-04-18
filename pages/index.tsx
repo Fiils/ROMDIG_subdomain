@@ -31,7 +31,7 @@ const Home: NextPage = () => {
     const auth = { email, password, id }
     setLoading(true)
 
-    if(!email.length || password.length < 8) {
+    if(!email.length || password.length < 8 || id.length !== 24) {
       setError(true)
       setLoading(false)
       return;

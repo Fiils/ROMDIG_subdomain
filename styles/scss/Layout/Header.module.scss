@@ -211,13 +211,12 @@
     li {
         background: rgb(230, 230, 230);
         padding-left: 40px !important;
+    }
+    .last {
+        border-bottom: 2.5px solid rgb(150, 150, 150) !important;
+    }
 
-        &:last-child {
-            border-bottom: 2.5px solid rgb(150, 150, 150) !important;
-        }
-
-        &:first-child {
-            border-top: 2.5px solid rgb(150, 150, 150) !important;
-        }
+    .first {
+        border-top: 2.5px solid rgb(150, 150, 150) !important;
     }
 }

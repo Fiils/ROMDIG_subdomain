@@ -49,13 +49,12 @@ const Header = () => {
                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649946541/FIICODE/list-6225_kdxr8j.svg' alt='Menu' width={30} height={30} onClick={() => {  setMenu(!menu); if(subSec !== null) { setTimeout(() => setSubSec(false), 300); } }} />
                     <span id='#title'>Dashboard ROMDIG</span>
                     <div className={styles.profile_picture}>
-                        <Image id='#profile-picture' src={(user.user.profilePicture === '/' || !user.user.profilePicture) ? 'https://res.cloudinary.com/multimediarog/image/upload/v1650018340/FIICODE/manage-260_dfu9dg.svg' : user.user.profilePicture } width={40} height={40} onBlur={() => setPpBox(false)} onClick={() => setPpBox(!ppBox) } alt='Profile Pciture' />
+                        <Image id='#profile-picture' src={(user.profilePicture === '/' || !user.profilePicture) ? 'https://res.cloudinary.com/multimediarog/image/upload/v1650018340/FIICODE/manage-260_dfu9dg.svg' : user.profilePicture } width={40} height={40} onBlur={() => setPpBox(false)} onClick={() => setPpBox(!ppBox) } alt='Profile Pciture' />
                             <div className={`${styles.pp_box} ${ppBox ? styles.open_box : styles.close_box }`}>
-                                <h3>Bună, Alex!</h3>
-                                {/* O sa inlocuiesc cu numele administratorului */}
+                                <h3>Bună, {user.name}!</h3>
                                 <div style={{ marginInline: 10}} className={styles.info_admin}>
-                                    <h5>Autorizatie: General</h5>
-                                    <h5>Judet: Iasi</h5>
+                                    <h5>Autorizatie: {user.type}</h5>
+                                    <h5>Judet: {user.county}</h5>
                                 </div>
                                 <div className={styles.logout}>
                                     <button onClick={(e) => Logout(e)}>Deconectează-te</button>
@@ -68,7 +67,7 @@ const Header = () => {
                 <div className={`${styles.sidemenu} ${menu ? styles.open_menu : styles.close_menu} ${border ? styles.bb_none : ''}`}>
                     <ul>
                         <Link href='/statistics' passHref><a onClick={() => setMenu(false)}><li>Statistici</li></a></Link>
-                        <Link href='/moderators' passHref><a onClick={() => setMenu(false)}><li>Gestionare moderatori*</li></a></Link>
+                        <Link href='/manage-mod' passHref><a onClick={() => setMenu(false)}><li>Gestionare moderatori*</li></a></Link>
                         <Link href='/create-mod' passHref><a onClick={() => setMenu(false)}><li>Creare moderatori</li></a></Link>
                         <li onClick={() => setSubSec(!subSec)} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
                             <span>Postări Utilizatori</span>

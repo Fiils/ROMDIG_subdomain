@@ -31,7 +31,7 @@ const Home: NextPage = () => {
     const auth = { email, password, id }
     setLoading(true)
 
-    if(!email.length || password.length < 8 || id.length !== 24) {
+    if(!email.length || password.length < 8 || id.length !== 20) {
       setError(true)
       setLoading(false)
       return;
@@ -47,7 +47,9 @@ const Home: NextPage = () => {
       
     if(result && result.message === 'User Authenticated') {
         Cookie.set('Allow-Authorization', result.token, { expires: 30, sameSite: dev ? 'lax' : 'none', secure: !dev })
-        router.push('/menu')
+        if(typeof window !== 'undefined') {
+          window.location.href = '/statistics'
+        }
     }
 
   }
@@ -70,7 +72,7 @@ const Home: NextPage = () => {
 
             <div className={`${styles.input} ${error ? styles.wrong_input : ''}`}>
               <label htmlFor='id'>Cod de autentificare</label>
-              <input type='string' maxLength={24} autoComplete='id' placeholder='ID-ul personalizat' id='od' name='id' value={id} onChange={e => { setError(false); setId(e.target.value) } } />
+              <input type='string' maxLength={20} autoComplete='id' placeholder='ID-ul personalizat' id='od' name='id' value={id} onChange={e => { setError(false); setId(e.target.value) } } />
               <div className={styles.svg_container}>
                   <VpnKeyIcon style={{ color: 'rgb(150, 150, 150)'}} />
               </div>
@@ -112,21 +114,30 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
   const { req } = ctx;
-  
-  let redirect = 0;
 
-  const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { headers: { Cookies: req.headers.cookie || 'a' } })
-                          .then(res => res.data)
-                          .catch(err => {
-                              redirect = 1
-                          })
+  const token = req.cookies['Allow-Authorization']
+  let redirect = false
 
-  if(redirect === 0 || (response && response.isLoggedIn)) {
+  if(!token) {
+      return {
+          props: {}
+      }
+  }
+
+  const user = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
+                      .then(res => res.data)
+                      .catch(err => {
+                          console.log(err);
+                          redirect = true
+                      })
+
+  if(!redirect)  {
       return {
           redirect: {
-              permanent: true,
-              destination: '/menu'
-          }
+              permanent: false,
+              destination: '/statistics'
+          },
+          props: {}
       }
   } else return { props: {} }
 }   

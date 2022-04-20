@@ -1,6 +1,8 @@
-import type { NextPage } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
 import { PieChart } from 'react-minimal-pie-chart'
+import axios from 'axios'
 
+import { server } from '../../config/server'
 import styles from '../../styles/scss/Statistics/Container.module.scss';
 
 
@@ -358,3 +360,37 @@ const Statistics: NextPage = () => {
 }
 
 export default Statistics;
+
+export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
+    const { req } = ctx;
+
+    const token = req.cookies['Allow-Authorization']
+    let redirect = false
+  
+    if(!token) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            },
+            props: {}
+        }
+    }
+  
+    const user = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
+                        .then(res => res.data)
+                        .catch(err => {
+                            console.log(err);
+                            redirect = true
+                        })
+  
+    if(redirect)  {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/'
+            },
+            props: {}
+        }
+    } else return { props: {} }
+}   

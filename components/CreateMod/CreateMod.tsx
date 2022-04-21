@@ -31,8 +31,6 @@ interface InitialProps {
 const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     const router = useRouter()
 
-    const user = useAuth()
-
     const [ showPassword, setShowPassword ] = useState(false)
     const [ showAdminPassword, setShowAdminPassword ] = useState(false)
     const [ loading, setLoading ] = useState(false)
@@ -217,7 +215,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
 
 
         const profilePicture = image
-        const type = county === location ? 'Judetean' : ((comuna != '' && comuna === location) ? 'Comunal' : (comuna === '' && location !== '') ? 'Orasesc' : (comuna !== '' && location !== '' ? 'Satesc' : ''))
+        const type = (comuna === '' && isWithoutCity) ? 'Judetean' : ((comuna != '' && comuna === location) ? 'Comunal' : ((comuna === '' && location !== '') ? 'Orasesc' : (comuna !== '' && location !== '' ? 'Satesc' : '')))
         const user = { firstName, lastName, id, email, password, userPassword, type, profilePicture, city, county, comuna, gender, cnp, rural, street }
         const regex = /^(?:[0-9]+[a-z]|[a-z]+[0-9])[a-z0-9]*$/i
         const cnpRegex = /^\d+$/
@@ -249,7 +247,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             userPassword: !userPassword.length ? 'Spațiul nu poate fi gol' : (userPassword.length < 8 ? 'Parolă prea scurtă' : (!regex.test(userPassword) ? 'Parola trebuie să conțină caractere alfanumerice' : '' )),
         })
         
-        if(!lastName.length || !firstName.length || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError){
+        if(!lastName.length || !firstName.length || !userPassword.length || userPassword.length < 8 || !regex.test(userPassword) || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError){
             setLoading(false);
             return;
         } 

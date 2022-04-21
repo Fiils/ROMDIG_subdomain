@@ -29,7 +29,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="canonical" href="https://dashboard.romdig.net" />
         <link rel="logo icon" href="/favicon.ico" />
       </Head>
-      <noscript>Please enable JavaScript to view this page</noscript>
+      <noscript>
+        <h2>Please enable JavaScript to view this page</h2>
+        {/* <style jsx global>
+        {`
+          body { 
+            display: none 
+          }
+        `}
+        </style> */}
+      </noscript>
       {layout && <Header /> }
       <Component {...pageProps} />
     </AuthProvider>

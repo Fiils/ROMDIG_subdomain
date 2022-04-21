@@ -24,10 +24,14 @@ interface FlexItemProfile {
 
 interface Moderators { 
     _moderators: [{
+        _id: string;
         lastName: string;
         firstName: string;
         profilePicture: string;
         creationDate: Date;
+        createdBy: string;
+        asId: string;
+        email: string;
         authorization: {
             type: string;
             location: {
@@ -35,11 +39,16 @@ interface Moderators {
                 city: string;
                 comuna: string;
             }
-        }
+        },
+        posts: {
+            status: Array<string>;
+        },
     }];
 }
 
 const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
+    const user = useAuth()
+
     const [ moderators, setModerators ] = useState<any>(_moderators)
     const [ createMod, setCreateMod ] = useState(false)
     const [ error, setError ] = useState(false)
@@ -47,8 +56,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
     const [ location, setLocation ] = useState('')
     const [ search, setSearch ] = useState(false)
     const [ searchedName, setSearchedName ] = useState('Toate')
-
-    const user = useAuth()
+    const [ loading, setLoading ] = useState(false)
 
     const FlexItemProfile = ({ name, profilePicture, authorization, county, city, comuna, created }: FlexItemProfile) => {
         return (
@@ -79,6 +87,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
     useEffect(() => {
         let locationError = false;
         setError(false)
+        setLoading(true)
 
         if(location === '') {
             const getNewModerators = async () => {
@@ -87,10 +96,12 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                                         .catch(err => {
                                             console.log(err)
                                             setError(true)
+                                            setLoading(false)
                                         })
     
                 if(result) {
                     setModerators(result.moderators)
+                    setLoading(false)
                     setSearchedName('Toate')
                 }
             }
@@ -102,6 +113,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
         if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
             setError(true)
             locationError = true
+            setLoading(false)
             return;
         }
 
@@ -158,17 +170,19 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                                     .catch(err => {
                                         console.log(err)
                                         setError(true)
+                                        setLoading(false)
                                     })
 
             if(result) {
                 setModerators(result.moderators)
+                setLoading(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}, ${city}` : (city !== '' ?  `, ${city}` : '')}`)
             }
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
-        }
+        } else setLoading(false)
     }, [search])
 
 
@@ -178,37 +192,43 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                 <div className={styles.fcontainer}>
                     <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <h2>Moderatori: {moderators.length}</h2>
-                        <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
-                            <GoogleInput index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
-                            <div className={styles.button_search}>
-                                <button onClick={() => setSearch(!search)}>Caută</button>
+                        {(user.type === 'General' || user.type === 'Comunal' || user.type === 'Judetean') &&
+                            <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                <GoogleInput index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
+                                <div className={styles.button_search}>
+                                    <button onClick={() => setSearch(!search)}>Caută</button>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                     <div className={styles.results_headline}>
                         <h1>Rezultate pentru: {searchedName}</h1>
                     </div>
-                    <div className={styles.profile_grid}>
-                        {!(moderators.length > 0) &&
-                            <div className={styles.flex_item_none}>
-                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                                <p>Niciun moderator creat</p>
-                            </div>
-                        }
+                    {!loading ?
+                        <div className={styles.profile_grid}>
+                            {!(moderators.length > 0) &&
+                                <div className={styles.flex_item_none}>
+                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                    <p>Niciun moderator creat</p>
+                                </div>
+                            }
 
-                        <>
-                            {moderators.map((value: any, key: number) => {
-                                return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
-                                                    authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
-                                                    comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
-                            })}
-                        </>
-                        
-                        <div className={styles.flex_item_create}>
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                            <p>Creează un nou moderator</p>
+                            <>
+                                {moderators.map((value: any, key: number) => {
+                                    return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
+                                                        authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
+                                                        comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
+                                })}
+                            </>
+                            
+                            <div className={styles.flex_item_create}>
+                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                <p>Creează un nou moderator</p>
+                            </div>
                         </div>
-                    </div>
+                    :
+                        <div className={styles.loader}></div>
+                    }
                 </div>
             :
                 <CreateModSection setCreateMod={setCreateMod} />

@@ -1,0 +1,123 @@
+.overlay {
+    z-index: 99;
+    background: rgba(0, 0, 0, .3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin-left: 0 !important;
+}
+
+.modal_container {
+    position: fixed;
+    display: block;
+    z-index: 100;
+    width: 400px;
+    height: 330px;
+    background: rgb(240, 240, 240);
+    top: calc(50vh - 165px);
+    left: calc(50vw - 200px);
+    border-radius: 10px;
+    padding-left: 0 !important;
+}
+
+.icon_modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    svg {
+        transition: all .25s;
+        border-radius: 50%;
+        padding: 2px;
+        cursor: pointer;
+    }
+
+    svg:hover {
+        background: rgb(225, 225, 225);
+    }
+}
+
+.title {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin-top: 5px;
+    margin-left: 10px;
+
+    h2 {
+        margin-block: 0;
+        font-family: 'Baloo Bhai 2';
+    }
+}
+
+.description {
+    margin-inline: 10%;
+    margin-top: 50px;
+    text-align: center;
+    font-family: 'Libre Baskerville';
+    font-size: .8rem;
+    color: rgb(130, 130, 130);
+}
+
+.input {
+    width: 100%;
+
+    input {
+        width: 80%;
+        margin-left: 10%;
+        padding-block: .4em;
+        padding-left: 5px;
+        border-radius: 3px;
+        border: 1px solid rgb(130, 130, 130);
+        font-family: 'Libre Baskerville';
+
+        &:focus {
+            outline: none;
+            // border: 2px solid rgb(130, 130, 130);
+        }
+    }
+
+    label {
+        font-family: 'Baloo Bhai 2';
+        font-size: .7rem;
+        color: red;
+        margin-left: 10%;
+    }
+}
+
+.button {
+    width: 100%;
+
+    button {
+        width: 50%;
+        margin-left: 25%;
+        margin-top: 30px;
+        font-family: 'Baloo Bhai 2';
+        padding: .5em 1em;
+        border-radius: 2px;
+        border: 1px solid rgb(150, 150, 150);
+        cursor: pointer;
+        background: white;
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &:active {
+            opacity: .8;
+        }
+    }
+
+    span {
+        margin-left: calc(50% - 30px) !important;
+        margin-top: 30px !important;
+    }
+}
+
+.error {
+    input {
+        border-color: red;
+    }
+}

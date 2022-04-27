@@ -44,10 +44,12 @@ interface Moderators {
             status: Array<string>;
         },
     }];
+    load: boolean;
+    numberOfPages: number;
 }
 
-const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
-    const user = useAuth()
+const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages }) => {
+    const auth = useAuth()
 
     const [ moderators, setModerators ] = useState<any>(_moderators)
     const [ createMod, setCreateMod ] = useState(false)
@@ -57,6 +59,12 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
     const [ search, setSearch ] = useState(false)
     const [ searchedName, setSearchedName ] = useState('Toate')
     const [ loading, setLoading ] = useState(false)
+
+    const [ more, setMore ] = useState(0)
+    const [ pages, setPages ] = useState(numberOfPages)
+    const [ isLocationChanged, setIsLocationChanged ] = useState(false)
+
+    const [ isComuna, setIsComuna ] = useState(false)
 
     const FlexItemProfile = ({ name, profilePicture, authorization, county, city, comuna, created }: FlexItemProfile) => {
         return (
@@ -70,11 +78,13 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                         <span>Autorizatie: {authorization}</span>
                         <span>Judet: {county}</span>
                         {comuna === '' ?
-                            <span>Oraș: {city}</span>
+                            <>
+                                { city !== '' && <span>Oraș: {city}</span> }
+                            </>
                         :
                             <>
-                                <span>Comuna: {comuna}</span>
-                                <span>Sat: {city}</span>
+                                {comuna !== '' && <span>Comuna: {comuna}</span> }
+                                {city !== '' && <span>Sat: {city}</span> }
                             </>
                         }
                         <span>Creat: {created}</span>
@@ -84,14 +94,18 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
         )
     }
 
+    //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
         let locationError = false;
         setError(false)
         setLoading(true)
 
         if(location === '') {
+            if(isLocationChanged) {
+                setMore(0)
+            }
             const getNewModerators = async () => {
-                const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?all=true`, { withCredentials: true })
+                const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?all=true&skip=${isLocationChanged ? 0 : more}`, { withCredentials: true })
                                         .then(res => res.data)
                                         .catch(err => {
                                             console.log(err)
@@ -100,10 +114,20 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                                         })
     
                 if(result) {
-                    setModerators(result.moderators)
+                    setPages(result.numberOfPages)
+                        
+                    if(isLocationChanged) {
+                        setModerators(result.moderators)
+                    } else {
+                        const newModerators: any = [...moderators, ...result.moderators]
+                        setModerators(newModerators)
+                    }
+
                     setLoading(false)
                     setSearchedName('Toate')
                 }
+
+                setIsLocationChanged(false)
             }
     
             getNewModerators()
@@ -164,8 +188,17 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
             comuna = ''
         }
 
+        if(comuna === '' && isComuna) {
+            setError(true)
+            return;
+        }
+
         const getNewModerators = async (county: string, comuna: string, location: string, city: string) => {
-            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false`, { withCredentials: true })
+            if(isLocationChanged) {
+                setMore(0)
+            }
+
+            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
@@ -174,16 +207,26 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                                     })
 
             if(result) {
-                setModerators(result.moderators)
+                if(isLocationChanged) {
+                    setModerators(result.moderators)
+                } else {
+                    const newModerators: any = [...moderators, ...result.moderators]
+                    setModerators(newModerators)
+                }
+
                 setLoading(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}, ${city}` : (city !== '' ?  `, ${city}` : '')}`)
             }
+            
+            setIsLocationChanged(false)
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
         } else setLoading(false)
-    }, [search])
+
+        setIsLocationChanged(false)
+    }, [search, more])
 
 
     return (
@@ -192,11 +235,11 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                 <div className={styles.fcontainer}>
                     <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <h2>Moderatori: {moderators.length}</h2>
-                        {(user.type === 'General' || user.type === 'Comunal' || user.type === 'Judetean') &&
+                        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) &&
                             <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                <GoogleInput index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
+                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
                                 <div className={styles.button_search}>
-                                    <button onClick={() => setSearch(!search)}>Caută</button>
+                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search) } }>Caută</button>
                                 </div>
                             </div>
                         }
@@ -231,8 +274,25 @@ const CreateMod: NextPage<Moderators> = ({ _moderators }) => {
                     }
                 </div>
             :
-                <CreateModSection setCreateMod={setCreateMod} />
+                <>
+                    {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
+
+                        <CreateModSection setCreateMod={setCreateMod} />
+                        
+                        :
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }}>
+                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
+                            <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
+                        </div>
+                    }
+                </>
              }
+                {pages > 1 &&
+                    <div className={styles.more}>
+                        <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
+                    </div>
+                } 
         </>
     )
 }
@@ -272,7 +332,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         }
     }
 
-    const moderators = await axios.get(`${server}/api/sd/mod/get-all-per-region`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
+    const moderators = await axios.get(`${server}/api/sd/mod/get-all-per-region?skip=0`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err)
@@ -280,7 +340,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
 
     return { 
         props: {
-            _moderators: moderators.moderators
+            _moderators: moderators.moderators,
+            load: !moderators.low,
+            numberOfPages: moderators.numberOfPages
         }
     }
 }   

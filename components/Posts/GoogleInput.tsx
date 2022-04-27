@@ -6,29 +6,26 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import FormHelperText from '@mui/material/FormHelperText';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useAuth } from '../../utils/useAuth'
 
 
+
 let autoComplete: any;
-let index = 0;
 
 interface Props {
     location: string;
     setLocation: any;
     setFullExactPosition: any;
     error: any;
-    errorMessages?: any;
     setError: any;
-    setErrorMessages?: any;
-    index: number
     isComuna: boolean;
     setIsComuna: any;
 }
 
-const loadScript = (url: any, callback: any, index: number) => {
+const loadScript = (url: any, callback: any) => {
     let script = document.createElement("script");
     script.type = "text/javascript";
 
@@ -52,7 +49,8 @@ function handleScriptLoad(updateQuery: any, autoCompleteRef: any, setFullExactPo
     autoCompleteRef.current,
     { types: ["(regions)"], componentRestrictions: { country: "ro" } }
   );
-  autoComplete.setFields(["address_components", "formatted_address", 'name']);
+
+  autoComplete.setFields(["address_components", "formatted_address", 'name', 'place_id']);
   autoComplete.addListener("place_changed", () =>
     handlePlaceSelect(updateQuery, setFullExactPosition)
   );
@@ -65,7 +63,7 @@ async function handlePlaceSelect(updateQuery: any, setFullExactPosition: any) {
   updateQuery(query);
 }
 
-const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPosition, error, errorMessages, setError, setErrorMessages, index, isComuna, setIsComuna }) => {
+const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPosition, error, setError, isComuna, setIsComuna }) => {
   const autoCompleteRef = useRef(null);
 
   const auth = useAuth()
@@ -73,21 +71,19 @@ const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPos
   useEffect(() => {
     loadScript(
       `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`,
-      () => handleScriptLoad(setLocation, autoCompleteRef, setFullExactPosition,), index
+      () => handleScriptLoad(setLocation, autoCompleteRef, setFullExactPosition,)
     );
   }, []);
 
   return (
     <div style={{ position: 'relative' }}>
-        <FormControl variant='standard' error={index === 1 ? error.location : error} fullWidth>
-          <InputLabel htmlFor='location'>Localizare</InputLabel>
-          <Input id='location' type='text' name='location' inputProps={{ ref: autoCompleteRef, value: location, onChange: (e: any) => { setIsComuna(false); if(index === 1) { setError({ ...error, location: false}); } else { setError(false) } if(index === 1) { setErrorMessages({ ...errorMessages, location: '' }) } setLocation(e.target.value) }, placeholder: '' }} />
-          {errorMessages && <FormHelperText>{errorMessages.location}</FormHelperText> }
-          {!errorMessages && <FormHelperText>{error ? 'Locație invalidă' : ''}</FormHelperText>}
-        </FormControl>
+      <FormControl error={error} variant='outlined'>
+          <InputLabel htmlFor='location' sx={{ left: -15 }}>Localizare</InputLabel>
+          <Input id='location' type='text' name='location' inputProps={{ ref: autoCompleteRef, value: location, onChange: (e: any) => { setIsComuna(false); setError(false); setLocation(e.target.value) }, placeholder: '' }} />
+      </FormControl>
 
       {(auth.type === 'General' || auth.type === 'Judetean') &&
-          <FormHelperText sx={{ position: 'absolute', bottom: -33, left: -1 }}>
+          <FormHelperText sx={{ position: 'absolute', bottom: -33, left: -1.2 }}>
               <FormControlLabel
                   control={
                     <Checkbox name="comuna" checked={isComuna} onChange={() => setIsComuna(!isComuna)} />

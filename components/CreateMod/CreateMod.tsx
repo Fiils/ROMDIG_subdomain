@@ -4,6 +4,7 @@ import axios from 'axios'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 
+
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,7 +16,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import FormHelperText from '@mui/material/FormHelperText';
-
 
 
 import styles from '../../styles/scss/CreateMod/CreateModContainer.module.scss'
@@ -30,6 +30,7 @@ interface InitialProps {
 
 const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     const router = useRouter()
+    const auth = useAuth()
 
     const [ showPassword, setShowPassword ] = useState(false)
     const [ showAdminPassword, setShowAdminPassword ] = useState(false)
@@ -48,6 +49,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     const [ cnp, setCnp ] = useState('')
     const [ street, setStreet ] = useState('')
     const [ fullExactPosition, setFullExactPosition ] = useState<any>()
+    const [ isComuna, setIsComuna ] = useState(false)
 
     const [ error, setError ] = useState({
         firstName: false,
@@ -200,6 +202,14 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
             locationError = true
         }
+
+        if(isComuna && comuna === '') {
+            setError({ ...error, location: true })
+            setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
+            locationError = true
+            setLoading(false)
+            return;
+        }
     
         let city = location, isWithoutCity = false;
         for(let i = 0; i < fullExactPosition.address_components.length; i++) {
@@ -259,7 +269,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             }
         }
 
-        const result = await axios.post(`${server}/api/sd/authentication/create-user`, user, { withCredentials: true })
+        const result = await axios.post(`${server}/api/sd/authentication/create-user?isComuna=${(isComuna && (auth.type === 'General' || auth.type === 'Judetean')) ? 'true' : 'false'}`, user, { withCredentials: true })
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err)
@@ -298,136 +308,136 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
         }
     }    
 
-
-
     return (
-        <div className={styles.container}>
-            <div className={styles.go_back}>
-                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650268110/FIICODE/left-arrow-7360_vff2lx.svg' width={40} height={20} />
-                <span id='#text' onClick={() => setCreateMod(false)}>Înapoi</span>
-            </div>
+        <>
+                <div className={styles.container}>
+                    <div className={styles.go_back}>
+                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650268110/FIICODE/left-arrow-7360_vff2lx.svg' width={40} height={20} />
+                        <span id='#text' onClick={() => setCreateMod(false)}>Înapoi</span>
+                    </div>
 
-            <div className={styles.account_title} style={{ marginTop: 50, display: 'flex', alignItems: 'center', gap: 5 }}> 
-                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650303545/FIICODE/pencil-9435_7_t5ht4m.svg' width={30} height={30} />
-                <h2>Creare moderator</h2>
-            </div>
+                    <div className={styles.account_title} style={{ marginTop: 50, display: 'flex', alignItems: 'center', gap: 5 }}> 
+                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650303545/FIICODE/pencil-9435_7_t5ht4m.svg' width={30} height={30} />
+                        <h2>Creare moderator</h2>
+                    </div>
 
-            <div className={styles.profile_picture}>
-                <span>Poză de profil:</span>
-                <input style={{ display: 'none' }} onChange={uploadPhoto} type='file' id='file' name='file' onClick={e => { const target = e.target as HTMLInputElement; target.value = '' } } accept='image/*'></input>
-                <label htmlFor='file' style={{ display: 'flex', alignItems: 'center', gap: '2em' }}>
-                    <Image src={image} width={120} height={120} />
-                </label>
-            </div>
-            <div className={styles.account_title}> 
-                <h2>Cont Admin:</h2>
-            </div>
-            <div style={{ backgroundColor: 'rgb(250, 250, 250)', paddingTop: 1, paddingBottom: 100  }}>
-                <div className={styles.profile}>
+                    <div className={styles.profile_picture}>
+                        <span>Poză de profil:</span>
+                        <input style={{ display: 'none' }} onChange={uploadPhoto} type='file' id='file' name='file' onClick={e => { const target = e.target as HTMLInputElement; target.value = '' } } accept='image/*'></input>
+                        <label htmlFor='file' style={{ display: 'flex', alignItems: 'center', gap: '2em' }}>
+                            <Image src={image} width={120} height={120} />
+                        </label>
+                    </div>
+                    <div className={styles.account_title}> 
+                        <h2>Cont Admin:</h2>
+                    </div>
+                    <div style={{ backgroundColor: 'rgb(250, 250, 250)', paddingTop: 1, paddingBottom: 100  }}>
+                        <div className={styles.profile}>
 
-                    <TextField id='name' label='Nume' variant='standard' value={lastName} onChange={e => { setError({ ...error, lastName: false}); setErrorMessages({ ...errorMessages, lastName: '' }); setLastName(e.target.value) } } error={error.lastName} helperText={errorMessages.lastName} />
-                    <TextField id='firstName' label='Prenume' variant='standard' value={firstName} onChange={e => { setError({ ...error, firstName: false}); setErrorMessages({ ...errorMessages, firstName: '' }); setFirstName(e.target.value) } } error={error.firstName} helperText={errorMessages.firstName} />
+                            <TextField id='name' label='Nume' variant='standard' value={lastName} onChange={e => { setError({ ...error, lastName: false}); setErrorMessages({ ...errorMessages, lastName: '' }); setLastName(e.target.value) } } error={error.lastName} helperText={errorMessages.lastName} />
+                            <TextField id='firstName' label='Prenume' variant='standard' value={firstName} onChange={e => { setError({ ...error, firstName: false}); setErrorMessages({ ...errorMessages, firstName: '' }); setFirstName(e.target.value) } } error={error.firstName} helperText={errorMessages.firstName} />
 
-                    <div style={{ width: '100%', display: 'flex', gap: 10 }}>
-                        <FormControl variant='standard' fullWidth error={error.id}>
-                            <InputLabel htmlFor='id'>Cod de autentificare</InputLabel>
-                            <Input id='id' type='text'  value={id} onChange={e => { setError({ ...error, id: false}); setErrorMessages({ ...errorMessages, id: '' }); setId(e.target.value) } } inputProps={{ readOnly: true }}
+                            <div style={{ width: '100%', display: 'flex', gap: 10 }}>
+                                <FormControl variant='standard' fullWidth error={error.id}>
+                                    <InputLabel htmlFor='id'>Cod de autentificare</InputLabel>
+                                    <Input id='id' type='text'  value={id} onChange={e => { setError({ ...error, id: false}); setErrorMessages({ ...errorMessages, id: '' }); setId(e.target.value) } } inputProps={{ readOnly: true }}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                onClick={() => { setError({ ...error, id: false}); setErrorMessages({ ...errorMessages, id: '' }); generateId() } }
+                                                edge="end"
+                                                >
+                                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650305034/FIICODE/manage-1170_qyjf3b.svg' width={20} height={20} style={{ cursor: 'pointer' }} />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        />
+                                    <FormHelperText>{errorMessages.id}</FormHelperText>
+                                </FormControl>
+                            </div>
+
+                            <TextField id='email' label='Email' variant='standard' value={email} onChange={e => { setError({ ...error, email: false}); setErrorMessages({ ...errorMessages, email: '' }); setEmail(e.target.value) } } error={error.email} helperText={errorMessages.email} />
+
+                            <FormControl variant='standard' error={error.password} fullWidth>
+                                <InputLabel htmlFor='password'>Parolă</InputLabel>
+                                <Input id='password' type={showAdminPassword ? 'text' : 'password'} value={password} onChange={e => { setError({ ...error, password: false}); setErrorMessages({ ...errorMessages, password: '' }); setPassword(e.target.value) } } 
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
-                                        onClick={() => { setError({ ...error, id: false}); setErrorMessages({ ...errorMessages, id: '' }); generateId() } }
+                                        onClick={() => setShowAdminPassword(!showAdminPassword)}
                                         edge="end"
                                         >
-                                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650305034/FIICODE/manage-1170_qyjf3b.svg' width={20} height={20} style={{ cursor: 'pointer' }} />
+                                            {showAdminPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     </InputAdornment>
                                 }
                                 />
-                            <FormHelperText>{errorMessages.id}</FormHelperText>
-                        </FormControl>
+                                <FormHelperText>{errorMessages.password}</FormHelperText>
+                            </FormControl>
+
+                            {(auth.type === 'General' || auth.type === 'Judetean') && <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={1} setLocation={setLocation} error={error} setError={setError} errorMessages={errorMessages} setErrorMessages={setErrorMessages} location={location} setFullExactPosition={setFullExactPosition} /> }
+
+                        </div>
                     </div>
 
-                    <TextField id='email' label='Email' variant='standard' value={email} onChange={e => { setError({ ...error, email: false}); setErrorMessages({ ...errorMessages, email: '' }); setEmail(e.target.value) } } error={error.email} helperText={errorMessages.email} />
 
-                    <FormControl variant='standard' error={error.password} fullWidth>
-                        <InputLabel htmlFor='password'>Parolă</InputLabel>
-                        <Input id='password' type={showAdminPassword ? 'text' : 'password'} value={password} onChange={e => { setError({ ...error, password: false}); setErrorMessages({ ...errorMessages, password: '' }); setPassword(e.target.value) } } 
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                onClick={() => setShowAdminPassword(!showAdminPassword)}
-                                edge="end"
+                    <div className={styles.account_title} style={{ marginTop: 100 }}> 
+                        <h2>Cont Utilizator:</h2>
+                    </div>
+
+                    <div style={{ backgroundColor: 'rgb(250, 250, 250)', paddingTop: 1, paddingBottom: 100  }}>
+                        <div className={styles.profile}>
+
+                            <FormControl variant='standard' error={error.userPassword} fullWidth>
+                                <InputLabel htmlFor='userPassword'>Parolă</InputLabel>
+                                <Input name='userPassword' id='userPassword' type={showPassword ? 'text' : 'password'} value={userPassword} onChange={e => { setError({ ...error, userPassword: false}); setErrorMessages({ ...errorMessages, userPassword: '' }); setUserPassword(e.target.value) } } 
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end" 
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                />
+                                <FormHelperText>{errorMessages.userPassword}</FormHelperText>
+                            </FormControl>
+
+                            <FormControl variant='standard' error={error.gender} fullWidth>
+                                <InputLabel id="gender-label">Sex</InputLabel>
+                                <Select
+                                labelId="gender-label"
+                                id="gender"
+                                value={gender}
+                                label="Sex"
+                                onChange={(e: any) => { setError({ ...error, gender: false }); setErrorMessages({ ...errorMessages, gender: '' }); setGender(e.target.value) } }
                                 >
-                                    {showAdminPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
+                                    <MenuItem value={'Bărbat'}>Bărbat</MenuItem>
+                                    <MenuItem value={'Femeie'}>Femeie</MenuItem>
+                                </Select>
+                                <FormHelperText>{errorMessages.gender}</FormHelperText>
+                            </FormControl>
+
+                            <TextField id='cnp' label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } helperText={errorMessages.cnp} />
+
+                            <TextField id='street' label='Stradă' variant='standard' error={error.street} value={street} onChange={e => { setError({ ...error, street: false}); setErrorMessages({ ...errorMessages, street: '' }); setStreet(e.target.value) } } helperText={errorMessages.street} />
+                        </div>
+                    </div>
+
+                    <div className={styles.container_button}>
+                        {!loading ?
+                            <>
+                                {fullError ? <span id='#text'>EROARE</span> : ''}
+                                <button onClick={e => handleCreateUser(e)}>Creează moderatorul</button>
+                            </>
+                        :
+                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} />
                         }
-                        />
-                        <FormHelperText>{errorMessages.password}</FormHelperText>
-                    </FormControl>
-
-                    <GoogleInput index={1} setLocation={setLocation} error={error} setError={setError} errorMessages={errorMessages} setErrorMessages={setErrorMessages} location={location} setFullExactPosition={setFullExactPosition} />
-
+                    </div>
                 </div>
-            </div>
-
-
-            <div className={styles.account_title} style={{ marginTop: 100 }}> 
-                <h2>Cont Utilizator:</h2>
-            </div>
-
-            <div style={{ backgroundColor: 'rgb(250, 250, 250)', paddingTop: 1, paddingBottom: 100  }}>
-                <div className={styles.profile}>
-
-                    <FormControl variant='standard' error={error.userPassword} fullWidth>
-                        <InputLabel htmlFor='userPassword'>Parolă</InputLabel>
-                        <Input name='userPassword' id='userPassword' type={showPassword ? 'text' : 'password'} value={userPassword} onChange={e => { setError({ ...error, userPassword: false}); setErrorMessages({ ...errorMessages, userPassword: '' }); setUserPassword(e.target.value) } } 
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                onClick={() => setShowPassword(!showPassword)}
-                                edge="end" 
-                                >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        />
-                        <FormHelperText>{errorMessages.userPassword}</FormHelperText>
-                    </FormControl>
-
-                    <FormControl variant='standard' error={error.gender} fullWidth>
-                        <InputLabel id="gender-label">Sex</InputLabel>
-                        <Select
-                        labelId="gender-label"
-                        id="gender"
-                        value={gender}
-                        label="Sex"
-                        onChange={(e: any) => { setError({ ...error, gender: false }); setErrorMessages({ ...errorMessages, gender: '' }); setGender(e.target.value) } }
-                        >
-                            <MenuItem value={'Bărbat'}>Bărbat</MenuItem>
-                            <MenuItem value={'Femeie'}>Femeie</MenuItem>
-                        </Select>
-                        <FormHelperText>{errorMessages.gender}</FormHelperText>
-                    </FormControl>
-
-                    <TextField id='cnp' label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } helperText={errorMessages.cnp} />
-
-                    <TextField id='street' label='Stradă' variant='standard' error={error.street} value={street} onChange={e => { setError({ ...error, street: false}); setErrorMessages({ ...errorMessages, street: '' }); setStreet(e.target.value) } } helperText={errorMessages.street} />
-                </div>
-            </div>
-
-            <div className={styles.container_button}>
-                {!loading ?
-                    <>
-                        {fullError ? <span id='#text'>EROARE</span> : ''}
-                        <button onClick={e => handleCreateUser(e)}>Creează moderatorul</button>
-                    </>
-                :
-                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} />
-                }
-            </div>
-        </div>
+        </>
     )
 }
 

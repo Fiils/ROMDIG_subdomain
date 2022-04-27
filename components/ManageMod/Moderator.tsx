@@ -59,7 +59,6 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
     const [ userPassword, setUserPassword ] = useState('')
     const [ password, setPassword ] = useState('')
     const [ image, setImage ] = useState(_profilePicture)
-    const [ cnp, setCnp ] = useState(_cnp)
     const [ street, setStreet ] = useState(_street)
 
     const [ error, setError ] = useState({
@@ -68,7 +67,6 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
         email: false,
         password: false,
         userPassword: false,
-        cnp: false,
         street: false, 
     })
 
@@ -81,7 +79,6 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
         email: '',
         userPassword: '',
         password: '',
-        cnp: '',
         street: '', 
     })
 
@@ -93,7 +90,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
 
     useEffect(() => {
-        if(startUpdating && !(firstName === _firstName && lastName === _lastName && email === _email && password === '' && userPassword === '' && cnp === _cnp && street === _street)) {
+        if(startUpdating && !(firstName === _firstName && lastName === _lastName && email === _email && password === '' && userPassword === '' && street === _street)) {
             const updateProfile = async () => {
                 setLoadingUpdateModal(true)
         
@@ -102,29 +99,17 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                 const data_email = email === _email ? _email : email
                 const data_password = password
                 const data_userPassword = userPassword
-                const data_cnp = cnp === _cnp ? _cnp : cnp
-                const data_street = street === _street ? _cnp : street
+                const data_street = street === _street ? _street : street
 
 
-                const result = await axios.patch(`${server}/api/sd/authentication/update-user/${_id}/${_asId}`,  { data_firstName, data_lastName, data_email, data_password, data_userPassword, data_cnp, data_street }, { withCredentials: true })
+                const result = await axios.patch(`${server}/api/sd/authentication/update-user/${_id}/${_asId}`,  { data_firstName, data_lastName, data_email, data_password, data_userPassword, data_street }, { withCredentials: true })
                                         .then(res => res.data)
                                         .catch(err => {
                                             console.log(err)
                                             setLoadingUpdateModal(false)
                                             setStartUpdating(false)
                                             setLoading_(false)
-                                            if(err && err.response && err.response.data && err.response.data.type ===  'cnp') {
-                                                setError({
-                                                    ...error, 
-                                                    cnp: true
-                                                })
-                                                setErrorMessages({
-                                                    ...errorMessages,
-                                                    cnp: err.response.data.message
-                                                })
-                                                setUpdated(false)
-                                                return;
-                                            } else if(err && err.response && err.response.data && err.response.data.type === 'email') {
+                                            if(err && err.response && err.response.data && err.response.data.type === 'email') {
                                                 setError({
                                                     ...error, 
                                                     email: true
@@ -138,7 +123,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                                             }
                                         })
         
-                if(result && result.message === 'User deleted') {
+                if(result && result.message === 'User updated') {
                     setLoading_(true)
                     setUpdated(false)
                     setLoadingUpdateModal(false)
@@ -180,7 +165,6 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
             email: !email.length ? !email.length : (!email.match(emailRegex) ? true : false ),
             password: password !== '' ? (password.length < 8 ? true : (!regex.test(password) ? true : false )) : false,
             userPassword: userPassword !== '' ? (userPassword.length < 8 ? true : (!regex.test(userPassword) ? true : false )) : false,
-            cnp: !cnp.length ? !cnp.length : (!cnpRegex.test(cnp) ? true : (cnp.length !== 13 ? true : false )),
             street: !street.length,
         })
 
@@ -189,12 +173,11 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
             firstName: !firstName.length ? 'Spațiul nu poate fi gol' : '',
             email: !email.length ? 'Spațiul nu poate fi gol' : (!email.match(emailRegex) ? 'Email invalid' : '' ),
             password: password !== '' ? (password.length < 8 ? 'Parolă prea scurtă' : (!regex.test(password) ? 'Parola trebuie să conțină caractere alfanumerice' : '' )) : '',
-            cnp: !cnp.length ? 'Spațiul nu poate fi gol' : (!cnpRegex.test(cnp) ? 'CNP-ul conține doar cifre' : (cnp.length !== 13 ? 'CNP-ul are doar 13 cifre' : '' )),
             street: !street.length ? 'Spațiul nu poate fi gol' : '',
             userPassword: userPassword !== '' ? (userPassword.length < 8 ? 'Parolă prea scurtă' : (!regex.test(userPassword) ? 'Parola trebuie să conțină caractere alfanumerice' : '' )) : '',
         })
 
-        if(!lastName.length || !firstName.length || !email.length || !street.length || !email.match(emailRegex) || (userPassword.length < 8 && userPassword !== '') || (!regex.test(userPassword) && userPassword !== '') || (password.length < 8 && password !== '') || !cnpRegex.test(cnp) || (!regex.test(password) && password !== '') || cnp.length !== 13){
+        if(!lastName.length || !firstName.length || !email.length || !street.length || !email.match(emailRegex) || (userPassword.length < 8 && userPassword !== '') || (!regex.test(userPassword) && userPassword !== '') || (password.length < 8 && password !== '') || (!regex.test(password) && password !== '') ){
             return;
         } 
 
@@ -224,7 +207,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                 <div style={{ backgroundColor: 'rgb(250, 250, 250)', paddingTop: 1, paddingBottom: 0  }}>
                     <div className={styles.profile}>
 
-                            <TextField id='name' label='Nume' variant='standard' value={lastName} onChange={e => { setError({ ...error, lastName: false}); 
+                            <TextField label='Nume' variant='standard' value={lastName} onChange={e => { setError({ ...error, lastName: false}); 
                                     setErrorMessages({ ...errorMessages, lastName: '' }); setLastName(e.target.value) } } error={error.lastName} helperText={errorMessages.lastName} 
                                     InputProps={{
                                             startAdornment: lastName !== _lastName ? (
@@ -235,7 +218,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                                     }} 
                             />
 
-                            <TextField id='firstName' label='Prenume' variant='standard' value={firstName} onChange={e => { setError({ ...error, firstName: false}); 
+                            <TextField label='Prenume' variant='standard' value={firstName} onChange={e => { setError({ ...error, firstName: false}); 
                                     setErrorMessages({ ...errorMessages, firstName: '' }); setFirstName(e.target.value) } } error={error.firstName} helperText={errorMessages.firstName} 
                                     InputProps={{
                                             startAdornment: firstName !== _firstName ? (
@@ -247,7 +230,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                             />
 
 
-                            <TextField id='email' label='Email' variant='standard' value={email} onChange={e => { setError({ ...error, email: false}); setErrorMessages({ ...errorMessages, email: '' }); 
+                            <TextField label='Email' variant='standard' value={email} onChange={e => { setError({ ...error, email: false}); setErrorMessages({ ...errorMessages, email: '' }); 
                                     setEmail(e.target.value) } } error={error.email} helperText={errorMessages.email} 
                                     InputProps={{
                                         startAdornment: email !== _email ? (
@@ -260,7 +243,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
                             <FormControl variant='standard' error={error.password}>
                                 <InputLabel htmlFor='password'>Parolă</InputLabel>
-                                <Input id='password' type={showAdminPassword ? 'text' : 'password'} value={password} onChange={e => { setError({ ...error, password: false}); setErrorMessages({ ...errorMessages, password: '' }); setPassword(e.target.value) } } 
+                                <Input type={showAdminPassword ? 'text' : 'password'} value={password} onChange={e => { setError({ ...error, password: false}); setErrorMessages({ ...errorMessages, password: '' }); setPassword(e.target.value) } } 
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
@@ -284,12 +267,12 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                             {expand &&
                                 <>
                                     {_city !== '' && 
-                                        <TextField id='city' label={_comuna !== '' ? 'Sat' : 'Oraș'} variant='standard' value={_city} InputProps={{ readOnly: true }} />
+                                        <TextField label={_comuna !== '' ? 'Sat' : 'Oraș'} variant='standard' value={_city} InputProps={{ readOnly: true }} />
                                     }
                                     {_comuna !== '' &&
-                                        <TextField id='comuna' label='Comună' variant='standard' value={_comuna} InputProps={{ readOnly: true }}  />
+                                        <TextField label='Comună' variant='standard' value={_comuna} InputProps={{ readOnly: true }}  />
                                     }
-                                    <TextField id='county' label='Județ' variant='standard' value={_county} InputProps={{ readOnly: true }} />
+                                    <TextField label='Județ' variant='standard' value={_county} InputProps={{ readOnly: true }} />
                                 </>
                             }
                     </div>
@@ -310,7 +293,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
                                 <FormControl variant='standard' error={error.userPassword} fullWidth>
                                     <InputLabel htmlFor='userPassword'>Parolă</InputLabel>
-                                    <Input name='userPassword' id='userPassword' type={showPassword ? 'text' : 'password'} value={userPassword} onChange={e => { setError({ ...error, userPassword: false}); setErrorMessages({ ...errorMessages, userPassword: '' }); setUserPassword(e.target.value) } } 
+                                    <Input name='userPassword' type={showPassword ? 'text' : 'password'} value={userPassword} onChange={e => { setError({ ...error, userPassword: false}); setErrorMessages({ ...errorMessages, userPassword: '' }); setUserPassword(e.target.value) } } 
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton
@@ -331,18 +314,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
                                     <FormHelperText>{errorMessages.userPassword}</FormHelperText>
                                 </FormControl>
 
-                                <TextField id='cnp' label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} 
-                                onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } 
-                                helperText={errorMessages.cnp} InputProps={{ 
-                                    startAdornment: cnp !== _cnp ? (
-                                        <InputAdornment position='start'>
-                                            <EditIcon />
-                                        </InputAdornment>
-                                        ) : ''
-                                }}
-                                />
-
-                                <TextField id='street' label='Stradă' variant='standard' error={error.street} value={street} 
+                                <TextField label='Stradă' variant='standard' error={error.street} value={street} 
                                 onChange={e => { setError({ ...error, street: false}); setErrorMessages({ ...errorMessages, street: '' }); setStreet(e.target.value) } } 
                                 helperText={errorMessages.street} InputProps={{ 
                                     startAdornment: street !== _street ? (
@@ -357,7 +329,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
                             {expand && 
                                 <div className={styles.update_button}>
-                                    <button  onClick={e => verifyValid(e)} disabled={firstName === _firstName && lastName === _lastName && email === _email && password === '' && userPassword === '' && cnp === _cnp && street === _street}>Actualizează</button>
+                                    <button  onClick={e => verifyValid(e)} disabled={firstName === _firstName && lastName === _lastName && email === _email && password === '' && userPassword === '' && street === _street}>Actualizează</button>
                                 </div>
                             }
                         </div>

@@ -1,0 +1,65 @@
+.container_flex {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    margin-bottom: 40px;
+    gap: .5em;
+    margin-right: -40px;
+    width: max-content;
+    margin-inline: auto;
+    margin-top: 50px;
+
+    img { 
+        cursor: pointer;
+    }
+
+    button {
+        padding: .3em .8em;
+        font-size: 1.2rem;
+        border: 1px solid rgba(0, 0, 0, .5);
+        border-color: #393D3F;
+        border-radius: 2px;
+        cursor: pointer;
+        background: none;
+        font-family: 'Baloo Bhai 2', cursive;
+
+        &:hover {
+            background-color: rgb(220, 220, 220)
+        }
+    }
+
+    span { 
+        cursor: default;
+        opacity: 0.5;
+        font-size: 0.9rem;
+    }
+}
+
+.activated {
+    background: #393D3F !important;
+    color: white;
+}
+
+@media screen and (min-width: 0px) and (max-width: 480px) {
+    .container_flex {
+        align-self: center;
+        margin-right: -8px;
+
+        button {
+            border-color: rgb(180, 180, 180);
+
+            &:hover {
+                background-color: inherit;
+            }
+
+            &:nth-child(2) {
+                background: rgb(240, 240, 240);
+            }
+        }
+
+        .current {
+            border: 1px solid rgb(200, 200, 200);
+        }
+    }
+}

@@ -116,3 +116,27 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+.more {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
+    button {
+        font-family: 'Baloo Bhai 2';
+        border: 0;
+        background: #A71D31;
+        color: white;
+        padding: .65em 1.3em;
+        border-radius: 2px;
+        cursor: pointer;
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &:active {
+            opacity: .8;
+        }
+    }
+}

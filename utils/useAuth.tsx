@@ -10,6 +10,7 @@ interface User {
         type: string;
         name: string;
         county: string;
+        done: boolean;
     }
     setUser: any;
 }
@@ -18,14 +19,14 @@ interface User {
 const AuthContext = React.createContext<any>({})
 
 export function AuthProvider(props: any) {
-    const [ user, setUser ] = useState({ isLoggedIn: false, userId: '', type: '', profilePicture: '/', name: '', county: '' })
+    const [ user, setUser ] = useState({ isLoggedIn: false, userId: '', type: '', profilePicture: '/', name: '', county: '', done: false })
 
     async function login() {
         const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true })
                             .then(res => res.data)
                             .catch(err => err.response)    
         if(response){
-            setUser({ isLoggedIn: response.isLoggedIn, userId: response.userId, type: response.type, profilePicture: response.profilePicture, name: response.name, county: response.county  })
+            setUser({ isLoggedIn: response.isLoggedIn, userId: response.userId, type: response.type, profilePicture: response.profilePicture, name: response.name, county: response.county, done: true  })
         }
     }
     useEffect(() => {
@@ -44,7 +45,8 @@ export function AuthProvider(props: any) {
     const profilePicture = user.profilePicture
     const name = user.name
     const county = user.county
-    const value = {county, name, isLoggedIn, userId, type, profilePicture, setUser}
+    const done = user.done
+    const value = {county, name, isLoggedIn, userId, type, profilePicture, done, setUser}
     return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>
 }
 

@@ -9,6 +9,7 @@ import styles from '../../styles/scss/Posts/Tools.module.scss'
 import GoogleInput from './GoogleInput'
 import { server } from '../../config/server'
 import Category from './CategorySelect'
+import { useAuth } from '../../utils/useAuth'
 
 
 interface Tools {
@@ -24,6 +25,7 @@ interface Tools {
 
 const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages, setLoading, changePageBool, setChangePage }) => {
     const router = useRouter()
+    const auth = useAuth()
     
     const [ status, setStatus ] = useState<any>((Cookies.get('url_status') && Cookies.get('url_status') !== '') ? JSON.parse(Cookies.get('url_status') || '[]') || [] : [])
 
@@ -309,9 +311,6 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             const newCategoryArray = url.split('=')
             newCategoryArray.pop()
             const newCategoryArray2 = newCategoryArray.join('=')
-            // .split('&')
-            // newCategoryArray2.pop()
-            // const newCategoryArray3 = newCategoryArray2.join('&') 
             let searchParams: any;
             if ('URLSearchParams' in window) {
                 searchParams = new URLSearchParams(newCategoryArray2.split('?')[1]);
@@ -394,8 +393,10 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             </h1>
             <Status status={status} handleChange={handleChange} />
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1em' }}>
-                <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
-                             isComuna={isComuna} setIsComuna={setIsComuna} />
+                {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') &&
+                    <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
+                                isComuna={isComuna} setIsComuna={setIsComuna} />
+                }
                 <div className={styles.button_search}>
                     <button onClick={() => { setOnlyLocation(true); setSearch(!search); } }>Caută</button>
                 </div>

@@ -116,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         return {
             redirect: {
                 permanent: false,
-                destination: '/'
+                destination: '/statistics'
             },
             props: {}
         }

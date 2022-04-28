@@ -46,10 +46,13 @@ interface Moderators {
     }];
     load: boolean;
     numberOfPages: number;
+    _coming: boolean;
 }
 
-const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages }) => {
+const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages, _coming }) => {
     const auth = useAuth()
+
+    const [ coming, setComing ] = useState(_coming)
 
     const [ moderators, setModerators ] = useState<any>(_moderators)
     const [ createMod, setCreateMod ] = useState(false)
@@ -65,6 +68,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
     const [ isLocationChanged, setIsLocationChanged ] = useState(false)
 
     const [ isComuna, setIsComuna ] = useState(false)
+    const [ isComunaName, setIsComunaName ] = useState(false)
 
     const FlexItemProfile = ({ name, profilePicture, authorization, county, city, comuna, created }: FlexItemProfile) => {
         return (
@@ -123,6 +127,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                         setModerators(newModerators)
                     }
 
+                    setComing(result.coming)
                     setLoading(false)
                     setSearchedName('Toate')
                 }
@@ -198,6 +203,12 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                 setMore(0)
             }
 
+            let specialName = false
+            if(isComuna) {
+                setIsComunaName(true)
+                specialName = true
+            } else setIsComunaName(false)
+
             const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
@@ -214,8 +225,9 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                     setModerators(newModerators)
                 }
 
+                setComing(result.coming)
                 setLoading(false)
-                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}, ${city}` : (city !== '' ?  `, ${city}` : '')}`)
+                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
             setIsLocationChanged(false)
@@ -288,7 +300,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                     }
                 </>
              }
-                {pages > 1 &&
+                {coming &&
                     <div className={styles.more}>
                         <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
                     </div>
@@ -342,7 +354,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         props: {
             _moderators: moderators.moderators,
             load: !moderators.low,
-            numberOfPages: moderators.numberOfPages
+            numberOfPages: moderators.numberOfPages,
+            _coming: moderators.coming,
         }
     }
 }   

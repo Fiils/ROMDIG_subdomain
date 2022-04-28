@@ -82,8 +82,6 @@ const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPos
         <FormControl variant='standard' error={index === 1 ? error.location : error} fullWidth>
           <InputLabel htmlFor='location'>Localizare</InputLabel>
           <Input id='location' type='text' name='location' inputProps={{ ref: autoCompleteRef, value: location, onChange: (e: any) => { setIsComuna(false); if(index === 1) { setError({ ...error, location: false}); } else { setError(false) } if(index === 1) { setErrorMessages({ ...errorMessages, location: '' }) } setLocation(e.target.value) }, placeholder: '' }} />
-          {errorMessages && <FormHelperText>{errorMessages.location}</FormHelperText> }
-          {!errorMessages && <FormHelperText>{error ? 'Locație invalidă' : ''}</FormHelperText>}
         </FormControl>
 
       {(auth.type === 'General' || auth.type === 'Judetean') &&

@@ -58,7 +58,7 @@ const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, d
     return (
         <div style={{ display: 'flex', gap: '40px', height: '100%', width: '100%' }}>
             <div key={_id} className={styles.post}>
-                <a href={`${client}/postari/${_id}`} target="_blank">
+                <a href={`${client}/postari/${_id}`} target="_blank" rel="noreferrer">
                 <div key={'k' + _id} className={styles.image} style={{ border: !media[0] ? '2px solid rgb(220, 220, 220)' : '0px' }}>
                     {media[0] && <Image src={media[0]} layout='fill' key={'l' + _id} alt='Poza Principala' /> }
                     {!media[0] && 

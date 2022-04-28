@@ -40,8 +40,8 @@
 
 .select_cat {
     font-size: 2.5rem !important;
-    font-weight: 600;
-    font-family: 'Belleza';
+    font-weight: 600 !important; 
+    font-family: 'Belleza' !important;
 
     *:focus {
         opacity: 1 !important;

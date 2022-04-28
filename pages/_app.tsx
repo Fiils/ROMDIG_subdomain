@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
 
 import Header from '../components/Layout/Header'
 import '../styles/scss/globals.scss'
@@ -18,6 +19,17 @@ function MyApp({ Component, pageProps }: AppProps) {
       setLayout(true)
     }
   }, [])
+
+  useEffect(() => {
+    if(router.pathname !== '/posts/[page]') {
+      Cookies.set('url', `?page=0&level=all&category=popular`)
+      Cookies.remove('url_location')
+      Cookies.remove('url_fex')
+      Cookies.remove('url_status')
+      Cookies.remove('url_comuna')
+      Cookies.remove('url_cat')
+    }
+  }, [router.pathname])
 
   return (
     <AuthProvider>

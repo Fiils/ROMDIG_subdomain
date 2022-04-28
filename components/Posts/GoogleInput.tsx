@@ -50,7 +50,7 @@ function handleScriptLoad(updateQuery: any, autoCompleteRef: any, setFullExactPo
     { types: ["(regions)"], componentRestrictions: { country: "ro" } }
   );
 
-  autoComplete.setFields(["address_components", "formatted_address", 'name', 'place_id']);
+  autoComplete.setFields(["address_components", 'name']);
   autoComplete.addListener("place_changed", () =>
     handlePlaceSelect(updateQuery, setFullExactPosition)
   );

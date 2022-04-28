@@ -2,6 +2,7 @@ import type { FC, Dispatch, SetStateAction } from 'react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import Cookies from 'js-cookie'
 
 import Status from './StatusSelect' 
 import styles from '../../styles/scss/Posts/Tools.module.scss'
@@ -11,27 +12,34 @@ import Category from './CategorySelect'
 
 
 interface Tools {
-    status: any;
-    setStatus: Dispatch<SetStateAction<any>>;
     errorLocation: boolean;
     setErrorLocation: Dispatch<SetStateAction<boolean>>;
     setPages: Dispatch<SetStateAction<number>>;
     setPosts: Dispatch<SetStateAction<any>>;
     setLoading: Dispatch<SetStateAction<boolean>>;
+    changePageBool: boolean;
+    setChangePage: Dispatch<SetStateAction<boolean>>;
 }
 
 
-const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, setPosts, setPages, setLoading }) => {
+const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages, setLoading, changePageBool, setChangePage }) => {
     const router = useRouter()
+    
+    const [ status, setStatus ] = useState<any>((Cookies.get('url_status') && Cookies.get('url_status') !== '') ? JSON.parse(Cookies.get('url_status') || '[]') || [] : [])
 
     const [ search, setSearch ] = useState<null | boolean>(null)
-    const [ location, setLocation ] = useState('')
-    const [ isComuna, setIsComuna ] = useState(false)
-    const [ fullExactPosition, setFullExactPosition ] = useState<any>(null)
+    const [ location, setLocation ] = useState((Cookies.get('url_location') && Cookies.get('url_location') !== '') ? Cookies.get('url_location') || '' : '')
+    const [ isComuna, setIsComuna ] = useState((Cookies.get('url_comuna') && Cookies.get('url_comuna') !== '') ? (Cookies.get('url_comuna') === 'true' ? true : false) : false)
+    const [ fullExactPosition, setFullExactPosition ] = useState<any>((Cookies.get('url_fex') && Cookies.get('url_fex') !== '') ? JSON.parse(Cookies.get('url_fex') || '') : null)
 
-    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-posts?level=all&category=popular`)
+    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-posts${Cookies.get('url') ? Cookies.get('url') : `?page=${parseInt(router.query.page!.toString().split('p')[1]) - 1}&level=all&category=popular`}`)
 
-    const [ category, setCategory ] = useState('Populare')
+    const [ category, setCategory ] = useState((Cookies.get('url_cat') && Cookies.get('url_cat') !== '') ? Cookies.get('url_cat') || 'Populare' : 'Populare')
+
+    const [ onlyLocation, setOnlyLocation ] = useState(false)
+
+    const [ changeStatusBool, setChangeStatus ] = useState(false)
+    const [ changeCategoryBool, setChangeCategory ] = useState(false)
 
     const handleChange = async (e: any) => {
         e.preventDefault()
@@ -41,11 +49,13 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
         } else {
             setStatus(status.filter((status: string) => !status.includes(e.target.value)))
         }
+        setChangeStatus(true)
     };
 
     const handleChangeCategory = async (e: any) => { 
         e.preventDefault()
         setCategory(e.target.value)
+        setChangeCategory(true)
     }
 
     const chooseCategoryServer = (categ: string | undefined | string[]) => {
@@ -75,8 +85,14 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
             let locationError = false;
             setErrorLocation(false)
             setLoading(true)
+            setOnlyLocation(true)
+            router.replace({
+                pathname: router.pathname,
+                query: { ...router.query, page: 'p1' }
+            })
 
             if(location === '') {
+                setStatus([])
 
                 const getNewModerators = async () => {
                     const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`, { withCredentials: true })
@@ -91,22 +107,27 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
                         setPages(result.numberOfPages)
                         setPosts(result.posts)
                         setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
-                        // setSearchedName('Toate')
                         setLoading(false)
                     } else {
                         setLoading(false)
                     }
-
+                        Cookies.set('url', `?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
+                        Cookies.set('url_status', [])
+                        Cookies.set('url_fex', '')
+                        Cookies.set('url_location', '')
+                        Cookies.set('url_comuna', 'false')
                 }
         
                 getNewModerators()
+                setOnlyLocation(false)
                 return;
             }
 
-            if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
+            if(typeof fullExactPosition === 'undefined' || !fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
                 setErrorLocation(true)
                 locationError = true
                 setLoading(false)
+                setOnlyLocation(false)
                 return;
             }
 
@@ -159,6 +180,8 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
 
             if(isComuna && comuna === '') {
                 setErrorLocation(true)
+                setOnlyLocation(false)
+                setLoading(false)
                 return;
             }
 
@@ -176,7 +199,11 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
                     setPages(result.numberOfPages)
                     setPosts(result.posts)
                     setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
-                    // setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}, ${city}` : (city !== '' ?  `, ${city}` : '')}`)
+                    Cookies.set('url_status', [])
+                    Cookies.set('url_location', location)
+                    Cookies.set('url_comuna', isComuna.toString())
+                    Cookies.set('url_fex', JSON.stringify(fullExactPosition))
+                    Cookies.set('url', `?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
                 } else {
                     setLoading(false)
                 }
@@ -186,6 +213,7 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
             if(!locationError) {
                 getNewModerators(county, comuna, location, city)
             }
+            setOnlyLocation(false)
             setLoading(false)
         }
     }, [search]) 
@@ -212,8 +240,24 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
                         urlPart += `&statusd=${value}`
                     }
             })
-    // category=${chooseCategoryServer(router.query.category)}
-            const result = await axios.get(`${url}${urlPart}`, { withCredentials: true })
+
+            const newCategoryArray = url.split('=')
+            newCategoryArray.pop()
+            const newCategoryArray2 = newCategoryArray.join('=')
+            const newCategoryArray3 = newCategoryArray2.split('&')
+            newCategoryArray3.pop()
+            const newCategoryArray4 = newCategoryArray3.join('&')
+            let searchParams: any;
+            if ('URLSearchParams' in window) {
+                searchParams = new URLSearchParams(newCategoryArray4.split('?')[1]);
+                searchParams.set("page", `0`);
+                searchParams.delete('statusa')
+                searchParams.delete('statusb')
+                searchParams.delete('statusc')
+                searchParams.delete('statusd')
+            }
+
+            const result = await axios.get(`${url.split('?')[0]}?${searchParams!.toString()}${urlPart}&category=${chooseCategoryServer(category)}`, { withCredentials: true })
                             .then(res => res.data)
                             .catch(err => {
                                 console.log(err); 
@@ -221,45 +265,125 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
                             })
     
             setLoading(false)
+            setUrl(`${url.split('?')[0]}?${searchParams!.toString()}${urlPart}&category=${chooseCategoryServer(category)}`)
             setPosts(result ? result.posts : [])
             setPages(result ? result.numberOfPages : 1)
+            setChangeStatus(false)
+
+            const cookiesStatuses: string[] | null = []
+            if(urlPart.split('&')[1] && urlPart.split('&')[1].split('=')[1] !== '') {
+                cookiesStatuses.push(urlPart.split('&')[1].split('=')[1])
+            } 
+            if(urlPart.split('&')[2] && urlPart.split('&')[2].split('=')[1] !== '') {
+                cookiesStatuses.push(urlPart.split('&')[2].split('=')[1])
+            } 
+            if(urlPart.split('&')[3] && urlPart.split('&')[3].split('=')[1] !== '') {
+                cookiesStatuses.push(urlPart.split('&')[3].split('=')[1])
+            }
+            if(urlPart.split('&')[4] && urlPart.split('&')[4].split('=')[1] !== '') {
+                cookiesStatuses.push(urlPart.split('&')[4].split('=')[1])
+            } 
+
+            Cookies.set('url', `?${searchParams!.toString()}${urlPart}&category=${chooseCategoryServer(category)}`)
+            Cookies.set('url_status', JSON.stringify(cookiesStatuses))
         }
 
-        // useEffect(() => {
-        //     changeStatus(status)
-        // }, [status])
+        useEffect(() => {
+            if(changeStatusBool) {
+                changeStatus(status)
+            }
+        }, [status])
+
     
 
-        const changeCategory = async (category: string) => {
+        const changeCategory = async (newCategory: string) => {
             router.push({
                 pathname: router.pathname,
-                query: { category: category, page: 'p1' }
+                query: { ...router.query, page: 'p1' }
             })
             setLoading(true)
             setPosts([])
             setPages(0)
             setStatus([])
 
-            const result = await axios.get(`${server}/api/sd/post/get-posts?category=${chooseCategoryServer(category)}&page=0&page_size=14`, { withCredentials: true })
+            const newCategoryArray = url.split('=')
+            newCategoryArray.pop()
+            const newCategoryArray2 = newCategoryArray.join('=')
+            // .split('&')
+            // newCategoryArray2.pop()
+            // const newCategoryArray3 = newCategoryArray2.join('&') 
+            let searchParams: any;
+            if ('URLSearchParams' in window) {
+                searchParams = new URLSearchParams(newCategoryArray2.split('?')[1]);
+                searchParams.set("page", `0`);
+            }
+            const result = await axios.get(`${url.split('?')[0]}?${searchParams!.toString()}${chooseCategoryServer(newCategory)}`, { withCredentials: true })
                             .then(res => res.data)
                             .catch(err => {
                                 console.log(err); 
-                                return;
                             })
-                            setLoading(false)
-            if(!result) {
-                router.replace({
-                    pathname: router.pathname,
-                    query: { ...router.query, page: 'p1' }
-                })
-            }
+            
+            setUrl(`${url.split('?')[0]}?${searchParams!.toString()}=${chooseCategoryServer(newCategory)}`)
+            setLoading(false)
             setPosts(result ? result.posts : [])
             setPages(result ? result.numberOfPages : 0)
+            setChangeCategory(false)
+
+            Cookies.set('url', `?${searchParams!.toString()}${chooseCategoryServer(newCategory)}`)
+            Cookies.set('url_cat', newCategory)
         }
 
         useEffect(() => {
-            changeCategory(category)
+            if(!onlyLocation && changeCategoryBool) {
+                changeCategory(category)
+            }
         }, [category])
+
+        
+    const changePage = async (category: string | undefined | string[]) => {
+        const page = router.query.page!.toString().split('')
+        let number = '';
+
+        if(page.length > 1) {
+            page.map((value: string) => {
+                if(value !== 'p'){
+                    number += value
+                }
+            })
+        }
+
+        setLoading(true)
+        setPosts([])
+        setPages(0)
+
+        let searchParams;
+        if ('URLSearchParams' in window) {
+            searchParams = new URLSearchParams(url.split('?')[1]);
+            searchParams.set("page", `${parseInt(number) - 1}`);
+        }
+        const result = await axios.get(`${url.split('?')[0]}?${searchParams?.toString()}`, { withCredentials: true })
+                        .then(res => res.data)
+                        .catch(err => {
+                            console.log(err); 
+                            return;
+                        })
+
+        setLoading(false)
+        setPosts(result ? result.posts : [])
+        setPages(result ? result.numberOfPages : 1)
+        setChangePage(false)
+
+        Cookies.set('url', `?${searchParams?.toString()}`)
+        Cookies.set('url_page', number)
+    }
+
+
+
+    useEffect(() => {
+        if(changePageBool) {
+            changePage(router.query.category)
+        }
+    }, [router.query.page])
     
 
     return (
@@ -273,7 +397,7 @@ const Tools: FC<Tools> = ({ status, setStatus, errorLocation, setErrorLocation, 
                 <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
                              isComuna={isComuna} setIsComuna={setIsComuna} />
                 <div className={styles.button_search}>
-                    <button onClick={() => { setSearch(!search); } }>Caută</button>
+                    <button onClick={() => { setOnlyLocation(true); setSearch(!search); } }>Caută</button>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, Dispatch, SetStateAction } from 'react';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -43,13 +43,13 @@ const StatusSelect: FC<StatusProps> = ({ category, handleChange }) => {
             disableUnderline
             className={styles.select_cat}
             >
-            <MenuItem value={'Populare'}>Populare</MenuItem>
-            <MenuItem value={'Vizionate'}>Vizionate</MenuItem>
-            <MenuItem value={'Apreciate'}>Apreciate</MenuItem>
-            <MenuItem value={'Comentate'}>Comentate</MenuItem>
-            <MenuItem value={'Noi'}>Noi</MenuItem>
-            <MenuItem value={'Vechi'}>Vechi</MenuItem>
-            <MenuItem value={'Neapreciate'}>Neapreciate</MenuItem>
+              <MenuItem value={'Populare'}>Populare</MenuItem>
+              <MenuItem value={'Vizionate'}>Vizionate</MenuItem>
+              <MenuItem value={'Apreciate'}>Apreciate</MenuItem>
+              <MenuItem value={'Comentate'}>Comentate</MenuItem>
+              <MenuItem value={'Noi'}>Noi</MenuItem>
+              <MenuItem value={'Vechi'}>Vechi</MenuItem>
+              <MenuItem value={'Neapreciate'}>Neapreciate</MenuItem>
           </Select>
         </FormControl>
         </ThemeProvider>

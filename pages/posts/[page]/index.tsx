@@ -1,8 +1,9 @@
 import type { NextPage, GetServerSideProps } from 'next'
 import axios from 'axios'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
+import * as cookie from 'cookie'
 
 import { server } from '../../../config/server'
 import styles from '../../../styles/scss/Posts/PostsContainer.module.scss'
@@ -10,6 +11,7 @@ import Pagination from '../../../components/Posts/Pagination'
 import MobilePagination from '../../../components/Posts/MobilePagination'
 import Post from '../../../components/Posts/PostGrid'
 import Tools from '../../../components/Posts/Tools'
+import { NoSSR } from '../../../utils/NoSsr'
 
 
 interface Posts {
@@ -24,75 +26,21 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
     const [ posts, setPosts ] = useState(_posts)
     const [ pages, setPages ] = useState(numberOfPages)
 
-    const [ status, setStatus ] = useState<string[]>([])
+
+    const [ changePage, setChangePage ] = useState(false)
 
     const [ errorLocation, setErrorLocation ] = useState(false)
 
 
     const [ loading, setLoading ] = useState(false)
 
-    // const changePage = async (category: string | undefined | string[]) => {
-    //     const page = router.query.page!.toString().split('')
-    //     let number = '';
-
-    //     if(page.length > 1) {
-    //         page.map((value: string) => {
-    //             if(value !== 'p'){
-    //                 number += value
-    //             }
-    //         })
-    //     }
-
-    //     setLoading(true)
-    //     setPosts([])
-    //     setPages(0)
-    //     const result = await axios.get(`${server}/api/post/show${chooseCategoryServer(category)}?page=${parseInt(number) - 1}&level=tot&age=${category === 'vechi' ? '1' : '-1'}`, { withCredentials: true })
-    //                     .then(res => res.data)
-    //                     .catch(err => {
-    //                         console.log(err); 
-    //                         return;
-    //                     })
-
-    //     if(!result) {
-    //         router.replace({
-    //             pathname: router.pathname,
-    //             query: { ...router.query, page: 'p1' }
-    //         })
-    //     }
-
-    //     if(result.posts.length === 0) {
-    //         setLoading(false)
-    //         return router.replace({
-    //             pathname: router.pathname,
-    //             query: { ...router.query, page: 'p1' }
-    //         })
-    //     } else {
-    //         setLoading(false)
-    //         setPosts(result.posts)
-    //         setPages(result.numberOfPages)
-    //     }
-    // }
-
-
-
-
-    // useEffect(() => {
-    //     changePage(router.query.category)
-    // }, [router.query.page])
-    
-
-
-
-    // useEffect(() => {
-    //     changeStatus(status)
-    // }, [status])
-
-
     return (
+        <NoSSR fallback={<div style={{ height: '100vh'}}></div>}>
         <div>   
-            <Tools status={status} setStatus={setStatus} errorLocation={errorLocation} setErrorLocation={setErrorLocation} setPosts={setPosts} setPages={setPages} setLoading={setLoading} />
+            <Tools changePageBool={changePage} setChangePage={setChangePage} errorLocation={errorLocation} setErrorLocation={setErrorLocation} 
+                   setPosts={setPosts} setPages={setPages} setLoading={setLoading} />
 
-                {(pages > 0 && posts.length > 0) ?
+                {(pages > 0 && posts.length > 0 && !loading) ?
                     <div className={styles.posts_container}>
                         {posts.map((post: any, index: number) => {
                             return <Post key={index} _id={post._id} index={index} title={post.title} description={post.description} upVoted={post.upVoted} downVoted={post.downVoted} firstNameAuthor={post.firstNameAuthor}
@@ -115,8 +63,9 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
             
             {loading && <div className={styles.loader}></div> }
 
-            {(pages > 0 && posts.length > 0) && <Pagination numberOfPages={pages} /> }
+            {(pages > 0 && posts.length > 0) && <Pagination numberOfPages={pages} setChangePage={setChangePage} /> }
         </div>
+        </NoSSR>
     )
 }
 
@@ -152,10 +101,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
                 destination: '/'
             },
             props: {}
-        }
+        }   
     }
 
-    const result = await axios.get(`${server}/api/sd/post/get-posts?level=all&category=popular`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
+
+    const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url ? cookie.parse(req.headers.cookie).url : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err.response)

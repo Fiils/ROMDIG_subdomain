@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, Dispatch, SetStateAction } from 'react'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
@@ -8,9 +8,10 @@ import styles from '../../styles/scss/Posts/Pagination.module.scss'
 
 interface Pagination { 
     numberOfPages: number;
+    setChangePage: Dispatch<SetStateAction<boolean>>;
 }
 
-const Pagination: FC<Pagination> = ({ numberOfPages }) => {
+const Pagination: FC<Pagination> = ({ numberOfPages, setChangePage }) => {
     const router = useRouter()
 
     const nextPage = () => {
@@ -28,6 +29,7 @@ const Pagination: FC<Pagination> = ({ numberOfPages }) => {
             })
             setCurrentButton(parseInt(number) + 1)
         }
+        setChangePage(true)
     }
 
 const prevPage = () => {
@@ -45,18 +47,23 @@ const prevPage = () => {
         })
         setCurrentButton(parseInt(number) - 1)
     }
+    setChangePage(true)
 }
 
 const[ arrCurBtn, setArrCurBtn] = useState<any[]>([])
 
-const page = router.query.page ? router.query.page.toString().split('') : ['p', '1']
-let number = '';
-page.map((value: string) => {
-    if(value !== 'p'){
-        number += value
-    }
-})
-const [currentButton, setCurrentButton] = useState<number>(parseInt(number) > 0 ? parseInt(number) : 1)
+const [currentButton, setCurrentButton] = useState<number>(parseInt(router.query.page!.toString() || '1'))
+useEffect(() => {
+    const page = router.query.page ? router.query.page.toString().split('') : ['p', '1']
+    let number = '';
+    page.map((value: string) => {
+        if(value !== 'p'){
+            number += value
+        }
+    })
+    setCurrentButton(parseInt(number))
+}, [router.query.page])
+
 
 let numberPages: number[] = []
 for(let i = 1; i <= numberOfPages; i++)
@@ -96,6 +103,8 @@ const change_first_page = (page: string) => {
     router.replace({
         query: { ...router.query, page: `p${page}` }
     })
+
+    setChangePage(true)
 }
 
 const changePage = (value: number) => {
@@ -103,6 +112,7 @@ const changePage = (value: number) => {
     if(currentButton !== value){
         change_first_page(value.toString());  
     }
+    setChangePage(true)
 }
 
 

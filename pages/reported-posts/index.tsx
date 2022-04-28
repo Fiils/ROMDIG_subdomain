@@ -30,6 +30,8 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
     const [ isComunaName, setIsComunaName ] = useState(false)
     const [ searchedName, setSearchedName ] = useState('Toate')
 
+    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-reported-posts?level=all&skip=0`)
+
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
         if(search === null) return;
@@ -65,8 +67,10 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                         setPosts(newPosts)
                     }
 
+                    setComing(result.coming)
                     setLoading(false)
                     setSearchedName('Toate')
+                    setUrl(`${server}/api/sd/post/get-reported-posts?level=all&skip=0`)
                 }
 
                 setIsComunaName(false)
@@ -163,10 +167,12 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                     setPosts(newPosts)
                 }
 
+                setUrl(`${server}/api/sd/post/get-reported-posts?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setLoading(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
+            setComing(result.coming)
             setIsLocationChanged(false)
         }
 
@@ -199,13 +205,17 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
             </div>
 
             {!loading ?
-                    <div className={styles.container_moderators}>
+                    <>
                         {(posts.length > 0) ?
-                            <>
+                            <div className={styles.container_moderators}>
                                 {posts.map((post: any, index: number) => {
-                                    // return <ReportedPost key={index} _id={post._id} title={post.title} authorId={post.authorId}
+                                    return <ReportedPost key={index} index={index} _id={post._id} title={post.title} authorId={post.authorId} nameAuthor={post.nameAuthor} city={post.city}
+                                                         county={post.county} description={post.description} downVoted={post.downVoted} upVoted={post.upVoted} reports={post.reports}
+                                                         favorites={post.favorites} firstNameAuthor={post.firstNameAuthor} media={post.media} status={post.status} views={post.views}
+                                                         comments={post.comments} creationDate={post.creationDate} authorProfilePicture={post.authorProfilePicture} url={url} 
+                                                         setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} />
                                 })}
-                            </>
+                            </div>
                             :
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
@@ -214,7 +224,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                                 </div>
                             </div>
                         }
-                    </div>
+                    </>
                 :
                     <div className={styles.loader}></div>
             }

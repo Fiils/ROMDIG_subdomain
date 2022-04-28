@@ -1,0 +1,119 @@
+.options_container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(230, 230, 230, .4);
+    border-radius: 5px;
+}
+
+.actions {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    margin-right: 15px;
+    gap: 1em;
+
+    img {
+        cursor: pointer !important;
+    }
+}
+
+.down_cont {
+    margin: 80px 5% 0 5%;
+
+    h2 {
+        font-family: 'Belleza';
+        font-weight: 900;
+        font-size: 2rem;
+    }
+}
+
+.reasons_box {
+    margin-top: 60px;
+    font-family: 'Baloo Bhai 2';
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    row-gap: 20%;
+    column-gap: 10px;
+}
+
+.overlay {
+    z-index: 99;
+    background: rgba(255, 255, 255, .5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin-left: 0 !important;
+}
+
+.container_accept {
+    z-index: 1000;
+    position: absolute;
+    width: 55%;
+    height: 70%;
+    top: 20%;
+    left: 22.5%;
+    right: 0;
+    background: white;
+}
+
+.close_modal {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    img {
+        transition: all .25s ease-out;
+        border-radius: 50% !important;
+        padding: 5px !important;
+    }
+
+    img:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, .05)
+    }
+}
+
+.icon_modal {
+    position: absolute;
+    top: 10px;
+    left: 15px
+}
+
+.content_modal {
+    margin-top: 90px;
+    font-family: 'Anonymous Pro';
+    text-align: center;
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        margin-inline: 10%;
+    }
+
+    button {
+        font-family: 'Baloo Bhai 2';
+        font-size: 1.1rem;
+        padding: .3em .8em;
+        border: 0;
+        cursor: pointer;
+        border-radius: 4px;
+        background: #A71D31;
+        color: white;
+        margin-top: 20px;
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &:active {
+            opacity: .8;
+        }
+    }
+}

@@ -137,6 +137,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
 
         if(comuna === '' && isComuna) {
             setErrorLocation(true)
+            setLoading(false)
             return;
         }
 

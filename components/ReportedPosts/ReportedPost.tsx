@@ -110,7 +110,7 @@ const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, d
             </a>
             </div>
 
-            <Options setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+            <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
         </div>
     )
 }

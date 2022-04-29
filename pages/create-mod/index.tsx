@@ -195,6 +195,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
         if(comuna === '' && isComuna) {
             setError(true)
+            setLoading(false)
             return;
         }
 

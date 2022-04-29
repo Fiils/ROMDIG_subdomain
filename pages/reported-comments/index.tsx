@@ -1,72 +1,36 @@
 import type { NextPage, GetServerSideProps } from 'next'
-import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
 
-import styles from '../../styles/scss/ManageMod/ManageModContainer.module.scss'
-import GoogleInput from '../../components/CreateMod/GoogleInput'
-import { server } from '../../config/server'
+import styles from '../../styles/scss/ReportedPosts/RContainer.module.scss'
 import { useAuth } from '../../utils/useAuth'
-import Moderator from '../../components/ManageMod/Moderator'
+import { server } from '../../config/server'
+import GoogleInput from '../../components/CreateMod/GoogleInput'
+import ReportedComment from '../../components/ReportedComments/ReportedComment'
 
-
-interface Moderators { 
-    _moderators: [{
-        _id: string;
-        lastName: string;
-        firstName: string;
-        profilePicture: string;
-        creationDate: Date;
-        createdBy: string;
-        asId: string;
-        email: string;
-        authorization: {
-            type: string;
-            location: {
-                county: string;
-                city: string;
-                comuna: string;
-            }
-        },
-        posts: {
-            status: Array<string>;
-        },
-    }];
-    _users: [{
-        gender: string;
-        cnp: string;
-        street: string;
-    }]
-    load: boolean;
-    numberOfPages: number;
+interface Posts {
+    _comments: any;
     _coming: boolean;
 }
 
-
-
-const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, numberOfPages, _coming }) => {    
-    const [ moderators, setModerators ] = useState<any>(_moderators)
-    const [ users, setUsers ] = useState<any>(_users)
-    const [ pages, setPages ] = useState(numberOfPages)
-    const [ coming, setComing ] = useState(_coming)
-
-    const [ more, setMore ] = useState(0)
-    const [ isLocationChanged, setIsLocationChanged ] = useState(false) 
-
+const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
     const auth = useAuth()
 
-    const [ errorLocation, setErrorLocation ] = useState(false)
-    const [ fullExactPosition, setFullExactPosition ] = useState<any>(null)
-    const [ location, setLocation ] = useState('')
-    const [ search, setSearch ] = useState<boolean | null>(null)
-    const [ searchedName, setSearchedName ] = useState('Toate')
-    const [ url, setUrl ] = useState(`${server}/api/sd/mod/get-all-per-region?all=true&skip=0`)
-
+    const [ coming, setComing ] = useState(_coming)
+    const [ isLocationChanged, setIsLocationChanged ] = useState(false)
     const [ isComuna, setIsComuna ] = useState(false)
-    const [ isComunaName, setIsComunaName ] = useState(false)
-
-
+    const [ comments, setComments ] = useState(_comments)
+    const [ search, setSearch ] = useState<boolean | null>(null)
+    const [ fullExactPosition, setFullExactPosition ] = useState<any>()
+    const [ location, setLocation ] = useState('')
+    const [ errorLocation, setErrorLocation ] = useState(false)
     const [ loading, setLoading ] = useState(false)
+    const [ more, setMore ] = useState(0)
+    const [ isComunaName, setIsComunaName ] = useState(false)
+    const [ searchedName, setSearchedName ] = useState('Toate')
+
+    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-reported-comments?level=all&skip=0`)
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
@@ -87,7 +51,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
             }
             
             const getNewModerators = async () => {
-                const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?all=true&skip=${isLocationChanged ? 0 : more}`, { withCredentials: true })
+                const result = await axios.get(`${server}/api/sd/post/get-reported-comments?level=all&skip=${isLocationChanged ? 0 : more}`, { withCredentials: true })
                                         .then(res => res.data)
                                         .catch(err => {
                                             console.log(err)
@@ -95,20 +59,18 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                                             setLoading(false)
                                         })
     
-                if(result) {
-                    setPages(result.numberOfPages)
-                        
+                if(result) {                            
                     if(isLocationChanged) {
-                        setModerators(result.moderators)
+                        setComments(result.comments)
                     } else {
-                        const newModerators: any = [...moderators, ...result.moderators]
-                        setModerators(newModerators)
+                        const newComments: any = [...comments, ...result.comments]
+                        setComments(newComments)
                     }
 
                     setComing(result.coming)
-                    setUrl(`${server}/api/sd/mod/get-all-per-region?all=true&skip=0`)
                     setLoading(false)
                     setSearchedName('Toate')
+                    setUrl(`${server}/api/sd/post/get-reported-comments?level=all&skip=0`)
                 }
 
                 setIsComunaName(false)
@@ -183,14 +145,14 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
             if(isLocationChanged) {
                 setMore(0)
             }
-            
+
             let specialName = false
             if(isComuna) {
                 setIsComunaName(true)
                 specialName = true
             } else setIsComunaName(false)
 
-            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
+            const result = await axios.get(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
@@ -200,18 +162,18 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
 
             if(result) {
                 if(isLocationChanged) {
-                    setModerators(result.moderators)
+                    setComments(result.posts)
                 } else {
-                    const newModerators: any = [...moderators, ...result.moderators]
-                    setModerators(newModerators)
+                    const newComments: any = [...comments, ...result.comments]
+                    setComments(newComments)
                 }
 
-                setComing(result.coming)
+                setUrl(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setLoading(false)
-                setUrl(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
+            setComing(result.coming)
             setIsLocationChanged(false)
         }
 
@@ -224,66 +186,59 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
 
     return (
         <>
-        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
-            <div style={{ paddingBottom: 50 }}>
-                <div className={styles.fcontainer}>
-                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                        <h2>Moderatori: {moderators.length}</h2>
-                        <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
-                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
-                            <div className={styles.button_search}>
-                                <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+            <div style={{ paddingBottom: 50 }}> 
+                {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
+                    <div className={styles.fcontainer}>
+                        <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                            <h2>Postări: {comments ? comments.length : 0}</h2>
+                            <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                                <div className={styles.button_search}>
+                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                                </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
-                </div>
-                
+                }
                 <div className={styles.results_headline}>
                     <h1>Rezultate pentru: {searchedName}</h1>
                 </div>
+            </div>
 
-                {!loading ?
-                    <div className={styles.container_moderators}>
-                        {(moderators.length > 0) ?
-                            <>
-                                {moderators.map((moderator: any, index: number) => {
-                                    return <Moderator key={moderator._id} _id={moderator._id} _lastName={moderator.lastName} _firstName={moderator.firstName} _profilePicture={moderator.profilePicture}
-                                                    _asId={moderator.asId} _email={moderator.email} _type={moderator.authorization.type} _county={moderator.authorization.location.county} 
-                                                    _comuna={moderator.authorization.location.comuna} _city={moderator.authorization.location.city} _gender={users[index].gender}
-                                                    _cnp={users[index].cnp} _street={users[index].street} url={url} setLoading_={setLoading} setModerators={setModerators} setUsers={setUsers} />
+            {!loading ?
+                    <>
+                        {(comments.length > 0) ?
+                            <div className={styles.container_moderators}>
+                                {comments.map((comment: any, index: number) => {
+                                    return <ReportedComment key={index} index={index} _id={comment._id} originalPostId={comment.originalPostId} authorId={comment.authorId} nameAuthor={comment.nameAuthor} 
+                                                         city={comment.city} county={comment.county} text={comment.text} downVoted={comment.downVoted} upVoted={comment.upVoted} reports={comment.reported}
+                                                         firstNameAuthor={comment.firstNameAuthor} creationDate={comment.creationDate} authorProfilePicture={comment.profilePicture} url={url} 
+                                                         setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} />
                                 })}
-                            </>
+                            </div>
                             :
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
                                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
+                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsită nicio postare semnalată ca fiind neadecvată</h3>
                                 </div>
                             </div>
                         }
-                    </div>
+                    </>
                 :
                     <div className={styles.loader}></div>
-                }
-                {coming &&
-                    <div className={styles.more}>
-                        <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
-                    </div>
-                }
-            </div>
-        :
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }}>
-                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
-                <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
-            </div>
-        }
-            
+            }
+
+            {coming &&
+                <div className={styles.more}>
+                    <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
+                </div>
+            } 
         </>
-    )   
+    )
 }
 
-export default ManageMod;
-
+export default ReportedPosts;
 
 export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
     const { req } = ctx;
@@ -318,30 +273,27 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         }
     }
 
-    const moderators = await axios.get(`${server}/api/sd/mod/get-all-per-region?all=true&skip=0`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
-                                .then(res => res.data)
-                                .catch(err => {
-                                    console.log(err)
-                                    redirect = true
-                                })
+    const result = await axios.get(`${server}/api/sd/post/get-reported-comments?level=all&skip=0`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
+                         .then(res => res.data)
+                         .catch(err => {
+                            console.log(err);
+                            redirect = true
+                        })
 
     if(redirect)  {
-        return {
+        return {    
             redirect: {
                 permanent: false,
-                destination: '/'
+                destination: '/statistics'
             },
             props: {}
         }
     }
 
-    return { 
+    return {
         props: {
-            _moderators: !moderators.low ? moderators.moderators : [],
-            _users: !moderators.low ? moderators.users : [],
-            load: !moderators.low,
-            numberOfPages: moderators.numberOfPages,
-            _coming: moderators.coming,
+            _comments: result.comments,
+            _coming: result.coming
         }
     }
-}   
+}

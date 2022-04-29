@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, Dispatch, SetStateAction} from 'react';
 import { useState } from 'react'
 import Image from 'next/image'
 import axios from 'axios'
@@ -10,15 +10,15 @@ interface Options {
     reports: any;
     url: string;
     id: string;
-    setSearch: any;
-    setIsLocationChanged: any;
-    search: any;
+    setSearch: Dispatch<SetStateAction<boolean>>;
+    setIsLocationChanged: Dispatch<SetStateAction<boolean>>;
+    search: boolean;
     upVoted: any;
     downVoted: any;
-    views: any;
+    originalPostId: string;
 }
 
-const OptionsSection: FC<Options> = ({ upVoted, downVoted, views, setSearch, setIsLocationChanged, search, reports, url, id }) => {
+const OptionsSection: FC<Options> = ({ upVoted, downVoted, setSearch, setIsLocationChanged, search, reports, url, id, originalPostId }) => {
 
     const [ hoverDelete, setHoverDelete ] = useState(false)
     const [ deleteAction, setDeleteAction ] = useState(false)
@@ -41,7 +41,7 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, views, setSearch, set
         setLoading(true)
         setError(false)
 
-        const result = await axios.delete(`${server}/api/sd/post/delete-post/${id}`, { withCredentials: true })
+        const result = await axios.delete(`${server}/api/sd/post/delete-comment/${originalPostId}/${id}`, { withCredentials: true })
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err)
@@ -49,7 +49,7 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, views, setSearch, set
                                     setLoading(false)
                                 })
 
-        if(result && result.message === 'Comment deleted') {
+        if(result && result.message === 'Post deleted') {
             setLoading(false)
             setIsLocationChanged(true)
             setSearch(!search)
@@ -83,7 +83,6 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, views, setSearch, set
                         <Reason text='Aprecieri' total={upVoted.count} />
                         <Reason text='Down Votes' total={downVoted.count} />
                         <Reason text='Semnalări' total={reports.count} />
-                        <Reason text='Vizionări' total={views.count} />
                     </div>
                 </div>
 

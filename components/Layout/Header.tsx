@@ -75,7 +75,7 @@ const Header = () => {
                         </li>
                         {subSec !== null && 
                             <div className={`${styles.sub_sec} ${subSec ? styles.open_sec : styles.close_sec }`}>
-                                <Link href='/set-status' passHref><a onClick={() => setMenu(false)}><li className={styles.first}>Setare Status</li></a></Link>
+                                <Link href='/set-status/p1' passHref><a onClick={() => setMenu(false)}><li className={styles.first}>Setare Status</li></a></Link>
                                 <Link href='/posts/p1' passHref><a onClick={() => setMenu(false)}><li>Toate</li></a></Link>
                                 <Link href='/reported-posts' passHref><a onClick={() => setMenu(false)}><li className={styles.last}>Raportate</li></a></Link>
                             </div>

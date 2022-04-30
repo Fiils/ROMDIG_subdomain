@@ -1,12 +1,18 @@
 import type { NextPage, GetServerSideProps } from 'next';
 import { PieChart } from 'react-minimal-pie-chart'
 import axios from 'axios'
+import { useState } from 'react'
 
 import { server } from '../../config/server'
 import styles from '../../styles/scss/Statistics/Container.module.scss';
 
+interface Statistics {
+    _statistics: any;
+}
 
-const Statistics: NextPage = () => {
+
+const Statistics: NextPage<Statistics> = ({ _statistics }) => {
+    const [ statistics, setStatistics ] = useState(_statistics)
 
     const defaultLabelStyle = {
         fontSize: '10px',
@@ -21,9 +27,9 @@ const Statistics: NextPage = () => {
                     <div>
                         <PieChart 
                             data={[
-                                { title: 'Orase', value: 28, color: '#E38627' },
-                                { title: 'Comune', value: 32, color: '#C13C37' },
-                                { title: 'Sate', value: 40, color: '#6A2135' },
+                                { title: 'Orașe', value: statistics.summative.cities, color: '#E38627' },
+                                { title: 'Comune', value: statistics.summative.comune, color: '#C13C37' },
+                                { title: 'Sate', value: statistics.summative.villages, color: '#6A2135' },
                             ]}
                             segmentsShift={3}
                             radius={PieChart.defaultProps.radius - 3}
@@ -37,14 +43,14 @@ const Statistics: NextPage = () => {
                         />
                     </div>
                     <div className={styles.flex_info}>
-                        <h3>Total moderatori: 35</h3>
-                        <h3>Total județe: 35</h3>
-                        <h3>Total orașe: 432</h3>
+                        <h3>Total moderatori: {statistics.summative.mods}</h3>
+                        <h3>Total județe: {statistics.summative.counties}</h3>
+                        <h3>Total orașe: {statistics.summative.cities}</h3>
                     </div>
                     <div className={styles.flex_info}>
-                        <h3>Total sate: 4628</h3>
-                        <h3>Total comune: 2475</h3>
-                        <h3>Total localități: 7628</h3>
+                        <h3>Total sate: {statistics.summative.villages}</h3>
+                        <h3>Total comune: {statistics.summative.comune}</h3>
+                        <h3>Total localități: {statistics.summative.localities}</h3>
                     </div>
                     <div className={styles.legend}>
                         <div style={{ position: 'relative'}}>
@@ -64,10 +70,10 @@ const Statistics: NextPage = () => {
                     <div>
                         <PieChart 
                             data={[
-                                { title: 'Trimise', value: 28, color: '#E38627' },
-                                { title: 'Vizionate', value: 32, color: '#C13C37' },
-                                { title: 'În lucru', value: 40, color: '#6A2135' },
-                                { title: 'Efectuate', value: 53, color: '#BA5A31' }
+                                { title: 'Trimise', value: statistics.status.sent, color: '#E38627' },
+                                { title: 'Vizionate', value: statistics.status.seen, color: '#C13C37' },
+                                { title: 'În lucru', value: statistics.status.work, color: '#6A2135' },
+                                { title: 'Efectuate', value: statistics.status.done, color: '#BA5A31' }
                             ]}
                             segmentsShift={3}
                             radius={PieChart.defaultProps.radius - 3}
@@ -81,10 +87,10 @@ const Statistics: NextPage = () => {
                     </div>
 
                     <div className={styles.flex_info}>
-                        <h3>Trimise: 35</h3>
-                        <h3>Vizionate: 35</h3>
-                        <h3>În lucru: 432</h3>
-                        <h3>Efectuate: 438</h3>
+                        <h3>Trimise: {statistics.status.sent}</h3>
+                        <h3>Vizionate: {statistics.status.seen}</h3>
+                        <h3>În lucru: {statistics.status.work}</h3>
+                        <h3>Efectuate: {statistics.status.done}</h3>
                     </div>
 
                     <div className={styles.legend}>
@@ -109,15 +115,15 @@ const Statistics: NextPage = () => {
                     <div className={styles.basic_info}>
                         <h1>Statistici geografice - utilizatori</h1>
                         <div className={styles.flex_info}>
-                            <h3>Total utilizatori: 33425</h3>
-                            <h3>Rural: 23435</h3>
-                            <h3>Urban: 9990</h3>
+                            <h3>Total utilizatori: {statistics.geoUsers.total}</h3>
+                            <h3>Rural: {statistics.geoUsers.rural}</h3>
+                            <h3>Urban: {statistics.geoUsers.urban}</h3>
                         </div>
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Rural', value: 23435, color: '#E38627' },
-                                    { title: 'Urban', value: 9990, color: '#C13C37' },
+                                    { title: 'Rural', value: statistics.geoUsers.rural, color: '#E38627' },
+                                    { title: 'Urban', value: statistics.geoUsers.urban, color: '#C13C37' },
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -146,10 +152,10 @@ const Statistics: NextPage = () => {
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Județ', value: 1428, color: '#E38627' },
-                                    { title: 'Oraș', value: 312, color: '#C13C37' },
-                                    { title: 'Comună', value: 430, color: '#6A2135' },
-                                    { title: 'Sat', value: 532, color: '#BA5A31' }
+                                    { title: 'Județ', value: statistics.geoPosts.county, color: '#E38627' },
+                                    { title: 'Oraș', value: statistics.geoPosts.city, color: '#C13C37' },
+                                    { title: 'Comună', value: statistics.geoPosts.comuna, color: '#6A2135' },
+                                    { title: 'Sat', value: statistics.geoPosts.village, color: '#BA5A31' }
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -162,15 +168,15 @@ const Statistics: NextPage = () => {
                             />
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>Total postări: 4628</h3>
-                            <h3>Mediul urban: 2475</h3>
-                            <h3>Mediul rural: 7628</h3>
+                            <h3>Total postări: {statistics.geoPosts.total}</h3>
+                            <h3>Mediul urban: {statistics.geoPosts.urban}</h3>
+                            <h3>Mediul rural: {statistics.geoPosts.rural}</h3>
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>Penrtu județ: 35</h3>
-                            <h3>Pentru oraș: 35</h3>
-                            <h3>Pentru comună: 35</h3>
-                            <h3>Pentru sat: 432</h3>
+                            <h3>Penrtu județ: {statistics.geoPosts.county}</h3>
+                            <h3>Pentru oraș: {statistics.geoPosts.city}</h3>
+                            <h3>Pentru comună: {statistics.geoPosts.comuna}</h3>
+                            <h3>Pentru sat: {statistics.geoPosts.village}</h3>
                         </div>
 
                         <div className={styles.legend}>
@@ -199,8 +205,8 @@ const Statistics: NextPage = () => {
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Bărbați', value: 28, color: '#E38627' },
-                                    { title: 'Femei', value: 32, color: '#C13C37' },
+                                    { title: 'Bărbați', value: statistics.users.men, color: '#E38627' },
+                                    { title: 'Femei', value: statistics.users.women, color: '#C13C37' },
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -214,12 +220,14 @@ const Statistics: NextPage = () => {
                             />
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>Bărbați: 43</h3>
-                            <h3>Femei: 35</h3>
+                            <h3>Bărbați: {statistics.users.men}</h3>
+                            <h3>Femei: {statistics.users.women}</h3>
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>Au poză de profil: 304</h3>
-                            <h3>Nu au poză de profil: 8374</h3>
+                            <h3>30 zile: {statistics.users.days30}</h3>
+                            <h3>14 zile: {statistics.users.days14}</h3>
+                            <h3>7 zile: {statistics.users.days7}</h3>
+                            <h3>Ultima zi: {statistics.users.day1}</h3>
                         </div>
 
                         <div className={styles.legend}>
@@ -237,8 +245,8 @@ const Statistics: NextPage = () => {
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Active', value: 202, color: '#E38627' },
-                                    { title: 'Inactive', value: 322, color: '#C13C37' },
+                                    { title: 'Active', value: statistics.users.active, color: '#E38627' },
+                                    { title: 'Inactive', value: statistics.users.inactive, color: '#C13C37' },
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -251,11 +259,11 @@ const Statistics: NextPage = () => {
                             />
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>Conturi active: 35</h3>
-                            <h3>Conturi inactive: 35</h3>
+                            <h3>Conturi active: {statistics.users.active}</h3>
+                            <h3>Conturi inactive: {statistics.users.inactive}</h3>
                             <br />
-                            <h3>Au comentat: 432</h3>
-                            <h3>N-au comentat: 438</h3>
+                            <h3>Au comentat: {statistics.users.usersCommented}</h3>
+                            <h3>N-au comentat: {statistics.users.usersNotCommented}</h3>
                         </div>
 
                         <div className={styles.legend}>
@@ -276,16 +284,16 @@ const Statistics: NextPage = () => {
                     <div className={styles.basic_info}>
                         <h1>Statistici postări</h1>
                         <div className={styles.flex_info}>
-                            <h3>Total postări: 33425</h3>
-                            <h3>Au poze: 3242</h3>
-                            <h3>N-au poze: 9990</h3>
-                            <h3>Au video: 8471</h3>
+                            <h3>Total postări: {statistics.posts.total}</h3>
+                            <h3>Au poze: {statistics.posts.withMedia}</h3>
+                            <h3>N-au poze: {statistics.posts.noMedia}</h3>
+                            <h3>Au video: {statistics.posts.withVideo}</h3>
                         </div>
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Cu poze', value: 23435, color: '#E38627' },
-                                    { title: 'Fără poze', value: 9990, color: '#C13C37' },
+                                    { title: 'Cu poze', value: statistics.posts.withMedia, color: '#E38627' },
+                                    { title: 'Fără poze', value: statistics.posts.noMedia, color: '#C13C37' },
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -314,8 +322,8 @@ const Statistics: NextPage = () => {
                         <div>
                             <PieChart 
                                 data={[
-                                    { title: 'Au comentarii', value: 328, color: '#E38627' },
-                                    { title: 'Nu au comentarii', value: 32, color: '#C13C37' },
+                                    { title: 'Au comentarii', value: statistics.posts.withComments, color: '#E38627' },
+                                    { title: 'Nu au comentarii', value: statistics.posts.withNoComments, color: '#C13C37' },
                                 ]}
                                 segmentsShift={3}
                                 radius={PieChart.defaultProps.radius - 3}
@@ -329,18 +337,17 @@ const Statistics: NextPage = () => {
                         </div>
                         <div className={styles.flex_info}>
                             <div style={{ position: 'relative' }}>
-                                <h3 className={styles.com}>Au comentarii: 7532</h3>
+                                <h3 className={styles.com}>Au comentarii: {statistics.posts.withComments}</h3>
                             </div>
                             <div style={{ position: 'relative' }}>
-                                <h3 className={styles.ncom}>Nu au comentarii: 1236</h3>
+                                <h3 className={styles.ncom}>Nu au comentarii: {statistics.posts.withNoComments}</h3>
                             </div>
                         </div>
                         <div className={styles.flex_info}>
-                            <h3>30 zile: 4628</h3>
-                            <h3>14 zile: 2475</h3>
-                            <h3>7 zile: 7628</h3>
-                            <h3>3 zile: 424</h3>
-                            <h3>1 zi: 24</h3>
+                            <h3>30 zile: {statistics.posts.days30}</h3>
+                            <h3>14 zile: {statistics.posts.days14}</h3>
+                            <h3>7 zile: {statistics.posts.days7}</h3>
+                            <h3>1 zi: {statistics.posts.day1}</h3>
                         </div>
 
 
@@ -392,5 +399,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
             },
             props: {}
         }
-    } else return { props: {} }
+    }
+
+    const result = await axios.get(`${server}/api/sd/mod/statistics`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
+                            .then(res => res.data)
+                            .catch(err => {
+                                console.log(err)
+                                redirect = true
+                            })
+                
+    if(redirect)  {
+        return {
+            notFound: true,
+            props: {}
+        }
+    }
+
+    return {
+        props: {
+            _statistics: result.statistics
+        }
+    }
 }   

@@ -49,7 +49,7 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, setSearch, setIsLocat
                                     setLoading(false)
                                 })
 
-        if(result && result.message === 'Post deleted') {
+        if(result && result.message === 'Comment deleted') {
             setLoading(false)
             setIsLocationChanged(true)
             setSearch(!search)

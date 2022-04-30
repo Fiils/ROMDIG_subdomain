@@ -20,7 +20,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
     const [ coming, setComing ] = useState(_coming)
     const [ isLocationChanged, setIsLocationChanged ] = useState(false)
     const [ isComuna, setIsComuna ] = useState(false)
-    const [ comments, setComments ] = useState(_comments)
+    const [ comments, setComments ] = useState(_comments || [])
     const [ search, setSearch ] = useState<boolean | null>(null)
     const [ fullExactPosition, setFullExactPosition ] = useState<any>()
     const [ location, setLocation ] = useState('')
@@ -220,7 +220,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
                                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsită nicio postare semnalată ca fiind neadecvată</h3>
+                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsită niciun comentariu semnalat ca fiind neadecvat</h3>
                                 </div>
                             </div>
                         }

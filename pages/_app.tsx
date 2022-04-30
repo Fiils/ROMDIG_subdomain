@@ -3,10 +3,12 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
+import axios from 'axios'
 
 import Header from '../components/Layout/Header'
 import '../styles/scss/globals.scss'
 import { AuthProvider } from '../utils/useAuth'
+import { server } from '../config/server'
 
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -30,6 +32,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       Cookies.remove('url_cat')
     }
   }, [router.pathname])
+
+  useEffect(() => {
+    const verifyUser = async () => {
+      let error = false;
+
+      const response = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true })
+                        .then(res => res.data)
+                        .catch(err => {
+                          error = true
+                        })    
+
+      if(Cookies.get('Allow-Authorization') && error) {
+        Cookies.remove('Allow-Authorization')
+        router.reload()
+      }
+    }
+
+    verifyUser()
+  }, [])
 
   return (
     <AuthProvider>

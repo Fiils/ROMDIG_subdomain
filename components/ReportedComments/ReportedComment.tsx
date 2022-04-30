@@ -38,13 +38,17 @@ interface Post {
     search: any;
 }
 
-const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, text, originalPostId, downVoted, upVoted, firstNameAuthor, reports, creationDate, nameAuthor, authorProfilePicture, url }) => {
+const Post: FC<Post> = ({ setSearch, index, setIsLocationChanged, search, _id, text, originalPostId, downVoted, upVoted, firstNameAuthor, reports, creationDate, nameAuthor, authorProfilePicture, url }) => {
     const [ width, height ] = useWindowSize()
 console.log(authorProfilePicture)
     return (
         <div style={{ display: 'flex', gap: '40px', height: '100%', width: '100%' }}>
             <a href={`${client}/postari/${originalPostId}`} target="_blank" rel="noreferrer">
                <div className={styles.comment}>
+               <div className={styles.numbered} style={{ position: 'absolute', top: 10, left: 10 }}>
+                   <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1651306601/FIICODE/text-message-4653_1_c6vcge.svg' width={40} height={40} />
+                   <span>Comment #{index + 1}</span>
+                </div>
                    <div className={styles.profile}>
                         <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648486559/FIICODE/user-4250_psd62d_xrxxhu_urnb0i.svg' width={50} height={50} />
                         <div style={{ display: 'flex', flexFlow: 'column wrap' }}>

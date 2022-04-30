@@ -1,0 +1,317 @@
+.post {
+    width: 100% !important;
+    max-width: 650px;
+    height: 600px;
+    background: rgb(255, 255, 255);
+    border-radius: 0 0 4px 4px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid rgb(220, 220, 220);    
+}
+
+.post_info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    font-family: 'Baloo Bhai 2';
+    font-weight: 400;
+    padding-top: 10px;
+    line-height: 1.15;
+    gap: 1em;
+
+    img {
+        border-radius: 50%;
+    }
+}
+
+.status {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: .5em;
+    position: absolute;
+    right: 0;
+    top: -38px;
+    margin-right: 10px;
+    font-family: 'Baloo Bhai 2';
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.title {
+    margin: 30px 50px 0 50px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    font-family: 'Baloo Tamma 2';
+    font-family: sans-serif;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5em;
+    max-height: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.image {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    height: 62%;
+
+    img {
+        border-radius: 0;
+    }
+}
+
+.manip_section {
+    position: relative;
+    margin: 20px 50px 10px 50px;
+    gap: .5em;
+    height: 8%;
+    width: 95%;
+    bottom: 0;
+    border-radius: 4px;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1em;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 4px;
+        border-radius: 1px;
+        background-color: rgb(220, 220, 220);
+    }
+}
+
+.manip_item {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    font-family: 'Baloo Bhai 2';
+    font-weight: 400;
+    border-radius: 5px;
+    padding: .5em .8em;
+    transition: all .2s ease-out;
+
+    &:first-child {
+        margin-left: .7em;
+    }
+
+    &:hover {
+        background-color: rgb(230, 230, 230)
+    }
+}
+
+.menu_status {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+
+    img {
+        transition: all .25s ease-out;
+        padding: 5px !important;
+        border-radius: 10px;
+    }
+
+    img:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, .05)
+    }
+}
+
+@keyframes appear_menu {
+    0% { transform: scale(0) }
+    100% { transform: scale(1) }
+}
+
+@keyframes disappear_menu {
+    0% { transform: scale(1); visibility: visible; }
+    100% { transform: scale(0); visibility: visible; }
+}
+
+.menu_cover {
+    position: absolute;
+    background: rgb(240, 240, 240);
+    border-radius: 3px;
+    top: 20%;
+    left: 15%;
+    width: 70%;
+    height: 60%;
+    z-index: 200;
+    visibility: collapse;
+}
+
+.appear {
+    animation: appear_menu .25s;
+    visibility: visible;
+}
+
+.disappear {
+    animation: disappear_menu .25s;
+}
+
+.overlay {
+    z-index: 99;
+    background: rgba(255, 255, 255, .5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin-left: 0 !important;
+}
+
+.close_icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    img {
+        border-radius: 50%;
+        padding: 5px !important;
+        transition: all .25s !important;
+
+        &:hover {
+            background: rgb(0, 0, 0, 0.05);
+        }
+    }
+}
+
+.icon_change {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.status_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column wrap;
+    padding-top: 50px;
+
+    h3 {
+        font-family: 'Belleza';
+        font-size: 1.5rem;
+    }
+
+    button {
+        margin-top: 30px;
+        font-family: 'Baloo Bhai 2';
+        font-size: 1.1rem;
+        padding: .3em .7em;
+        color: white;
+        background: #A71D31;
+        border: 0;
+        border-radius: 3px;
+        cursor: pointer;    
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &:active {
+            opacity: .8;
+        }
+    }
+}
+
+.grid_status {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+}
+
+
+@media screen and (min-width: 0px) and (max-width: 1400px) {
+  .post {
+      width: 80%;
+      max-width: 600px;
+  }
+}
+
+@media screen and (min-width: 0px) and (max-width: 480px) {
+    .post {
+        height: 550px;
+    }
+
+    .title {
+        font-size: 1rem;
+        margin-left: 10px;
+        width: 90%;
+    }
+
+    .post_info {
+        overflow: hidden;
+
+        img {
+            border-radius: 0;
+        }
+
+        span {
+            margin-right: 5px !important;
+        }
+
+    }
+
+    .image {
+        height: 52%;
+    }
+
+    .status {
+        top: -41px;
+        gap: 0;    
+    }
+
+    .manip_section {
+        position: relative;
+        gap: .5em;
+        height: 8%;
+        width: 100%;
+        bottom: 0;
+        border-radius: 4px;
+        display: flex;
+        flex-flow: row nowrap;
+        gap: .5em;
+    
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            border-radius: 1px;
+            background-color: rgb(220, 220, 220);
+        }
+    }
+    
+    .manip_item {
+        display: flex;
+        align-items: center;
+        gap: .5em;
+        font-family: 'Baloo Bhai 2';
+        font-weight: 400;
+        border-radius: 5px;
+        padding: .5em .8em;
+        transition: all .2s ease-out;
+        background-color: rgb(250, 250, 250);
+
+        &:first-child {
+            margin-left: .7em;
+        }
+    
+    }
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1550px) {
+    .post {
+        width: 70%;
+
+    }
+}

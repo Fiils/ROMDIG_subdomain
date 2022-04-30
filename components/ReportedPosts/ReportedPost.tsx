@@ -92,13 +92,13 @@ const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, d
                     <h3 key={'j' + _id} className={styles.title}>{title}</h3>
                         <div style={{ display: 'flex', flexFlow: 'row nowrap', justifyContent: 'center' }} key={description}>
                             <div key={'a' + _id} className={styles.manip_section}>
-                                <Link href={`/postari/${_id}`}>
+                                <Link href={`${client}/postari/${_id}`}>
                                     <div className={styles.manip_item}>
                                         {width >= 480 && <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648474271/FIICODE/hearts-7890_2_maukcl.svg' width={20} height={20} alt='Reactii' /> }
                                         <span>{upVoted.count + downVoted.count} voturi</span>
                                     </div>
                                 </Link>
-                                <Link href={`/postari/${_id}`}>
+                                <Link href={`${client}/postari/${_id}`}>
                                     <div className={styles.manip_item}>
                                         {width >= 480 && <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648474242/FIICODE/support-1091_1_smleyp.svg' width={20} height={20} alt='Comentarii' /> }
                                         <span>{comments.count} comentarii</span>

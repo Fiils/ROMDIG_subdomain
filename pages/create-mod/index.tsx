@@ -54,7 +54,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
     const [ coming, setComing ] = useState(_coming)
 
-    const [ moderators, setModerators ] = useState<any>(_moderators)
+    const [ moderators, setModerators ] = useState<any>(_moderators || [])
     const [ createMod, setCreateMod ] = useState(false)
     const [ error, setError ] = useState(false)
     const [ fullExactPosition, setFullExactPosition ] = useState<any>(null)

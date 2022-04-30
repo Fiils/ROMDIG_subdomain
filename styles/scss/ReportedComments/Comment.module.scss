@@ -1,4 +1,5 @@
 .comment {
+    position: relative;
     width: 500px;
     height: 500px;
     background: rgb(245, 245, 245);
@@ -8,6 +9,15 @@
     align-items: center;
 }
 
+.numbered {
+    font-family: 'Belleza';
+    font-size: 1.7rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .4em;
+}
+
 .profile {
     display: flex;
     gap: 1em;
@@ -15,11 +25,18 @@
 }
 
 .comment_wrapper {
-    margin-top: 10px; 
+    margin-top: 30px;   
     width: 90%;
-    border: 1px solid rgb(20, 20, 20);
+    border: 1px solid rgb(200, 200, 200);
+    background: rgb(240, 240, 240);
     padding-inline: 1em;
     border-radius: 5px;
     height: 200px;
     overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { 
+        display: none; 
+    }
 }

@@ -9,7 +9,7 @@ import { server } from '../../../config/server'
 import styles from '../../../styles/scss/Posts/PostsContainer.module.scss'
 import Pagination from '../../../components/Posts/Pagination'
 import MobilePagination from '../../../components/Posts/MobilePagination'
-import Post from '../../../components/Posts/PostGrid'
+import Post from '../../../components/StatusPosts/PostGrid'
 import Tools from '../../../components/Posts/Tools'
 import { NoSSR } from '../../../utils/NoSsr'
 
@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
     const user = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
                         .then(res => res.data)
                         .catch(err => {
-                            console.log(err.response);
+                            console.log(err);
                             redirect = true
                         })
   
@@ -108,9 +108,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
     const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url ? cookie.parse(req.headers.cookie).url : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
-                                    console.log('asidgao sd')
+                                    console.log(err.response)
                                     redirect = true
-                                    return err.response
                                 })
 
     if(redirect)  {

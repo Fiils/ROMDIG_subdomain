@@ -20,9 +20,19 @@ const Header = () => {
     const user = useAuth()
 
     useEffect(() => {
-        if(menu) document.body.style.overflow = 'hidden';
-        if(!menu) document.body.style.overflow = 'unset';
+        const documentWidth = document.documentElement.clientWidth;
+        const windowWidth = window.innerWidth;
+        const scrollBarWidth = windowWidth - documentWidth;
+        if(menu) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollBarWidth}px`
+        }
+        if(!menu) {
+            document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = `0px`
+        }
      }, [menu]);
+
 
      useEffect(() => {
         if(!subSec) {
@@ -44,7 +54,7 @@ const Header = () => {
     return (
         <div>
             {menu && <div className={styles.overlay}></div> }
-            <div className={styles.container}>
+            <div className={`${styles.container} ${menu ? styles.fullwidth : ''}`}>
                 <div style={{ paddingTop: 10, paddingLeft: 10, display: 'flex', alignItems: 'center', gap: '.1em' }} className={styles.logo_icon}>
                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649946541/FIICODE/list-6225_kdxr8j.svg' alt='Menu' width={30} height={30} onClick={() => {  setMenu(!menu); if(subSec !== null) { setTimeout(() => setSubSec(false), 300); } }} />
                     <span id='#title'>Dashboard ROMDIG</span>

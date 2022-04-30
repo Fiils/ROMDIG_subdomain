@@ -5,6 +5,10 @@
     background-color: #a71d31;
 }
 
+.fullwidth {
+    width: 100vw;
+}
+
 .profile_picture {
     position: absolute;
     right: 10px;
@@ -26,6 +30,7 @@
     right: 9px;
     top: 70px;
     z-index: 18;
+    visibility: collapse;
 
     h3 {
         text-align: center;
@@ -45,17 +50,16 @@
 
 .open_box {
     animation: appear_box .5s;
-    display: block !important;
+    visibility: visible;
 }
 
 @keyframes disappear_box {
-    0% { opacity: 1;  }
-    100% { opacity: 0; }
+    0% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: visible; }
 }
 
 .close_box {
     animation: disappear_box .5s;
-    display: none !important;
 }
 
 .info_admin {

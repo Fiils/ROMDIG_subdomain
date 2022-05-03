@@ -5,7 +5,7 @@ import axios from 'axios'
 
 import styles from '../../styles/scss/RegistrationForms/Form.module.scss'
 import { server } from '../../config/server'
-
+                            
 
 interface User { 
     form: any;
@@ -109,8 +109,9 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                     <div className={styles.submit_buttons}>
                         {!loading ?
                             <>
-                                <button onClick={e => acceptAccount(e)}>Acceptă contul</button>
-                                <button onClick={e => refuseAccount(e)}>Refuză contul</button>
+                                {error && <span style={{ color: 'red' }}>EROARE</span>}
+                                <button style={{ borderColor: 'green', color: 'green' }} onClick={e => acceptAccount(e)}>Acceptă contul</button>
+                                <button className={styles.refuse} onClick={e => refuseAccount(e)}>Refuză contul</button>
                             </>
                         :
                             <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />

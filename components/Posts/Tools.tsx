@@ -84,7 +84,7 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
 
     //For changing location of the posts
     useEffect(() => {
-        if(search !== null) {
+        if(search !== null && !loading) {
             let locationError = false;
             setErrorLocation(false)
             setLoading(true)

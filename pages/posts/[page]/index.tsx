@@ -34,6 +34,7 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
 
 
     const [ loading, setLoading ] = useState(false)
+    console.log(loading)
 
     return (
         <NoSSR fallback={<div style={{ height: '100vh'}}></div>}>

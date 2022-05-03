@@ -118,14 +118,15 @@
         border-radius: 2px;
         cursor: pointer;
 
-        &:first-child {
-            color: green;
-            border-color: green;
-        }
-
+        
         &:last-child {
             color: red;
             border-color: red;
+        }
+
+        &:first-child {
+            color: green;
+            border-color: green;
         }
 
         &:hover {

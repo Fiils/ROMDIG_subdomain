@@ -108,9 +108,10 @@
     }
 
     span[id='#title'] {
-        font-size: 1.3rem;
+        font-size: clamp(1.1rem, 5vw, 1.3rem);
         font-family: 'Belleza';
         color: white;
+        margin-top: -5px;
     }
 }
 

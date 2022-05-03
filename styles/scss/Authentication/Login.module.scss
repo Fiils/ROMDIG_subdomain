@@ -13,14 +13,16 @@ $primary-color: #A71D31;
 
 .form {
     position: relative;
-    width: 450px;
+    width: min(80vw, 450px);
     height: 550px;
     background-color: rgb(250, 250, 250);
     border-radius: 10px;
     padding-top: 40px;
+    margin-top: -20px;
     box-shadow: 3px 6px 20px 0px rgb(50, 50, 50);
 
     h2 {
+        font-size: clamp(1.2rem, 6vw, 1.875rem);
         text-align: center;
         font-family: 'Anonymous Pro';
         color: $primary-color;
@@ -40,8 +42,8 @@ $primary-color: #A71D31;
 .input {
     display: flex;
     flex-flow: column wrap;
+    margin-inline: auto;
     width: 70%;
-    margin-left: 15%;
 
     label {
         font-family: 'Baloo Bhai 2';
@@ -54,6 +56,7 @@ $primary-color: #A71D31;
         border-radius: 5px;
         border: 2px solid rgb(200, 200, 200);
         box-shadow: inset 5px 3px 4px rgb(240, 240, 240);
+        width: 100%;
 
         &:focus {
             outline-color: #a71d31;
@@ -81,7 +84,7 @@ $primary-color: #A71D31;
         border: 1px solid rgb(150, 150, 150);
         border: none;
         border-radius: 5px;
-        padding: 1em 5em;
+        padding: 1em clamp(2.5em, 10vw, 5em);
         background-color: #a71d31;
         color: white;
         opacity: .9;
@@ -105,7 +108,7 @@ $primary-color: #A71D31;
 
 .copyright {
     position: absolute;
-    bottom: 10px;
+    bottom: 5px;
     left: 0;
     right: 0;
     text-align: center;
@@ -113,14 +116,14 @@ $primary-color: #A71D31;
     opacity: .4; 
     padding-top: 20px;
     color: white;
-    font-size: .9rem;
+    font-size: clamp(.6rem, 4vw,.9rem);
 
     &::before {
         content: '';
         position: absolute;
         width: 50%;
         height: 2px;
-        top: 0;
+        top: 10px;
         left: 25%;
         background: rgb(200, 200, 200);
     }
@@ -135,4 +138,8 @@ $primary-color: #A71D31;
             outline-color: red !important;
         }
     }
+}
+
+@media screen and (min-width: 0px) and (max-width: 500px) {
+    
 }

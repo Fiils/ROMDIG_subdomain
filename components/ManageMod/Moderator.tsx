@@ -85,8 +85,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
     useEffect(() => {
         if(deleted || updated) document.body.style.overflow = 'hidden'
         if(!deleted || !updated) document.body.style.overflow = 'unset'
-    }, [deleted || updated])
-
+    }, [deleted, updated])
 
 
     useEffect(() => {
@@ -186,7 +185,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
     return (
         <>
-            {(deleted && !deleted) && <ModalDelete url={url} _name={_lastName} setModal={setDeleted} _id={_id} _asId={_asId} setLoading_={setLoading_} setUsers={setUsers} setModerators={setModerators} /> }
+            {(deleted && !updated) && <ModalDelete url={url} _name={_lastName} setModal={setDeleted} _id={_id} _asId={_asId} setLoading_={setLoading_} setUsers={setUsers} setModerators={setModerators} /> }
             {(updated && !deleted) && <ModalUpdate setError={setErrorUpdateModal} loading={loadingUpdateModal} _name={_lastName} error={errorUpdateModal} setModal={setUpdated} setStartUpdating={setStartUpdating} /> 
             }
             <div className={styles.moderator_wrapper}>

@@ -23,7 +23,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   useEffect(() => {
-    if(router.pathname !== '/posts/[page]') {
+    if((router.pathname !== '/posts/[page]' && router.pathname !== '/set-status/[page]') || (Cookies.get('level') === 'setstatus' && router.pathname === '/posts/[page]')) {
+      if(Cookies.get('level') === 'setstatus' && router.pathname === '/posts/[page]') {
+        Cookies.set('level', 'posts')
+      }
+      Cookies.set('url', `?page=0&level=all&category=popular`)
+      Cookies.remove('url_location')
+      Cookies.remove('url_fex')
+      Cookies.remove('url_status')
+      Cookies.remove('url_comuna')
+      Cookies.remove('url_cat')
+    }
+    if((router.pathname !== '/set-status/[page]' && router.pathname !== '/posts/[page]') || (Cookies.get('level') === 'posts' && router.pathname === '/set-status/[page]')) {
+      if(Cookies.get('level') === 'posts' && router.pathname === '/set-status/[page]') {
+        Cookies.set('level', 'setstatus')
+      }
       Cookies.set('url', `?page=0&level=all&category=popular`)
       Cookies.remove('url_location')
       Cookies.remove('url_fex')

@@ -139,7 +139,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
             return;
         }
 
-        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
+        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location || !fullExactPosition.address_components) {
             setError(true)
             locationError = true
             setLoading(false)

@@ -119,7 +119,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
             return;
         }
 
-        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
+        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location || !fullExactPosition.address_components) {
             setErrorLocation(true)
             locationError = true
             setLoading(false)

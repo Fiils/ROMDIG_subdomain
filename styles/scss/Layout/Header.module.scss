@@ -17,6 +17,7 @@
     z-index: 999;
 }
 
+
 @keyframes appear_box {
     0% { opacity: 0; }
     100% { opacity: 1; }
@@ -30,7 +31,6 @@
     right: 9px;
     top: 70px;
     z-index: 18;
-    visibility: collapse;
 
     h3 {
         text-align: center;
@@ -50,7 +50,6 @@
 
 .open_box {
     animation: appear_box .5s;
-    visibility: visible;
 }
 
 @keyframes disappear_box {
@@ -99,7 +98,7 @@
 
     img {
         transition: background-color .3s ease-out;
-        border-radius: 7px;
+        border-radius: 50% !important;
         padding: 3px 6px !important;
         cursor: pointer;
     }
@@ -115,15 +114,31 @@
     }
 }
 
+.icon_menu {
+    img {
+        border-radius: 7px !important;
+    }
+}
+
+.nodisplay {
+    display: none;
+}
 
 .sidemenu {
     position: fixed;
-    margin-top: 11px;
+    margin-top: 7px;
     width: 0px;
     height: calc(100vh - 57px);
     background-color: rgb(240, 240, 240);
     z-index: 20;
     overflow: hidden;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+
+    &::-webkit-scrollbar { 
+        display: none;  /* Safari and Chrome */
+    }
     
 
     div span[id='#title'] {

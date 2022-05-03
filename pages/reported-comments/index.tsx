@@ -81,7 +81,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
             return;
         }
 
-        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
+        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location || !fullExactPosition.address_components) {
             setErrorLocation(true)
             locationError = true
             setLoading(false)

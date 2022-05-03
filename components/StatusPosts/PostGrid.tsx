@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import axios from 'axios'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -59,7 +59,7 @@ const Post: FC<Post> = ({ _id, title, description, downVoted, upVoted, firstName
     const [ width, height ] = useWindowSize()
 
     const [ menu, setMenu ] = useState(false)
-    const [ statusChange, setStatusChange ] = useState('Trimis')
+    const [ statusChange, setStatusChange ] = useState(status)
 
     const [ loading, setLoading ] = useState(false)
     const [ error, setError ] = useState(false)
@@ -91,6 +91,20 @@ const Post: FC<Post> = ({ _id, title, description, downVoted, upVoted, firstName
             setLoading(false)
         }
     }
+
+    const [ displayMenuAnim, setDisplayMenuAnim ] = useState(false)
+
+    useEffect(() => {
+        if(menu) {
+            setDisplayMenuAnim(true)
+        }
+        setTimeout(() => {
+            if(!menu) {
+                setDisplayMenuAnim(false)
+                setStatusChange(statusPost)
+            }
+        }, 200)
+    }, [menu])
 
     return (
         <div key={_id} className={styles.post}>
@@ -148,38 +162,36 @@ const Post: FC<Post> = ({ _id, title, description, downVoted, upVoted, firstName
                 <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1651320804/FIICODE/app-11173_topbz6.svg' width={30} height={33} onClick={() => setMenu(true)} />
             </div>
             {menu && <div className={styles.overlay}></div>}
-            {menu !== null &&
-                <div className={`${styles.menu_cover} ${menu ? styles.appear : styles.disappear}`}>
-                    <div className={styles.icon_change}>
-                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1651323377/FIICODE/transfer-3816_xclhsl.svg' width={30} height={30} />
-                    </div>
-                    <div className={styles.close_icon}>
-                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648734448/FIICODE/x-10327_z0xv5h.svg' width={30} height={30} onClick={() => setMenu(false)} />
-                    </div>
-                    <div className={styles.status_container}>
-                        <h3>Setare Status</h3>
-                        <RadioGroup
-                            value={statusChange}
-                            onChange={e => setStatusChange(e.target.value)}
-                            name="radio-buttons-group"
-                            className={styles.grid_status}
-                        >
-                            <FormControlLabel value="Trimis" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648628565/FIICODE/paper-plane-2563_dlcylv.svg' width={20} height={20} />Trimis</div>} />
-                            <FormControlLabel value="Vizionat" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648713682/FIICODE/check-7078_v85jcm.svg' width={20} height={20} />Vizionat</div>} />
-                            <FormControlLabel value="În lucru" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648713958/FIICODE/time-management-9651_fywiug.svg' width={20} height={20} />În lucru</div>} />
-                            <FormControlLabel value="Efectuat" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648714033/FIICODE/wrench-and-screwdriver-9431_hf7kve.svg' width={20} height={20} />Efectuat</div>} />
-                        </RadioGroup>
-                        {!loading ?
-                        <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', gap: '.3em', color: 'red', fontFamily: 'Baloo Bhai 2' }}>
-                            <button onClick={e => changeStatus(e)}>Schimbă status</button>
-                            {error && <div>Eroare</div>}
-                        </div>
-                        :
-                            <Image style={{ marginTop: 10 }} src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
-                        }   
-                    </div>
+            <div className={`${styles.menu_cover} ${menu ? styles.appear : styles.disappear} ${!displayMenuAnim ? styles.nodisplay : ''}`}>
+                <div className={styles.icon_change}>
+                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1651323377/FIICODE/transfer-3816_xclhsl.svg' width={30} height={30} />
                 </div>
-            }
+                <div className={styles.close_icon}>
+                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648734448/FIICODE/x-10327_z0xv5h.svg' width={30} height={30} onClick={() => setMenu(false)} />
+                </div>
+                <div className={styles.status_container}>
+                    <h3>Setare Status</h3>
+                    <RadioGroup
+                        value={statusChange}
+                        onChange={e => setStatusChange(e.target.value)}
+                        name="radio-buttons-group"
+                        className={styles.grid_status}
+                    >
+                        <FormControlLabel value="Trimis" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648628565/FIICODE/paper-plane-2563_dlcylv.svg' width={20} height={20} />Trimis</div>} />
+                        <FormControlLabel value="Vizionat" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648713682/FIICODE/check-7078_v85jcm.svg' width={20} height={20} />Vizionat</div>} />
+                        <FormControlLabel value="În lucru" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648713958/FIICODE/time-management-9651_fywiug.svg' width={20} height={20} />În lucru</div>} />
+                        <FormControlLabel value="Efectuat" control={<Radio />} label={<div style={{ display: 'flex', alignItems: 'center', gap: '.4em' }}> <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648714033/FIICODE/wrench-and-screwdriver-9431_hf7kve.svg' width={20} height={20} />Efectuat</div>} />
+                    </RadioGroup>
+                    {!loading ?
+                    <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', gap: '.3em', color: 'red', fontFamily: 'Baloo Bhai 2' }}>
+                        <button onClick={e => changeStatus(e)}>Schimbă status</button>
+                        {error && <div>Eroare</div>}
+                    </div>
+                    :
+                        <Image style={{ marginTop: 10 }} src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
+                    }   
+                </div>
+            </div>
         </div>
     )
 }

@@ -144,16 +144,19 @@
     width: 70%;
     height: 60%;
     z-index: 200;
-    visibility: collapse;
+    cursor: default;
 }
 
 .appear {
     animation: appear_menu .25s;
-    visibility: visible;
 }
 
 .disappear {
     animation: disappear_menu .25s;
+}
+
+.nodisplay {
+    display: none;
 }
 
 .overlay {
@@ -176,6 +179,7 @@
         border-radius: 50%;
         padding: 5px !important;
         transition: all .25s !important;
+        cursor: pointer;
 
         &:hover {
             background: rgb(0, 0, 0, 0.05);

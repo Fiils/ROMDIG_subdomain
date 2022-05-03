@@ -20,10 +20,11 @@ interface Tools {
     setLoading: Dispatch<SetStateAction<boolean>>;
     changePageBool: boolean;
     setChangePage: Dispatch<SetStateAction<boolean>>;
+    loading: boolean;
 }
 
 
-const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages, setLoading, changePageBool, setChangePage }) => {
+const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages, setLoading, changePageBool, setChangePage, loading }) => {
     const router = useRouter()
     const auth = useAuth()
     
@@ -94,8 +95,6 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             })
 
             if(location === '') {
-                setStatus([])
-
                 const getNewModerators = async () => {
                     const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`, { withCredentials: true })
                                             .then(res => res.data)
@@ -125,7 +124,7 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                 return;
             }
 
-            if(typeof fullExactPosition === 'undefined' || !fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
+            if(typeof fullExactPosition === 'undefined' || !fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location || !fullExactPosition.address_components) {
                 setErrorLocation(true)
                 locationError = true
                 setLoading(false)
@@ -187,7 +186,7 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                 return;
             }
 
-            const getNewModerators = async (county: string, comuna: string, location: string, city: string) => {
+            const getNewModerators = async (county: string, comuna: string, location: string) => {
                 const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`, { withCredentials: true })
                                         .then(res => res.data)
                                         .catch(err => {
@@ -197,9 +196,9 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                                         })
 
                 if(result) {
-                    setLoading(false)
                     setPages(result.numberOfPages)
                     setPosts(result.posts)
+                    setLoading(false)
                     setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
                     Cookies.set('url_status', [])
                     Cookies.set('url_location', location)
@@ -213,7 +212,7 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             }
 
             if(!locationError) {
-                getNewModerators(county, comuna, location, city)
+                getNewModerators(county, comuna, location)
             }
             setOnlyLocation(false)
             setLoading(false)
@@ -306,7 +305,6 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             setLoading(true)
             setPosts([])
             setPages(0)
-            setStatus([])
 
             const newCategoryArray = url.split('=')
             newCategoryArray.pop()

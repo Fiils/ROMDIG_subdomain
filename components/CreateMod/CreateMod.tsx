@@ -43,7 +43,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
     const [ userPassword, setUserPassword ] = useState('')
-    const [ image, setImage ] = useState('https://res.cloudinary.com/multimediarog/image/upload/v1650018340/FIICODE/manage-260_dfu9dg.svg')
+    const [ image, setImage ] = useState('https://res.cloudinary.com/multimediarog/image/upload/v1651419562/FIICODE/skill-8804_ibppuw.svg')
     const [ location, setLocation ] = useState('')
     const [ gender, setGender ] = useState('Bărbat')
     const [ cnp, setCnp ] = useState('')
@@ -420,7 +420,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
                                 <FormHelperText>{errorMessages.gender}</FormHelperText>
                             </FormControl>
 
-                            <TextField id='cnp' label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } helperText={errorMessages.cnp} />
+                            <TextField id='cnp' inputProps={{ maxLength: 13 }} label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } helperText={errorMessages.cnp} />
 
                             <TextField id='street' label='Stradă' variant='standard' error={error.street} value={street} onChange={e => { setError({ ...error, street: false}); setErrorMessages({ ...errorMessages, street: '' }); setStreet(e.target.value) } } helperText={errorMessages.street} />
                         </div>

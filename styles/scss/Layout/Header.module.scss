@@ -241,3 +241,17 @@
         border-top: 2.5px solid rgb(150, 150, 150) !important;
     }
 }
+
+@media screen and (min-width: 0px) and (max-width: 1024px) {
+    .logout button:hover {
+        text-decoration: none;
+    }
+    
+    .logo_icon img:hover {    
+            background-color: inherit;
+    }
+
+    .sidemenu ul li:hover {
+        opacity: 1;
+    }
+}

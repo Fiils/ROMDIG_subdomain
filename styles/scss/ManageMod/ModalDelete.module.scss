@@ -13,18 +13,18 @@
     position: fixed;
     display: block;
     z-index: 100;
-    width: 400px;
+    width: min(80vw, 400px);
     height: 330px;
     background: rgb(240, 240, 240);
     top: calc(50vh - 165px);
-    left: calc(50vw - 200px);
+    left: calc(50vw - min(40vw, 200px));
     border-radius: 10px;
     padding-left: 0 !important;
 }
 
 .icon_modal {
     position: absolute;
-    top: 10px;
+    top: 6px;
     right: 10px;
 
     svg {
@@ -48,6 +48,7 @@
 
     h2 {
         margin-block: 0;
+        font-size: clamp(1rem, 2.5vw, 1.4rem);
         font-family: 'Baloo Bhai 2';
     }
 }

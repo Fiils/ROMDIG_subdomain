@@ -49,7 +49,7 @@ interface Moderators {
     _coming: boolean;
 }
 
-const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages, _coming }) => {
+const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages, _coming = false }) => {
     const auth = useAuth()
 
     const [ coming, setComing ] = useState(_coming)
@@ -79,15 +79,15 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                 </div>  
                 <div className={styles.profile_info}>
                     <div style={{ marginLeft: 10, display: 'flex', flexFlow: 'column wrap', gap: '.5em' }}>
-                        <span>Autorizatie: {authorization}</span>
-                        <span>Judet: {county}</span>
+                        <span>Autorizație: {authorization}</span>
+                        <span>Județ: {county}</span>
                         {comuna === '' ?
                             <>
                                 { city !== '' && <span>Oraș: {city}</span> }
                             </>
                         :
                             <>
-                                {comuna !== '' && <span>Comuna: {comuna}</span> }
+                                {comuna !== '' && <span>Comună: {comuna}</span> }
                                 {city !== '' && <span>Sat: {city}</span> }
                             </>
                         }
@@ -246,10 +246,10 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
         <>
             {!createMod ?
                 <div className={styles.fcontainer}>
-                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                    <div className={styles.tools}>
                         <h2>Moderatori: {moderators.length}</h2>
                         {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) &&
-                            <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
+                            <div className={styles.search_tool}>
                                 <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
                                 <div className={styles.button_search}>
                                     <button onClick={() => { setIsLocationChanged(true); setSearch(!search) } }>Caută</button>

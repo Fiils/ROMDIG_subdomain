@@ -93,6 +93,7 @@
     margin-top: 30px;
 
     span {
+        font-size: clamp(.8rem, 3.5vw, 1rem);
         overflow-x: scroll;
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -106,9 +107,9 @@
 .submit_buttons {
     display: flex;
     gap: 2em;
-    position: absolute;
+    position: relative;
     width: 100%;
-    bottom: 60px;
+    margin-top: 85px;
 
     button {
         font-family: 'Belleza';
@@ -137,4 +138,77 @@
             opacity: .5;
         }
     }
+}
+
+
+@media screen and (min-width: 0px) and (max-width: 500px) {
+    .wrapper_form {
+        padding: 10px 10px 10px 10px;
+        height: auto;      
+        grid-template-columns: 1fr;
+        grid-template-rows: .6fr .6fr 1fr;
+    }
+
+    .image {
+        width: 100%;
+        max-width: 250px;
+        margin-inline: auto;
+        height: 100%;
+        max-height: 200px;
+        margin-top: 15%;
+    
+        img {
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    .submit_buttons {
+        margin-top: 50px;
+
+        button {
+            font-size: clamp(.6rem, 2.5vw, 1rem);
+        }
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 900px) {
+    .wrapper_form {
+        padding: 10px 10px 10px 10px;
+        height: auto;      
+        grid-template-columns: 1fr;
+        grid-template-rows: .6fr .6fr 1fr;
+    }
+
+    .image {
+        width: 100%;
+        max-width: 300px;
+        margin-inline: auto;
+        height: 100%;
+        max-height: 300px;
+        margin-top: 15%;
+    
+        img {
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    .info {
+        margin-top: 40px;
+    }
+
+    .submit_buttons {
+        margin-top: 50px;
+
+        button {
+            font-size: clamp(.6rem, 2.5vw, 1rem);
+        }
+    }
+}
+
+@media screen and (min-width: 500px) and (max-width: 900px) {
+    
 }

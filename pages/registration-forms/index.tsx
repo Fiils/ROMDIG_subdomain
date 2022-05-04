@@ -8,6 +8,7 @@ import styles from '../../styles/scss/RegistrationForms/ContainerReg.module.scss
 import { useAuth } from '../../utils/useAuth'
 import GoogleInput from '../../components/Posts/GoogleInput'
 import UserForm from '../../components/RegistrationForms/ReqForm'
+import { NoSSR } from '../../utils/NoSsr'
 
 
 interface Forms {
@@ -191,13 +192,13 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
 
 
     return (
-        <>
+        <NoSSR fallback={<div style={{ width: '100vw', height: '100vh' }}></div>}>
         {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) ?
             <div style={{ paddingBottom: 50 }}>
                 <div className={styles.fcontainer}>
-                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                    <div className={styles.tools}>
                         <h2>Moderatori: {forms ? forms.length : 0}</h2>
-                        <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
+                        <div className={styles.search_tool}>
                             <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>
                                 <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
@@ -206,30 +207,33 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                     </div>
                 </div>
                 
-                <div className={styles.results_headline}>
-                    <h1>Rezultate pentru: {searchedName}</h1>
+                <div className={styles.full_wrapper}>
+                    <div className={styles.results_headline}>
+                        <h1>Rezultate pentru: {searchedName}</h1>
+                    </div>
+
+                    {!loading ?
+                        <div className={styles.container_forms}>
+                            {(forms && forms.length > 0) ?
+                                <>
+                                    {forms.map((form: any, index: number) => {
+                                        return <UserForm key={index} form={form} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} />
+                                    })}
+                                </>
+                                :
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
+                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
+                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit nicio cerere de activare a vreunui cont</h3>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    :
+                        <div className={styles.loader}></div>
+                    }
                 </div>
 
-                {!loading ?
-                    <div className={styles.container_forms}>
-                        {(forms && forms.length > 0) ?
-                            <>
-                                {forms.map((form: any, index: number) => {
-                                    return <UserForm key={index} form={form} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} />
-                                })}
-                            </>
-                            :
-                            <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
-                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit nicio cerere de activare a vreunui cont</h3>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                :
-                    <div className={styles.loader}></div>
-                }
                 {coming &&
                     <div className={styles.more}>
                         <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
@@ -243,7 +247,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
             </div>
         }
             
-        </>
+        </NoSSR>
     )
 }
 

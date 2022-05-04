@@ -44,7 +44,7 @@ interface Moderators {
 
 
 
-const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, numberOfPages, _coming }) => {    
+const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, numberOfPages, _coming = false }) => {    
     const [ moderators, setModerators ] = useState<any>(_moderators || [])
     const [ users, setUsers ] = useState<any>(_users || [])
     const [ pages, setPages ] = useState(numberOfPages)
@@ -227,9 +227,9 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
         {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
             <div style={{ paddingBottom: 50 }}>
                 <div className={styles.fcontainer}>
-                    <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                    <div className={styles.tools}>
                         <h2>Moderatori: {moderators.length}</h2>
-                        <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
+                        <div className={styles.search_tool}>
                             <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>
                                 <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
@@ -238,33 +238,36 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                     </div>
                 </div>
                 
-                <div className={styles.results_headline}>
-                    <h1>Rezultate pentru: {searchedName}</h1>
+
+                <div className={styles.full_wrapper}>
+                    <div className={styles.results_headline}>
+                        <h1>Rezultate pentru: {searchedName}</h1>
+                    </div>
+                    {!loading ?
+                        <div className={styles.container_moderators}>
+                            {(moderators.length > 0) ?
+                                <>
+                                    {moderators.map((moderator: any, index: number) => {
+                                        return <Moderator key={moderator._id} _id={moderator._id} _lastName={moderator.lastName} _firstName={moderator.firstName} _profilePicture={moderator.profilePicture}
+                                                        _asId={moderator.asId} _email={moderator.email} _type={moderator.authorization.type} _county={moderator.authorization.location.county} 
+                                                        _comuna={moderator.authorization.location.comuna} _city={moderator.authorization.location.city} _gender={users[index].gender}
+                                                        _cnp={users[index].cnp} _street={users[index].street} url={url} setLoading_={setLoading} setModerators={setModerators} setUsers={setUsers} />
+                                    })}
+                                </>
+                                :
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
+                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
+                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    :
+                        <div className={styles.loader}></div>
+                    }
                 </div>
 
-                {!loading ?
-                    <div className={styles.container_moderators}>
-                        {(moderators.length > 0) ?
-                            <>
-                                {moderators.map((moderator: any, index: number) => {
-                                    return <Moderator key={moderator._id} _id={moderator._id} _lastName={moderator.lastName} _firstName={moderator.firstName} _profilePicture={moderator.profilePicture}
-                                                    _asId={moderator.asId} _email={moderator.email} _type={moderator.authorization.type} _county={moderator.authorization.location.county} 
-                                                    _comuna={moderator.authorization.location.comuna} _city={moderator.authorization.location.city} _gender={users[index].gender}
-                                                    _cnp={users[index].cnp} _street={users[index].street} url={url} setLoading_={setLoading} setModerators={setModerators} setUsers={setUsers} />
-                                })}
-                            </>
-                            :
-                            <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
-                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                    <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                :
-                    <div className={styles.loader}></div>
-                }
                 {coming &&
                     <div className={styles.more}>
                         <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>

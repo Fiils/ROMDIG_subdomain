@@ -1,6 +1,8 @@
 .container {
     padding: 50px 15vw 40px 15vw;
     position: relative;
+    max-width: 2000px;
+    margin-inline: auto;
 }
 
 .go_back {
@@ -100,6 +102,43 @@
 
         &:active {
             opacity: .8;
+        }
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 900px) {
+    .container {
+        padding-inline: 5vw;
+    }
+
+    .go_back {
+        left: calc(5vw + 10px);
+
+        span[id='#text']:hover {
+            opacity: 1;
+        }
+    }
+
+    .account_title {
+        font-size: 1rem;
+    }
+
+    .container_button {
+        span[id='#text'] {
+            font-size: .9rem;
+        }
+
+        button {
+            font-size: .9rem;
+
+
+            &:hover {
+                opacity: 1;
+            }
+    
+            &:active {
+                opacity: 1;
+            }
         }
     }
 }

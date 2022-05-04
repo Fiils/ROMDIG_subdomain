@@ -1,11 +1,11 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState, FC, ReactNode } from 'react'
 
 interface NoSSRProps { 
-    children: any;
     fallback: any;
+    children: ReactNode;
 }
 
-export const NoSSR = ({children, fallback} : NoSSRProps) => {
+export const NoSSR: FC<NoSSRProps> = ({children, fallback}) => {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {

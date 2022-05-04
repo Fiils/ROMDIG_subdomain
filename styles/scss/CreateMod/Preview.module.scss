@@ -4,6 +4,7 @@
     h2 {
         font-family: 'Anonymous Pro';
         margin-bottom: 40px;
+        font-size: clamp(1.2rem, 5vw, 1.4rem);
     }
 }
 
@@ -30,7 +31,7 @@
 
 .results_headline {
     margin-top: 50px;
-    font-size: .8rem;
+    font-size: clamp(.5rem, 2.5vw, .8rem);
 
     h1 {
         font-family: 'Baloo Bhai 2';
@@ -41,6 +42,7 @@
     width: 100%;
     height: 40%;
     display: grid;
+    justify-items: center;
     grid-template-columns: repeat(3, 1fr);
     gap: 3em;
 }
@@ -138,5 +140,129 @@
         &:active {
             opacity: .8;
         }
+    }
+}
+
+.tools {
+    display: flex;
+    position: relative; 
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgb(200, 200, 200);
+}
+
+.search_tool {
+    position: absolute; 
+    right: 0; 
+    display: flex;
+    align-items: center; 
+    gap: 1em
+}
+
+@media screen and (min-width: 0px) and (max-width: 500px) {
+    .fcontainer {
+        padding: 30px 5vw 40px 5vw;
+    }
+
+    .tools {
+        flex-flow: column wrap;
+        align-items: center;
+        border-bottom: 0;
+    }
+
+    .search_tool {
+        top: 70px;
+        left: 0;
+        justify-content: center;
+    }
+
+    .profile_grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .results_headline {
+        margin-top: 100px;
+    }
+}
+
+@media screen and (min-width: 500px) and (max-width: 615px) {
+    
+    .fcontainer {
+        padding-inline: 10px;
+    }
+
+
+@mixin Flex_Item {
+    width: 200px;
+    height: 320px;
+    border-radius: 5px;
+    border: 2px solid rgb(130, 130, 130);
+    background: rgba(200, 200, 200, .2);
+    display: flex;
+    flex-flow: column wrap;
+    font-family: 'Belleza';
+    font-weight: 600;
+}
+
+.flex_item_none {
+    align-items: center;
+    justify-content: center;
+    color: rgb(150, 150, 150);
+    font-size: 1.1rem;
+    @include Flex_Item;
+
+    img:hover {
+        cursor: pointer;
+        border-radius: 10px !important;
+    }
+}
+
+.flex_item_create {
+    justify-content: center;
+    color: rgb(150, 150, 150);
+    align-items: center;
+    font-size: 1.1rem;
+    @include Flex_Item;
+
+    img:hover {
+        cursor: pointer;
+        border-radius: 10px !important;
+    }
+}
+
+.flex_item_profile {
+    padding-top: 30px;
+    gap: 1em;
+    position: relative;
+    @include Flex_Item;
+}
+}
+
+
+@media screen and (min-width: 500px) and (max-width: 950px) {
+    .fcontainer {
+        padding: 30px 5vw 40px 5vw;
+    }
+
+    .tools {
+        flex-flow: column wrap;
+    }
+
+    .profile_grid {
+        grid-template-columns: 1fr 1fr;
+        justify-items: center;
+    }
+}
+
+@media screen and (min-width: 950px) and (max-width: 1075px) {
+    .fcontainer {
+        padding: 30px 5vw 40px 5vw;
+    }
+}
+
+@media screen and (min-width: 1075px) and (max-width: 1405px) {
+    .fcontainer {
+        padding: 30px 10vw 40px 10vw;
     }
 }

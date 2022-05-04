@@ -5,6 +5,8 @@ import { useState } from 'react'
 
 import { server } from '../../config/server'
 import styles from '../../styles/scss/Statistics/Container.module.scss';
+import useWindowSize from '../../utils/useWindowSize'
+import { NoSSR } from '../../utils/NoSsr'
 
 interface Statistics {
     _statistics: any;
@@ -14,12 +16,15 @@ interface Statistics {
 const Statistics: NextPage<Statistics> = ({ _statistics }) => {
     const [ statistics, setStatistics ] = useState(_statistics)
 
+    const [ width ] = useWindowSize()
+
     const defaultLabelStyle = {
         fontSize: '10px',
         fontFamily: 'sans-serif',
       };
 
     return (
+        <NoSSR fallback={<div style={{ height: '100vh', width: '100vw'}}></div>}>
         <div style={{ paddingBottom: 40}}>
             <div className={styles.grid}>
                 <div className={styles.basic_info}>
@@ -42,15 +47,17 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                             animate
                         />
                     </div>
-                    <div className={styles.flex_info}>
-                        <h3>Total moderatori: {statistics.summative.mods}</h3>
-                        <h3>Total județe: {statistics.summative.counties}</h3>
-                        <h3>Total orașe: {statistics.summative.cities}</h3>
-                    </div>
-                    <div className={styles.flex_info}>
-                        <h3>Total sate: {statistics.summative.villages}</h3>
-                        <h3>Total comune: {statistics.summative.comune}</h3>
-                        <h3>Total localități: {statistics.summative.localities}</h3>
+                    <div className={styles.flex_info_container}>
+                        <div className={styles.flex_info}>
+                            <h3>Total moderatori: {statistics.summative.mods}</h3>
+                            <h3>Total județe: {statistics.summative.counties}</h3>
+                            <h3>Total orașe: {statistics.summative.cities}</h3>
+                        </div>
+                        <div className={styles.flex_info}>
+                            <h3>Total sate: {statistics.summative.villages}</h3>
+                            <h3>Total comune: {statistics.summative.comune}</h3>
+                            <h3>Total localități: {statistics.summative.localities}</h3>
+                        </div>
                     </div>
                     <div className={styles.legend}>
                         <div style={{ position: 'relative'}}>
@@ -86,7 +93,7 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                         />
                     </div>
 
-                    <div className={styles.flex_info}>
+                    <div className={`${styles.flex_info} ${styles.status_grid}`}>
                         <h3>Trimise: {statistics.status.sent}</h3>
                         <h3>Vizionate: {statistics.status.seen}</h3>
                         <h3>În lucru: {statistics.status.work}</h3>
@@ -114,11 +121,6 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                 <div className={`${styles.grid} ${styles.grid_reverse} `}>
                     <div className={styles.basic_info}>
                         <h1>Statistici geografice - utilizatori</h1>
-                        <div className={styles.flex_info}>
-                            <h3>Total utilizatori: {statistics.geoUsers.total}</h3>
-                            <h3>Rural: {statistics.geoUsers.rural}</h3>
-                            <h3>Urban: {statistics.geoUsers.urban}</h3>
-                        </div>
                         <div>
                             <PieChart 
                                 data={[
@@ -135,6 +137,12 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 lengthAngle={-360} 
                                 animate
                             />
+                        </div>
+
+                        <div className={styles.flex_info}>
+                            <h3>Total utilizatori: {statistics.geoUsers.total}</h3>
+                            <h3>Rural: {statistics.geoUsers.rural}</h3>
+                            <h3>Urban: {statistics.geoUsers.urban}</h3>
                         </div>
 
                         <div className={styles.legend}>
@@ -167,16 +175,18 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 animate
                             />
                         </div>
-                        <div className={styles.flex_info}>
-                            <h3>Total postări: {statistics.geoPosts.total}</h3>
-                            <h3>Mediul urban: {statistics.geoPosts.urban}</h3>
-                            <h3>Mediul rural: {statistics.geoPosts.rural}</h3>
-                        </div>
-                        <div className={styles.flex_info}>
-                            <h3>Penrtu județ: {statistics.geoPosts.county}</h3>
-                            <h3>Pentru oraș: {statistics.geoPosts.city}</h3>
-                            <h3>Pentru comună: {statistics.geoPosts.comuna}</h3>
-                            <h3>Pentru sat: {statistics.geoPosts.village}</h3>
+                        <div className={styles.flex_info_container}>
+                            <div className={styles.flex_info}>
+                                <h3>Total postări: {statistics.geoPosts.total}</h3>
+                                <h3>Mediul urban: {statistics.geoPosts.urban}</h3>
+                                <h3>Mediul rural: {statistics.geoPosts.rural}</h3>
+                            </div>
+                            <div className={styles.flex_info}>
+                                <h3>Penrtu județ: {statistics.geoPosts.county}</h3>
+                                <h3>Pentru oraș: {statistics.geoPosts.city}</h3>
+                                <h3>Pentru comună: {statistics.geoPosts.comuna}</h3>
+                                <h3>Pentru sat: {statistics.geoPosts.village}</h3>
+                            </div>
                         </div>
 
                         <div className={styles.legend}>
@@ -219,15 +229,17 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 animate
                             />
                         </div>
-                        <div className={styles.flex_info}>
-                            <h3>Bărbați: {statistics.users.men}</h3>
-                            <h3>Femei: {statistics.users.women}</h3>
-                        </div>
-                        <div className={styles.flex_info}>
-                            <h3>30 zile: {statistics.users.days30}</h3>
-                            <h3>14 zile: {statistics.users.days14}</h3>
-                            <h3>7 zile: {statistics.users.days7}</h3>
-                            <h3>Ultima zi: {statistics.users.day1}</h3>
+                        <div className={styles.flex_info_container}>
+                            <div className={styles.flex_info}>
+                                <h3>Bărbați: {statistics.users.men}</h3>
+                                <h3>Femei: {statistics.users.women}</h3>
+                            </div>
+                            <div className={styles.flex_info}>
+                                <h3>30 zile: {statistics.users.days30}</h3>
+                                <h3>14 zile: {statistics.users.days14}</h3>
+                                <h3>7 zile: {statistics.users.days7}</h3>
+                                <h3>Ultima zi: {statistics.users.day1}</h3>
+                            </div>
                         </div>
 
                         <div className={styles.legend}>
@@ -258,6 +270,7 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 animate
                             />
                         </div>
+                        {width > 500 ?
                         <div className={styles.flex_info}>
                             <h3>Conturi active: {statistics.users.active}</h3>
                             <h3>Conturi inactive: {statistics.users.inactive}</h3>
@@ -265,6 +278,18 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                             <h3>Au comentat: {statistics.users.usersCommented}</h3>
                             <h3>N-au comentat: {statistics.users.usersNotCommented}</h3>
                         </div>
+                        :
+                            <div className={styles.flex_info_container}>
+                                <div className={styles.flex_info}>
+                                    <h3>Conturi active: {statistics.users.active}</h3>
+                                    <h3>Conturi inactive: {statistics.users.inactive}</h3>
+                                </div>
+                                <div className={styles.flex_info}>
+                                    <h3>Au comentat: {statistics.users.usersCommented}</h3>
+                                    <h3>N-au comentat: {statistics.users.usersNotCommented}</h3>
+                                </div>
+                            </div>
+                        }
 
                         <div className={styles.legend}>
                             <div style={{ position: 'relative' }}>
@@ -283,12 +308,7 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                 <div className={`${styles.grid} ${styles.grid_reverse} `}>
                     <div className={styles.basic_info}>
                         <h1>Statistici postări</h1>
-                        <div className={styles.flex_info}>
-                            <h3>Total postări: {statistics.posts.total}</h3>
-                            <h3>Au poze: {statistics.posts.withMedia}</h3>
-                            <h3>N-au poze: {statistics.posts.noMedia}</h3>
-                            <h3>Au video: {statistics.posts.withVideo}</h3>
-                        </div>
+
                         <div>
                             <PieChart 
                                 data={[
@@ -305,6 +325,13 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 lengthAngle={-360} 
                                 animate
                             />
+                        </div>
+
+                        <div className={styles.flex_info}>
+                            <h3>Total postări: {statistics.posts.total}</h3>
+                            <h3>Au poze: {statistics.posts.withMedia}</h3>
+                            <h3>N-au poze: {statistics.posts.noMedia}</h3>
+                            <h3>Au video: {statistics.posts.withVideo}</h3>
                         </div>
 
                         <div className={styles.legend}>
@@ -335,19 +362,22 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                                 animate
                             />
                         </div>
-                        <div className={styles.flex_info}>
-                            <div style={{ position: 'relative' }}>
-                                <h3 className={styles.com}>Au comentarii: {statistics.posts.withComments}</h3>
+
+                        <div className={styles.flex_info_container}>
+                            <div className={styles.flex_info}>
+                                <div style={{ position: 'relative' }}>
+                                    <h3 className={styles.com}>Au comentarii: {statistics.posts.withComments}</h3>
+                                </div>
+                                <div style={{ position: 'relative' }}>
+                                    <h3 className={styles.ncom}>Nu au comentarii: {statistics.posts.withNoComments}</h3>
+                                </div>
                             </div>
-                            <div style={{ position: 'relative' }}>
-                                <h3 className={styles.ncom}>Nu au comentarii: {statistics.posts.withNoComments}</h3>
+                            <div className={styles.flex_info}>
+                                <h3>30 zile: {statistics.posts.days30}</h3>
+                                <h3>14 zile: {statistics.posts.days14}</h3>
+                                <h3>7 zile: {statistics.posts.days7}</h3>
+                                <h3>1 zi: {statistics.posts.day1}</h3>
                             </div>
-                        </div>
-                        <div className={styles.flex_info}>
-                            <h3>30 zile: {statistics.posts.days30}</h3>
-                            <h3>14 zile: {statistics.posts.days14}</h3>
-                            <h3>7 zile: {statistics.posts.days7}</h3>
-                            <h3>1 zi: {statistics.posts.day1}</h3>
                         </div>
 
 
@@ -363,6 +393,7 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
                     
                 </div>
             </div>
+        </NoSSR>
     )
 }
 

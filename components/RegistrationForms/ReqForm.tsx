@@ -5,6 +5,8 @@ import axios from 'axios'
 
 import styles from '../../styles/scss/RegistrationForms/Form.module.scss'
 import { server } from '../../config/server'
+import useWindowSize from '../../utils/useWindowSize'
+import { NoSSR } from '../../utils/NoSsr'
                             
 
 interface User { 
@@ -20,6 +22,8 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
 
     const [ photoSelect, setPhotoSelect ] = useState(false)
     const [ photo, setPhoto ] = useState('/')
+
+    const [ width ] = useWindowSize()
 
     const [ loading, setLoading ] = useState(false)
     const [ error, setError ] = useState(false)
@@ -75,15 +79,31 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
     return (
         <>
             <div className={styles.wrapper_form}>
-                <div className={styles.image}>
-                    <h3>Buletin</h3>
-                    <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
-                </div>
+                {width > 500 &&
+                        <div className={styles.image}>
+                            <h3>Buletin</h3>
+                            <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
+                        </div>
+                }
+                {width > 500 &&
+                    <div className={styles.image}>
+                        <h3>Domiciliu</h3>
+                        <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
+                    </div>
+                }
+                {width <= 500 &&
+                    <div className={styles.image_container}>
+                        <div className={styles.image}>
+                            <h3>Buletin</h3>
+                            <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
+                        </div>
 
-                <div className={styles.image}>
-                    <h3>Domiciliu</h3>
-                    <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
-                </div>
+                        <div className={styles.image}>
+                            <h3>Domiciliu</h3>
+                            <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
+                        </div>
+                    </div>
+                }
 
                 <div className={styles.info}>
                     <h2>{user.name} {user.firstName}</h2>

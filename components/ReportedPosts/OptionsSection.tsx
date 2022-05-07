@@ -76,17 +76,15 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, views, setSearch, set
                     <Reason text='Altceva' total={reports.reasons.filter((reason: string) => reason === 'Altceva').length} />
                 </div>
 
-                <div style={{ marginTop: 60 }}>
-                    <h2>Statistici</h2>
+                <h2 className={styles.mt_big}>Statistici</h2>
 
-                    <div className={styles.reasons_box}>
-                        <Reason text='Aprecieri' total={upVoted.count} />
-                        <Reason text='Down Votes' total={downVoted.count} />
-                        <Reason text='Semnalări' total={reports.count} />
-                        <Reason text='Vizionări' total={views.count} />
-                    </div>
+                <div className={styles.reasons_box}>
+                    <Reason text='Aprecieri' total={upVoted.count} />
+                    <Reason text='Down Votes' total={downVoted.count} />
+                    <Reason text='Semnalări' total={reports.count} />
+                    <Reason text='Vizionări' total={views.count} />
                 </div>
-
+                
                 <div>
 
                 </div>

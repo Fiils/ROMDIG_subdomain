@@ -1,6 +1,6 @@
-import type { FC } from 'react'
+import type { FC, Dispatch, SetStateAction} from 'react'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 import styles from '../../styles/scss/Posts/Pagination.module.scss'
@@ -8,9 +8,10 @@ import styles from '../../styles/scss/Posts/Pagination.module.scss'
 
 interface Pagination { 
     numberOfPages: number;
+    setChangePage: Dispatch<SetStateAction<boolean>>;
 }
 
-const Pagination: FC<Pagination> = ({ numberOfPages }) => {
+const Pagination: FC<Pagination> = ({ numberOfPages, setChangePage }) => {
     const router = useRouter()
 
     const nextPage = () => {
@@ -47,15 +48,17 @@ const prevPage = () => {
     }
 }
 
-
-const page = router.query.page ? router.query.page.toString().split('') : ['p', '1']
-let number = '';
-page.map((value: string) => {
-    if(value !== 'p'){
-        number += value
-    }
-})
-const [currentButton, setCurrentButton] = useState<number>(parseInt(number) > 0 ? parseInt(number) : 1)
+const [currentButton, setCurrentButton] = useState<number>(parseInt(router.query.page!.toString() || '1'))
+useEffect(() => {
+    const page = router.query.page ? router.query.page.toString().split('') : ['p', '1']
+    let number = '';
+    page.map((value: string) => {
+        if(value !== 'p'){
+            number += value
+        }
+    })
+    setCurrentButton(parseInt(number))
+}, [router.query.page])
 
 
     return (

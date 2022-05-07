@@ -79,19 +79,19 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
     return (
         <>
             <div className={styles.wrapper_form}>
-                {width > 500 &&
+                {width > 1250 &&
                         <div className={styles.image}>
                             <h3>Buletin</h3>
                             <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
                         </div>
                 }
-                {width > 500 &&
+                {width > 1250 &&
                     <div className={styles.image}>
                         <h3>Domiciliu</h3>
                         <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
                     </div>
                 }
-                {width <= 500 &&
+                {width <= 1250 &&
                     <div className={styles.image_container}>
                         <div className={styles.image}>
                             <h3>Buletin</h3>
@@ -109,21 +109,21 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                     <h2>{user.name} {user.firstName}</h2>
 
                     <div className={styles.personal}>
-                        <span>Email: {user.email}</span>
-                        <span>CNP: {user.cnp}</span>
-                        <span>Strada: {user.street}</span>
-                        <span>Județ: {user.county}</span>
+                        <span>Email: <span>{user.email} aiusdiuas diuagds i aus diags dag 8sdg</span></span>
+                        <span>CNP: <span>{user.cnp}</span></span>
+                        <span>Strada: <span>{user.street}</span></span>
+                        <span>Județ: <span>{user.county}</span></span>
                         {user.comuna !== '' ?
                             <>
-                                <span>Comuna: {user.comuna}</span>
-                                <span>Sat: {user.city}</span>
+                                <span>Comuna: <span>{user.comuna}</span></span>
+                                <span>Sat: <span>{user.city}</span></span>
                             </>
                             :
                             <>
-                                <span>Oraș: {user.city}</span>
+                                <span>Oraș: <span>{user.city}</span></span>
                             </>
                         }
-                        <span>Sex: {user.gender}</span>
+                        <span>Sex: <span>{user.gender}</span></span>
                     </div>
 
                     <div className={styles.submit_buttons}>

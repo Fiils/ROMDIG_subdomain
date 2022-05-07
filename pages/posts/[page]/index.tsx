@@ -13,6 +13,7 @@ import MobilePagination from '../../../components/Posts/MobilePagination'
 import Post from '../../../components/Posts/PostGrid'
 import Tools from '../../../components/Posts/Tools'
 import { NoSSR } from '../../../utils/NoSsr'
+import useWindowSize from '../../../utils/useWindowSize'
 
 
 interface Posts {
@@ -27,6 +28,8 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
     const [ posts, setPosts ] = useState(_posts || [])
     const [ pages, setPages ] = useState(numberOfPages || 1)
 
+    const [ width ] = useWindowSize()
+
 
     const [ changePage, setChangePage ] = useState(false)
 
@@ -38,35 +41,36 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
 
     return (
         <NoSSR fallback={<div style={{ height: '100vh'}}></div>}>
-        <div>   
-            <Tools changePageBool={changePage} setChangePage={setChangePage} errorLocation={errorLocation} setErrorLocation={setErrorLocation} 
-                   setPosts={setPosts} setPages={setPages} setLoading={setLoading} loading={loading} />
+            <div>   
+                <Tools changePageBool={changePage} setChangePage={setChangePage} errorLocation={errorLocation} setErrorLocation={setErrorLocation} 
+                    setPosts={setPosts} setPages={setPages} setLoading={setLoading} loading={loading} />
 
-                {(pages > 0 && posts.length > 0 && !loading) ?
-                    <div className={styles.posts_container}>
-                        {posts.map((post: any, index: number) => {
-                            return <Post key={index} _id={post._id} index={index} title={post.title} description={post.description} upVoted={post.upVoted} downVoted={post.downVoted} firstNameAuthor={post.firstNameAuthor}
-                                        media={post.media} favorites={post.favorites} reports={post.reports} views={post.views} creationDate={post.creationDate} nameAuthor={post.nameAuthor} 
-                                        authorProfilePicture={post.authorProfilePicture} comments={post.comments} authorId={post.authorId} city={post.city} county={post.county} status={post.status} />
-                            })
-                        }
-                    </div>
-
-                : 
-                <> 
-                    {!loading &&
-                        <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', justifyContent: 'center', mixBlendMode: 'multiply', marginTop: 200 }}>
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648493816/FIICODE/photos-10608_1_ewgru0.svg' alt='Fara Postari' width={200} height={200} />
-                            <h2 style={{ width: '100%', color: '#808080', textAlign: 'center' }}>Nicio postare nu a fost găsită.</h2>
+                    {(pages > 0 && posts.length > 0 && !loading) ?
+                        <div className={styles.posts_container}>
+                            {posts.map((post: any, index: number) => {
+                                return <Post key={index} _id={post._id} index={index} title={post.title} description={post.description} upVoted={post.upVoted} downVoted={post.downVoted} firstNameAuthor={post.firstNameAuthor}
+                                            media={post.media} favorites={post.favorites} reports={post.reports} views={post.views} creationDate={post.creationDate} nameAuthor={post.nameAuthor} 
+                                            authorProfilePicture={post.authorProfilePicture} comments={post.comments} authorId={post.authorId} city={post.city} county={post.county} status={post.status} />
+                                })
+                            }
                         </div>
-                    }
-                </>
-            }
-            
-            {loading && <div className={styles.loader}></div> }
 
-            {(pages > 0 && posts.length > 0) && <Pagination numberOfPages={pages} setChangePage={setChangePage} /> }
-        </div>
+                    : 
+                    <> 
+                        {!loading &&
+                            <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', justifyContent: 'center', mixBlendMode: 'multiply', marginTop: 200 }}>
+                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648493816/FIICODE/photos-10608_1_ewgru0.svg' alt='Fara Postari' width={200} height={200} />
+                                <h2 style={{ width: '100%', color: '#808080', textAlign: 'center' }}>Nicio postare nu a fost găsită.</h2>
+                            </div>
+                        }
+                    </>
+                }
+                
+                {loading && <div className={styles.loader}></div> }
+
+                {(pages > 0 && posts.length > 0 && width > 480) && <Pagination numberOfPages={pages} setChangePage={setChangePage} /> }
+                {(pages > 0 && posts.length > 0 && width <= 480) && <MobilePagination numberOfPages={pages} setChangePage={setChangePage} /> }
+            </div>
         </NoSSR>
     )
 }

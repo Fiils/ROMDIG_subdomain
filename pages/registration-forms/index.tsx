@@ -2,12 +2,13 @@ import type { NextPage, GetServerSideProps } from 'next'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 
 import { server } from '../../config/server'
 import styles from '../../styles/scss/RegistrationForms/ContainerReg.module.scss'
 import { useAuth } from '../../utils/useAuth'
 import GoogleInput from '../../components/Posts/GoogleInput'
-import UserForm from '../../components/RegistrationForms/ReqForm'
+// import UserForm from '../../components/RegistrationForms/ReqForm'
 import { NoSSR } from '../../utils/NoSsr'
 
 
@@ -15,6 +16,10 @@ interface Forms {
     _forms: any;
     _coming: boolean;
 }
+
+const UserForm = dynamic(() => import('../../components/RegistrationForms/ReqForm'),
+    { ssr: false }
+)
 
 
 const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {

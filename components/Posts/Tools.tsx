@@ -10,6 +10,7 @@ import GoogleInput from './GoogleInput'
 import { server } from '../../config/server'
 import Category from './CategorySelect'
 import { useAuth } from '../../utils/useAuth'
+import useWindowSize from '../../utils/useWindowSize'
 
 
 interface Tools {
@@ -27,6 +28,8 @@ interface Tools {
 const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages, setLoading, changePageBool, setChangePage, loading }) => {
     const router = useRouter()
     const auth = useAuth()
+
+    const [ width ] = useWindowSize()
     
     const [ status, setStatus ] = useState<any>((Cookies.get('url_status') && Cookies.get('url_status') !== '') ? JSON.parse(Cookies.get('url_status') || '[]') || [] : [])
 
@@ -385,12 +388,12 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
 
     return (
         <div className={styles.tools} style={{ position: 'relative' }}>
-            <h1 style={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center', gap: '.2em' }} className={styles.title_cat}>
+            <h1 style={{ position: width >= 1250 ? 'absolute' : 'relative', left: 0, display: 'flex', alignItems: 'center', gap: '.2em' }} className={styles.title_cat}>
                 <span>Postări:</span>
                 <Category category={category} handleChange={handleChangeCategory} />
             </h1>
             <Status status={status} handleChange={handleChange} />
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1em' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1em' }} className={styles.search_inp}>
                 {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') &&
                     <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
                                 isComuna={isComuna} setIsComuna={setIsComuna} />

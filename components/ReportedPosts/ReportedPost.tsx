@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -53,10 +54,12 @@ interface Post {
 }
 
 const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, description, downVoted, upVoted, firstNameAuthor, media, status, favorites, reports, views, creationDate, nameAuthor, authorProfilePicture, comments, url }) => {
-    const [ width, height ] = useWindowSize()
+    const [ width ] = useWindowSize()
+
+    const [ menu, setMenu ] = useState(false)
 
     return (
-        <div style={{ display: 'flex', gap: '40px', height: '100%', width: '100%' }}>
+        <div className={styles.reported_post_grid}>
             <div key={_id} className={styles.post}>
                 <a href={`${client}/postari/${_id}`} target="_blank" rel="noreferrer">
                 <div key={'k' + _id} className={styles.image} style={{ border: !media[0] ? '2px solid rgb(220, 220, 220)' : '0px' }}>
@@ -108,9 +111,22 @@ const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, d
                         </div>
                     </div>
             </a>
+            {width < 1000 && 
+                <div className={styles.menu_status}>
+                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1651320804/FIICODE/app-11173_topbz6.svg' width={25} height={33} onClick={() => setMenu(!menu)} />
+                </div>
+            }
             </div>
 
-            <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+            {width > 1000 ? 
+                <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+            :  
+                <>
+                    {menu && 
+                        <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+                    }
+                </>
+            }
         </div>
     )
 }

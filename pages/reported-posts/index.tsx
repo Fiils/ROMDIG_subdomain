@@ -8,6 +8,7 @@ import { useAuth } from '../../utils/useAuth'
 import { server } from '../../config/server'
 import GoogleInput from '../../components/CreateMod/GoogleInput'
 import ReportedPost from '../../components/ReportedPosts/ReportedPost'
+import { NoSSR } from '../../utils/NoSsr'
 
 interface Posts {
     _posts: any;
@@ -185,24 +186,22 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
     }, [search, more])
 
     return (
-        <>
-            <div style={{ paddingBottom: 50 }}> 
-                {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
-                    <div className={styles.fcontainer}>
-                        <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                            <h2>Postări: {posts ? posts.length : 0}</h2>
-                            <div style={{ width: '40%', position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
-                                <div className={styles.button_search}>
-                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
-                                </div>
+        <NoSSR fallback={<div style={{width: '100vw', height: '100vh'}}></div>}>
+            {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
+                <div className={styles.fcontainer}>
+                    <div className={styles.tools}>
+                        <h2>Postări: {posts ? posts.length : 0}</h2>
+                        <div className={styles.search_tool}>
+                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                            <div className={styles.button_search}>
+                                <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
                             </div>
-                        </div>  
-                    </div>
-                }
-                <div className={styles.results_headline}>
-                    <h1>Rezultate pentru: {searchedName}</h1>
+                        </div>
+                    </div>  
                 </div>
+            }
+            <div className={styles.results_headline}>
+                <h1>Rezultate pentru: {searchedName}</h1>
             </div>
 
             {!loading ?
@@ -235,7 +234,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                     <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
                 </div>
             } 
-        </>
+        </NoSSR>
     )
 }
 

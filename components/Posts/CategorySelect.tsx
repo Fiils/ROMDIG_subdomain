@@ -19,9 +19,6 @@ interface StatusProps {
 }
 
 const StatusSelect: FC<StatusProps> = ({ category, handleChange }) => {
-  const matches = useMediaQuery('(min-width:1400px)')
-  const matches_500 = useMediaQuery('(min-width:500px)')
-
 
     const customSelect = createTheme({
         palette: {
@@ -33,25 +30,25 @@ const StatusSelect: FC<StatusProps> = ({ category, handleChange }) => {
 
     return (
         <ThemeProvider theme={customSelect}>
-        <FormControl variant='standard' sx={{ m: 1, mb: .8, }}>
-          <Select
-            MenuProps={{ disableScrollLock: true }}
-            labelId="sort-by-category"
-            id="category"
-            value={category}
-            onChange={handleChange}
-            disableUnderline
-            className={styles.select_cat}
-            >
-              <MenuItem value={'Populare'}>Populare</MenuItem>
-              <MenuItem value={'Vizionate'}>Vizionate</MenuItem>
-              <MenuItem value={'Apreciate'}>Apreciate</MenuItem>
-              <MenuItem value={'Comentate'}>Comentate</MenuItem>
-              <MenuItem value={'Noi'}>Noi</MenuItem>
-              <MenuItem value={'Vechi'}>Vechi</MenuItem>
-              <MenuItem value={'Neapreciate'}>Neapreciate</MenuItem>
-          </Select>
-        </FormControl>
+          <FormControl variant='standard' sx={{ m: 1, mb: .8 }}>
+            <Select
+              MenuProps={{ disableScrollLock: true }}
+              labelId="sort-by-category"
+              id="category"
+              value={category}
+              onChange={handleChange}
+              disableUnderline
+              className={styles.select_cat}
+              >
+                <MenuItem value={'Populare'}>Populare</MenuItem>
+                <MenuItem value={'Vizionate'}>Vizionate</MenuItem>
+                <MenuItem value={'Apreciate'}>Apreciate</MenuItem>
+                <MenuItem value={'Comentate'}>Comentate</MenuItem>
+                <MenuItem value={'Noi'}>Noi</MenuItem>
+                <MenuItem value={'Vechi'}>Vechi</MenuItem>
+                <MenuItem value={'Neapreciate'}>Neapreciate</MenuItem>
+            </Select>
+          </FormControl>
         </ThemeProvider>
     )
 }

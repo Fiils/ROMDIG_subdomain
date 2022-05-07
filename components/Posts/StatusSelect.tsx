@@ -17,8 +17,7 @@ interface StatusProps {
 }
 
 const StatusSelect: FC<StatusProps> = ({ status, handleChange }) => {
-  const matches = useMediaQuery('(min-width:1400px)')
-  const matches_500 = useMediaQuery('(min-width:500px)')
+  const matches_1250 = useMediaQuery('(min-width:1250px)')
 
 
     const customSelect = createTheme({
@@ -31,7 +30,7 @@ const StatusSelect: FC<StatusProps> = ({ status, handleChange }) => {
 
     return (
         <ThemeProvider theme={customSelect}>
-        <FormControl variant='standard' sx={{ m: 1, minWidth: matches_500 ? 170 : 100, width: '40%', maxWidth: 170 }}>
+        <FormControl variant='standard' sx={{ m: 1, minWidth: 170, maxWidth: 170, mt: matches_1250 ? 1 : 0, ml: 0 }}>
           <InputLabel id="sort-by-status">Statut</InputLabel>
           <Select
             MenuProps={{ disableScrollLock: true }}

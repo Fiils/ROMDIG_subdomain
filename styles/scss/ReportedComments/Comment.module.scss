@@ -7,6 +7,17 @@
     flex-flow: column wrap;
     justify-content: center;
     align-items: center;
+    border: 1px solid rgb(245, 245, 245);
+    border-radius: 5px;
+
+    &:hover {
+        border: 1px solid rgba(150, 150, 150);
+    }
+}
+
+.reported_comment_grid {
+    display: flex;
+    gap: 40px;
 }
 
 .numbered {
@@ -38,5 +49,39 @@
 
     &::-webkit-scrollbar { 
         display: none; 
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 1000px) {
+    .comment {
+        width: 80vw;
+
+        &:hover {
+            border-color: rgb(245, 245, 245);        
+        }
+    }
+
+    .menu_status {
+        position: absolute;
+        bottom: 0px;
+        right: 5px;
+
+        img {
+            transition: all .25s ease-out;
+            padding: 5px !important;
+            padding-block: 3px !important;
+            border-radius: 10px;
+            background-color: rgba(100, 100, 100, .05)
+        }
+    }
+
+    .reported_comment_grid {
+        display: grid;
+        background-blend-mode: color-burn;
+        padding-block: 0px;
+        padding-inline: 0px;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        justify-items: center;
     }
 }

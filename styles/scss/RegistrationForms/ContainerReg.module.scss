@@ -66,7 +66,7 @@
 
 .full_wrapper {
     margin-inline: auto;
-    max-width: 1300px;
+    max-width: 1800px;
 }
 
 .tools {
@@ -112,17 +112,12 @@
     }
 
     .container_forms {
-        margin-inline: 20px;
+        margin-inline: 20px;    
     }
 }
 
-@media screen and (min-width: 500px) and (max-width: 900px) {
+@media screen and (min-width: 500px) and (max-width: 1024px) {
     .fcontainer {
         margin-inline: 5vw;
-    }
-
-    .search_tool {
-        width: 80%;
-        margin-left: 20%;
     }
 }

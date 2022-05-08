@@ -7,6 +7,7 @@ import styles from '../../styles/scss/RegistrationForms/Form.module.scss'
 import { server } from '../../config/server'
 import useWindowSize from '../../utils/useWindowSize'
 import { NoSSR } from '../../utils/NoSsr'
+import { useAuth } from '../../utils/useAuth'
                             
 
 interface User { 
@@ -19,6 +20,8 @@ interface User {
 
 const ReqForm: FC<User> = ({ _user, setSearch, setIsLocationChanged, search}) => {
     const [ user, setUser ] = useState(_user)
+
+    const auth = useAuth()
 
     const [ photoSelect, setPhotoSelect ] = useState(false)
     const [ photo, setPhoto ] = useState('/')
@@ -35,6 +38,9 @@ const ReqForm: FC<User> = ({ _user, setSearch, setIsLocationChanged, search}) =>
 
     const deleteAccount = async (e: any) => {
         e.preventDefault()
+
+        if(auth.type !== 'General' && auth.type !== 'Judetean') return;
+
         setLoading(true)
         setError(false)
 
@@ -87,7 +93,7 @@ const ReqForm: FC<User> = ({ _user, setSearch, setIsLocationChanged, search}) =>
                     <h2>{user.name} {user.firstName}</h2>
 
                     <div className={styles.personal}>
-                        <span>Email: <span>{user.email} aiusdiuas diuagds i aus diags dag 8sdg</span></span>
+                        <span>Email: <span>{user.email}</span></span>
                         <span>CNP: <span>{user.cnp}</span></span>
                         <span>Strada: <span>{user.street}</span></span>
                         <span>Județ: <span>{user.county}</span></span>
@@ -108,7 +114,7 @@ const ReqForm: FC<User> = ({ _user, setSearch, setIsLocationChanged, search}) =>
                         {!loading ?
                             <>
                                 {error && <span style={{ color: 'red' }}>EROARE</span>}
-                                <button style={{ borderColor: 'green', color: 'green' }} onClick={e => deleteAccount(e)}>Șterge contul</button>
+                                <button style={{ borderColor: 'green', color: 'green' }} onClick={e => deleteAccount(e)} disabled={auth.type !== 'General' && auth.type !== 'Judetean'}>Șterge contul (Admin Județean/General)</button>
                             </>
                         :
                             <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />

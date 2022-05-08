@@ -109,7 +109,7 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                     <h2>{user.name} {user.firstName}</h2>
 
                     <div className={styles.personal}>
-                        <span>Email: <span>{user.email} aiusdiuas diuagds i aus diags dag 8sdg</span></span>
+                        <span>Email: <span>{user.email}</span></span>
                         <span>CNP: <span>{user.cnp}</span></span>
                         <span>Strada: <span>{user.street}</span></span>
                         <span>Județ: <span>{user.county}</span></span>

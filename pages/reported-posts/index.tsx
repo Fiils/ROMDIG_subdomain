@@ -187,7 +187,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
 
     return (
         <NoSSR fallback={<div style={{width: '100vw', height: '100vh'}}></div>}>
-            {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
+            {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' || auth.type === 'Orasesc' || auth.type === 'Satesc') || !auth.done) &&
                 <div className={styles.fcontainer}>
                     <div className={styles.tools}>
                         <h2>Postări: {posts ? posts.length : 0}</h2>

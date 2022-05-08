@@ -186,7 +186,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
 
     return (
         <>
-                {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
+                {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc') || !auth.done) &&
                     <div className={styles.fcontainer}>
                         <div className={styles.tools}>
                             <h2>Postări: {comments ? comments.length : 0}</h2>

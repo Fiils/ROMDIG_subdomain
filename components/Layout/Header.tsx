@@ -92,7 +92,7 @@ const Header = () => {
                 <div className={`${styles.sidemenu} ${menu ? styles.open_menu : styles.close_menu} ${border ? styles.bb_none : ''}`}>
                     <ul>
                         <Link href='/statistics'><a onClick={() => setMenu(false)}><li>Statistici</li></a></Link>
-                        <Link href='/manage-mod'><a onClick={() => setMenu(false)}><li>Gestionare moderatori*</li></a></Link>
+                        <Link href='/manage-mod'><a onClick={() => setMenu(false)}><li>Gestionare moderatori</li></a></Link>
                         <Link href='/create-mod'><a onClick={() => setMenu(false)}><li>Creare moderatori</li></a></Link>
                         <li onClick={() => setSubSec(!subSec)} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
                             <span>Postări Utilizatori</span>
@@ -107,7 +107,7 @@ const Header = () => {
                         }
                         <Link href='/reported-comments'><a onClick={() => setMenu(false)}><li>Comentarii raportate</li></a></Link>
                         <Link href='/registration-forms'><a onClick={() => setMenu(false)}><li>Cereri de înregistrare</li></a></Link>
-                        <Link href='/manage-users'><a onClick={() => setMenu(false)}><li>Gestionare utilizatori</li></a></Link>
+                        <Link href='/manage-users'><a onClick={() => setMenu(false)}><li>Gestionare utilizatori*</li></a></Link>
                     </ul> 
                 </div>
                 }

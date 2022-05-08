@@ -41,7 +41,7 @@ interface Post {
 const Post: FC<Post> = ({ setSearch, index, setIsLocationChanged, search, _id, text, originalPostId, downVoted, upVoted, firstNameAuthor, reports, creationDate, nameAuthor, authorProfilePicture, url }) => {
     const [ width ] = useWindowSize()
 
-    const [ menu, setMenu ] = useState(false)
+    const [ menu, setMenu ] = useState<boolean | null>(null)
 
     return (
 
@@ -73,12 +73,10 @@ const Post: FC<Post> = ({ setSearch, index, setIsLocationChanged, search, _id, t
             </div>
 
             {width > 1000 ? 
-                <Options originalPostId={originalPostId} upVoted={upVoted} downVoted={downVoted} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+                <Options menu={menu} originalPostId={originalPostId} upVoted={upVoted} downVoted={downVoted} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
             :  
                 <>
-                    {menu && 
-                        <Options originalPostId={originalPostId} upVoted={upVoted} downVoted={downVoted} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
-                    }
+                    <Options menu={menu} originalPostId={originalPostId} upVoted={upVoted} downVoted={downVoted} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
                 </>
             }
         </div>

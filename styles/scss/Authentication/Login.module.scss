@@ -18,7 +18,6 @@ $primary-color: #A71D31;
     background-color: rgb(250, 250, 250);
     border-radius: 10px;
     padding-top: 40px;
-    margin-top: -20px;
     box-shadow: 3px 6px 20px 0px rgb(50, 50, 50);
 
     h2 {
@@ -107,10 +106,8 @@ $primary-color: #A71D31;
 }
 
 .copyright {
-    position: absolute;
-    bottom: 5px;
-    left: 0;
-    right: 0;
+    position: relative;
+    top: calc(50vh - 295px);
     text-align: center;
     font-family: 'Libre Baskerville';
     opacity: .4; 

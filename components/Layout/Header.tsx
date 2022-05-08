@@ -107,6 +107,7 @@ const Header = () => {
                         }
                         <Link href='/reported-comments'><a onClick={() => setMenu(false)}><li>Comentarii raportate</li></a></Link>
                         <Link href='/registration-forms'><a onClick={() => setMenu(false)}><li>Cereri de înregistrare</li></a></Link>
+                        <Link href='/manage-users'><a onClick={() => setMenu(false)}><li>Gestionare utilizatori</li></a></Link>
                     </ul> 
                 </div>
                 }

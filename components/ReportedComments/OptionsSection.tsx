@@ -1,10 +1,11 @@
 import type { FC, Dispatch, SetStateAction} from 'react';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import axios from 'axios'
 
 import styles from '../../styles/scss/ReportedPosts/Options.module.scss'
 import { server } from '../../config/server'
+import useWindowSize from '../../utils/useWindowSize'
 
 interface Options {
     reports: any;
@@ -16,15 +17,18 @@ interface Options {
     upVoted: any;
     downVoted: any;
     originalPostId: string;
+    menu: null | boolean;
 }
 
-const OptionsSection: FC<Options> = ({ upVoted, downVoted, setSearch, setIsLocationChanged, search, reports, url, id, originalPostId }) => {
+const OptionsSection: FC<Options> = ({ upVoted, downVoted, setSearch, setIsLocationChanged, search, reports, url, id, originalPostId, menu }) => {
 
     const [ hoverDelete, setHoverDelete ] = useState(false)
     const [ deleteAction, setDeleteAction ] = useState(false)
 
     const [ loading, setLoading ] = useState(false)
     const [ error, setError ] = useState(false)
+
+    const [ width ] = useWindowSize()
 
     const Reason = ({ text, total }: { text: string, total: number }) => {
 
@@ -59,8 +63,25 @@ const OptionsSection: FC<Options> = ({ upVoted, downVoted, setSearch, setIsLocat
         }
     }
 
+    const [ show, setShow ] = useState(false)
+
+    useEffect(() => {
+        setShow(true)
+
+        let menuTimeout: any;
+        if(!menu) {
+            menuTimeout = setTimeout(() => {
+                setShow(false)
+            }, 200)
+        }
+
+        return () => {
+            clearTimeout(menuTimeout)
+        }
+    }, [menu])
+
     return (
-        <div className={styles.options_container}>
+        <div className={`${styles.options_container} ${(width <= 1000 && menu !== null) ? (menu ? styles.appear : styles.disappear) : ''} ${(!show && width <= 1000) ? styles.nodisplay : ''}`}>
             <div className={styles.actions}>
                 <Image onClick={() => setDeleteAction(true)} onMouseOver={() => setHoverDelete(true)} onMouseOut={() => setHoverDelete(false)} src={ !hoverDelete ? 'https://res.cloudinary.com/multimediarog/image/upload/v1651165241/FIICODE/red-delete-10437_1_flgrzd.svg' : 'https://res.cloudinary.com/multimediarog/image/upload/v1651165239/FIICODE/red-delete-10437_xwdkzg.svg' } width={30} height={30} priority/>
             </div>

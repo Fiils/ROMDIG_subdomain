@@ -56,7 +56,7 @@ interface Post {
 const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, description, downVoted, upVoted, firstNameAuthor, media, status, favorites, reports, views, creationDate, nameAuthor, authorProfilePicture, comments, url }) => {
     const [ width ] = useWindowSize()
 
-    const [ menu, setMenu ] = useState(false)
+    const [ menu, setMenu ] = useState<null | boolean>(null)
 
     return (
         <div className={styles.reported_post_grid}>
@@ -119,12 +119,10 @@ const Post: FC<Post> = ({ setSearch, setIsLocationChanged, search, _id, title, d
             </div>
 
             {width > 1000 ? 
-                <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
+                <Options menu={menu} upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
             :  
                 <>
-                    {menu && 
-                        <Options upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
-                    }
+                    <Options menu={menu} upVoted={upVoted} downVoted={downVoted} views={views} setSearch={setSearch} search={search} setIsLocationChanged={setIsLocationChanged} reports={reports} url={url} id={_id} />
                 </>
             }
         </div>

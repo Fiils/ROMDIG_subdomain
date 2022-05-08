@@ -6,6 +6,28 @@
     border-radius: 5px;
 }
 
+@keyframes appear_anim {
+    0% { height: 0; opacity: 0; }
+    100% { height: 500px; opacity: 1; }
+}
+.appear {
+    animation: appear_anim .25s;
+    height: 500px;
+}
+
+@keyframes disappear_anim {
+    0% { height: 500px; opacity: 1;  }
+    100% { height: 0; opacity: 0; }
+}
+.disappear {
+    animation: disappear_anim .25s;
+    height: 0;
+}
+
+.nodisplay {
+    display: none;
+}
+
 .actions {
     position: relative;
     display: flex;

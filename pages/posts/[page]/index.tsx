@@ -37,7 +37,6 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
 
 
     const [ loading, setLoading ] = useState(false)
-    console.log(loading)
 
     return (
         <NoSSR fallback={<div style={{ height: '100vh'}}></div>}>
@@ -110,7 +109,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         }   
     }
 
-    const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url ? encodeURI(cookie.parse(req.headers.cookie).url) : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
+    const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url ? encodeURI(decodeURIComponent(cookie.parse(req.headers.cookie).url)) : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
                                     redirect = true
@@ -126,6 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
             props: {}
         }
     }
+
 
     return { 
         props: {

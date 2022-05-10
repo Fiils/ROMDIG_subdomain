@@ -21,10 +21,24 @@ const Header = () => {
 
     const user = useAuth()
 
+    const [ cancelAnimation, setCancelAnimation ] = useState(false)
+    const [ disabledLink, setDisabledLink ] = useState(false)
+    useEffect(() => {
+        if(subSec && menu) {
+        setCancelAnimation(false)
+        }
+        if(!menu || !subSec) {
+            setTimeout(() => {
+                setCancelAnimation(true)
+            }, 450)
+        }
+    }, [ menu, subSec ])
+
     useEffect(() => {
         const documentWidth = document.documentElement.clientWidth;
         const windowWidth = window.innerWidth;
         const scrollBarWidth = windowWidth - documentWidth;
+
         if(menu) {
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = `${scrollBarWidth}px`
@@ -37,9 +51,13 @@ const Header = () => {
 
 
      useEffect(() => {
-        if(!subSec) {
+        if(!subSec && !disabledLink) {
+            setDisabledLink(true)
             setTimeout(() => {
                 setBorder(false)
+            }, 450)
+            setTimeout(() => {
+                setDisabledLink(false)
             }, 500)
         } else setBorder(true)
      }, [subSec])
@@ -56,12 +74,31 @@ const Header = () => {
      }, [ppBox])
 
      const Logout = async (e: any) => {
-         e.preventDefault()
+        e.preventDefault()
 
-         if(Cookies.get('Allow-Authorization')) {
+        if(Cookies.get('Allow-Authorization')) {
             Cookies.remove('Allow-Authorization')
-         }
-         router.reload()
+        }
+
+        router.reload()
+     }
+
+     const postsPage = () => {
+        Cookies.set('url', `?page=0&level=all&category=popular`)
+        Cookies.remove('url_location')
+        Cookies.remove('url_fex')
+        Cookies.remove('url_status')
+        Cookies.remove('url_comuna')
+        Cookies.remove('url_cat')
+     }
+
+     const setStatusPostsPage = () => {
+        Cookies.set('url_s', `?page=0&level=all&category=popular`)
+        Cookies.remove('url_location_s')
+        Cookies.remove('url_fex_s')
+        Cookies.remove('url_status_s')
+        Cookies.remove('url_comuna_s')
+        Cookies.remove('url_cat_s')
      }
 
     return (
@@ -94,14 +131,14 @@ const Header = () => {
                         <Link href='/statistics'><a onClick={() => setMenu(false)}><li>Statistici</li></a></Link>
                         <Link href='/manage-mod'><a onClick={() => setMenu(false)}><li>Gestionare moderatori</li></a></Link>
                         <Link href='/create-mod'><a onClick={() => setMenu(false)}><li>Creare moderatori</li></a></Link>
-                        <li onClick={() => setSubSec(!subSec)} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
+                        <li onClick={() => { if(!disabledLink) { setSubSec(!subSec) } }} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
                             <span>Postări Utilizatori</span>
                             <Image src={ !subSec ? 'https://res.cloudinary.com/multimediarog/image/upload/v1649594121/FIICODE/arrow-down-3101_hgf5ei.svg' : 'https://res.cloudinary.com/multimediarog/image/upload/v1649594123/FIICODE/arro-up-3100_otqmq5.svg' } alt='Icon' width={15} height={15} />
                         </li>
                         {subSec !== null && 
-                            <div className={`${styles.sub_sec} ${subSec ? styles.open_sec : styles.close_sec }`}>
-                                <Link href='/set-status/p1'><a onClick={() => setMenu(false)}><li className={styles.first}>Setare Status</li></a></Link>
-                                <Link href='/posts/p1'><a onClick={() => setMenu(false)}><li>Toate</li></a></Link>
+                            <div className={`${styles.sub_sec} ${subSec ? styles.open_sec : styles.close_sec } ${cancelAnimation ? styles.nodisplay : ''}`}>
+                                <a href='/set-status/p1' onClick={() => { setStatusPostsPage(); setMenu(false) } }><li className={styles.first}>Setare Status</li></a>
+                                <a href='/posts/p1' onClick={() => { postsPage(); setMenu(false) }}><li>Toate</li></a>
                                 <Link href='/reported-posts'><a onClick={() => setMenu(false)}><li className={styles.last}>Raportate</li></a></Link>
                             </div>
                         }

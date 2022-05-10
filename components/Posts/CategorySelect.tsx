@@ -1,13 +1,9 @@
-import type { FC, Dispatch, SetStateAction } from 'react';
+import type { FC } from 'react';
 
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Checkbox from '@mui/material/Checkbox';
-import ListItemText from '@mui/material/ListItemText';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import styles from '../../styles/scss/Posts/Tools.module.scss'
 

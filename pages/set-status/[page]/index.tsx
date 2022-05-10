@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as cookie from 'cookie'
+import dynamic from 'next/dynamic'
 
 import { server } from '../../../config/server'
 import styles from '../../../styles/scss/Posts/PostsContainer.module.scss'
 import Pagination from '../../../components/Posts/Pagination'
 import MobilePagination from '../../../components/Posts/MobilePagination'
 import Post from '../../../components/StatusPosts/PostGrid'
-import Tools from '../../../components/Posts/Tools'
 import { NoSSR } from '../../../utils/NoSsr'
 import useWindowSize from '../../../utils/useWindowSize'
 
@@ -19,6 +19,11 @@ interface Posts {
     _posts: any,
     numberOfPages: number
 }
+
+const Tools = dynamic(
+    () => import('../../../components/StatusPosts/Tools'),
+    {  ssr: false }
+)
 
 
 const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
@@ -110,11 +115,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
     }
 
 
-    const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url ? encodeURI(cookie.parse(req.headers.cookie).url) : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
+    const result = await axios.get(`${server}/api/sd/post/get-posts${cookie.parse(req.headers.cookie).url_s ? encodeURI(decodeURIComponent(cookie.parse(req.headers.cookie).url_s)) : `?level=all&category=popular&page=${parseInt(ctx.query.page.split('p')[1]) - 1}`}`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
-                                    console.log(err.response)
                                     redirect = true
+                                    console.log(err)
                                 })
 
     if(redirect)  {

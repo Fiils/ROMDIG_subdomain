@@ -194,7 +194,6 @@ const RegistrationForms: NextPage<Forms> = ({ _users, _coming  }) => {
         setIsLocationChanged(false)
     }, [search, more])
 
-
     return (
         <NoSSR fallback={<div style={{ width: '100vw', height: '100vh' }}></div>}>
         {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' ||  auth.type === 'Orasesc' || auth.type === 'Satesc') || !auth.done) ?

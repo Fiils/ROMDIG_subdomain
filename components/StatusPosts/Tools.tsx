@@ -4,11 +4,11 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 
-import Status from './StatusSelect' 
+import Status from '../Posts/StatusSelect' 
 import styles from '../../styles/scss/Posts/Tools.module.scss'
-import GoogleInput from './GoogleInput'
+import GoogleInput from '../Posts/GoogleInput'
 import { server } from '../../config/server'
-import Category from './CategorySelect'
+import Category from '../Posts/CategorySelect'
 import { useAuth } from '../../utils/useAuth'
 import useWindowSize from '../../utils/useWindowSize'
 
@@ -32,16 +32,16 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
     const [ width ] = useWindowSize()
     const [ locationChanged, setLocationChanged ] = useState({ value: false, text: ''})
     
-    const [ status, setStatus ] = useState<any>((Cookies.get('url_status') && Cookies.get('url_status') !== '') ? JSON.parse(Cookies.get('url_status') || '[]') || [] : [])
+    const [ status, setStatus ] = useState<any>((Cookies.get('url_status_s') && Cookies.get('url_status_s') !== '') ? JSON.parse(Cookies.get('url_status_s') || '[]') || [] : [])
 
     const [ search, setSearch ] = useState<null | boolean>(null)
-    const [ location, setLocation ] = useState((Cookies.get('url_location') && Cookies.get('url_location') !== '') ? Cookies.get('url_location') || '' : '')
-    const [ isComuna, setIsComuna ] = useState((Cookies.get('url_comuna') && Cookies.get('url_comuna') !== '') ? (Cookies.get('url_comuna') === 'true' ? true : false) : false)
-    const [ fullExactPosition, setFullExactPosition ] = useState<any>((Cookies.get('url_fex') && Cookies.get('url_fex') !== '') ? JSON.parse(Cookies.get('url_fex') || '') : null)
+    const [ location, setLocation ] = useState((Cookies.get('url_location_s') && Cookies.get('url_location_s') !== '') ? Cookies.get('url_location_s') || '' : '')
+    const [ isComuna, setIsComuna ] = useState((Cookies.get('url_comuna_s') && Cookies.get('url_comuna_s') !== '') ? (Cookies.get('url_comuna_s') === 'true' ? true : false) : false)
+    const [ fullExactPosition, setFullExactPosition ] = useState<any>((Cookies.get('url_fex_s') && Cookies.get('url_fex_s') !== '') ? JSON.parse(Cookies.get('url_fex_s') || '') : null)
 
-    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-posts${Cookies.get('url') ? Cookies.get('url') : `?page=${parseInt(router.query.page!.toString().split('p')[1]) - 1}&level=all&category=popular`}`)
+    const [ url, setUrl ] = useState(`${server}/api/sd/post/get-posts${Cookies.get('url_s') ? Cookies.get('url_s') : `?page=${parseInt(router.query.page!.toString().split('p')[1]) - 1}&level=all&category=popular`}`)
 
-    const [ category, setCategory ] = useState((Cookies.get('url_cat') && Cookies.get('url_cat') !== '') ? Cookies.get('url_cat') || 'Populare' : 'Populare')
+    const [ category, setCategory ] = useState((Cookies.get('url_cat_s') && Cookies.get('url_cat_s') !== '') ? Cookies.get('url_cat_s') || 'Populare' : 'Populare')
 
     const [ onlyLocation, setOnlyLocation ] = useState(false)
 
@@ -116,11 +116,11 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                     } else {
                         setLoading(false)
                     }
-                        Cookies.set('url', `?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
-                        Cookies.set('url_status', [])
-                        Cookies.set('url_fex', '')
-                        Cookies.set('url_location', '')
-                        Cookies.set('url_comuna', 'false')
+                        Cookies.set('url_s', `?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
+                        Cookies.set('url_status_s', [])
+                        Cookies.set('url_fex_s', '')
+                        Cookies.set('url_location_s', '')
+                        Cookies.set('url_comuna_s', 'false')
                 }
         
                 getNewModerators()
@@ -204,11 +204,11 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                     setPosts(result.posts)
                     setLoading(false)
                     setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
-                    Cookies.set('url_status', [])
-                    Cookies.set('url_location', location)
-                    Cookies.set('url_comuna', isComuna.toString())
-                    Cookies.set('url_fex', JSON.stringify(fullExactPosition))
-                    Cookies.set('url', `?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
+                    Cookies.set('url_status_s', [])
+                    Cookies.set('url_location_s', location)
+                    Cookies.set('url_comuna_s', isComuna.toString())
+                    Cookies.set('url_fex_s', JSON.stringify(fullExactPosition))
+                    Cookies.set('url_s', `?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
                 } else {
                     setLoading(false)
                 }
@@ -294,8 +294,8 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                 cookiesStatuses.push(urlPart.split('&')[4].split('=')[1])
             } 
 
-            Cookies.set('url', `?${searchParams!.toString()}${urlPart}&category=${chooseCategoryServer(category)}`)
-            Cookies.set('url_status', JSON.stringify(cookiesStatuses))
+            Cookies.set('url_s', `?${searchParams!.toString()}${urlPart}&category=${chooseCategoryServer(category)}`)
+            Cookies.set('url_status_s', JSON.stringify(cookiesStatuses))
         }
 
         useEffect(() => {
@@ -335,8 +335,8 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             setPages(result ? result.numberOfPages : 0)
             setChangeCategory(false)
 
-            Cookies.set('url', `?${searchParams!.toString()}${chooseCategoryServer(newCategory)}`)
-            Cookies.set('url_cat', newCategory)
+            Cookies.set('url_s', `?${searchParams!.toString()}${chooseCategoryServer(newCategory)}`)
+            Cookies.set('url_cat_s', newCategory)
         }
 
         useEffect(() => {
@@ -379,8 +379,8 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
         setPages(result ? result.numberOfPages : 1)
         setChangePage(false)
 
-        Cookies.set('url', `?${searchParams?.toString()}`)
-        Cookies.set('url_page', number)
+        Cookies.set('url_s', `?${searchParams?.toString()}`)
+        Cookies.set('url_page_s', number)
     }
 
 

@@ -189,7 +189,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                 {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc') || !auth.done) &&
                     <div className={styles.fcontainer}>
                         <div className={styles.tools}>
-                            <h2>Postări: {comments ? comments.length : 0}</h2>
+                            <h2>Comentarii: {comments ? comments.length : 0}</h2>
                             <div className={styles.search_tool}>
                                 <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                                 <div className={styles.button_search}>

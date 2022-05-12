@@ -115,8 +115,8 @@ const Header = () => {
                             <div className={`${styles.pp_box} ${ppBox ? styles.open_box : styles.close_box } ${!showBox ? styles.nodisplay : ''}`}>
                                 <h3>Bună, {user.name}!</h3>
                                 <div style={{ marginInline: 10}} className={styles.info_admin}>
-                                    <h5>Autorizatie: {user.type}</h5>
-                                    <h5>Judet: {user.county}</h5>
+                                    <h5>Autorizatie: <div>{user.type}</div></h5>
+                                    <h5>Judet: <div>{user.county}</div></h5>
                                 </div>
                                 <div className={styles.logout}>
                                     <button onClick={(e) => Logout(e)}>Deconectează-te</button>
@@ -133,7 +133,7 @@ const Header = () => {
                         <Link href='/create-mod'><a onClick={() => setMenu(false)}><li>Creare moderatori</li></a></Link>
                         <li onClick={() => { if(!disabledLink) { setSubSec(!subSec) } }} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
                             <span>Postări Utilizatori</span>
-                            <Image src={ !subSec ? 'https://res.cloudinary.com/multimediarog/image/upload/v1649594121/FIICODE/arrow-down-3101_hgf5ei.svg' : 'https://res.cloudinary.com/multimediarog/image/upload/v1649594123/FIICODE/arro-up-3100_otqmq5.svg' } alt='Icon' width={15} height={15} />
+                            <Image src={ !subSec ? 'https://res.cloudinary.com/multimediarog/image/upload/v1649594121/FIICODE/arrow-down-3101_hgf5ei.svg' : 'https://res.cloudinary.com/multimediarog/image/upload/v1649594123/FIICODE/arro-up-3100_otqmq5.svg' } alt='Icon' width={15} height={15} priority/>
                         </li>
                         {subSec !== null && 
                             <div className={`${styles.sub_sec} ${subSec ? styles.open_sec : styles.close_sec } ${cancelAnimation ? styles.nodisplay : ''}`}>

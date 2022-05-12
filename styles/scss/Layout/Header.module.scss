@@ -28,6 +28,7 @@
     height: 200px;
     background: rgb(240, 240, 240);
     position: absolute;
+    border-radius: 3px 0 3px 3px;
     right: 9px;
     top: 70px;
     z-index: 18;
@@ -35,6 +36,25 @@
     h3 {
         text-align: center;
         font-family: 'Baloo Bhai 2';
+    }
+
+    h5 {
+        display: flex;
+        gap: .3em;
+    }
+
+    h5 div {
+        white-space: nowrap;
+        font-size: inherit;
+        overflow-x: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        height: 1.5em;
+        width: 120px;
+        
+        &::-webkit-scrollbar { 
+            display: none; 
+        }
     }
 
     &::before {

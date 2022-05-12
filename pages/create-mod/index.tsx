@@ -79,16 +79,16 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                 </div>  
                 <div className={styles.profile_info}>
                     <div style={{ marginLeft: 10, display: 'flex', flexFlow: 'column wrap', gap: '.5em' }}>
-                        <span>Autorizație: {authorization}</span>
-                        <span>Județ: {county}</span>
+                        <span>Autorizație: <div>{authorization}</div></span>
+                        <span>Județ: <div>{county}</div></span>
                         {comuna === '' ?
                             <>
-                                { city !== '' && <span>Oraș: {city}</span> }
+                                { city !== '' && <span>Oraș: <div>{city}</div></span> }
                             </>
                         :
                             <>
-                                {comuna !== '' && <span>Comună: {comuna}</span> }
-                                {city !== '' && <span>Sat: {city}</span> }
+                                {comuna !== '' && <span>Comună: <div>{comuna}</div></span> }
+                                {city !== '' && <span>Sat: <div>{city}</div></span> }
                             </>
                         }
                         <span>Creat: {created}</span>

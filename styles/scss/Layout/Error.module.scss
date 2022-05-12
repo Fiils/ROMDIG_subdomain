@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 14vw);
+    height: calc(100vh - 150px);
+    margin-inline: 7vw;
+    gap: 2em;
+}
+
+.info {
+    font-family: 'Anonymous Pro';
+
+    p {
+        font-size: 1.2rem;
+        word-break: keep-all;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 500px) {
+    .container {
+        flex-flow: column wrap;
+        margin-inline: 0;
+        width: 100%;
+        gap: 1em;
+    }
+
+    .info {
+        text-align: center;
+        margin-inline: 5vw;
+    }
+}

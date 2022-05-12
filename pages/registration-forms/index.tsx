@@ -202,7 +202,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
             <div style={{ paddingBottom: 50 }}>
                 <div className={styles.fcontainer}>
                     <div className={styles.tools}>
-                        <h2>Moderatori: {forms ? forms.length : 0}</h2>
+                        <h2>Formulare: {forms ? forms.length : 0}</h2>
                         <div className={styles.search_tool}>
                             <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>

@@ -196,11 +196,11 @@ const RegistrationForms: NextPage<Forms> = ({ _users, _coming  }) => {
 
     return (
         <NoSSR fallback={<div style={{ width: '100vw', height: '100vh' }}></div>}>
-        {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' ||  auth.type === 'Orasesc' || auth.type === 'Satesc') || !auth.done) ?
+        {((auth.type === 'General' || auth.type === 'Judetean') || !auth.done) ?
             <div style={{ paddingBottom: 50 }}>
                 <div className={styles.fcontainer}>
                     <div className={styles.tools}>
-                        <h2>Moderatori: {users ? users.length : 0}</h2>
+                        <h2>Utilizatori: {users ? users.length : 0}</h2>
                         <div className={styles.search_tool}>
                             <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>
@@ -227,7 +227,7 @@ const RegistrationForms: NextPage<Forms> = ({ _users, _coming  }) => {
                                 <div>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
                                         <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit nicio cerere de activare a vreunui cont</h3>
+                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun utilizator conform cerințelor</h3>
                                     </div>
                                 </div>
                             }

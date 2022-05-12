@@ -76,11 +76,12 @@
     position: relative;
 
     h2 {
+        white-space: nowrap;
         overflow-x: scroll;
         -ms-overflow-style: none;
         scrollbar-width: none;
         height: 1.5em;
-        
+    
         &::-webkit-scrollbar { 
             display: none; 
         }

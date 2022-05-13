@@ -107,21 +107,23 @@ const Header = () => {
             <div className={`${styles.container} ${menu ? styles.fullwidth : ''}`}>
                 <div style={{ paddingTop: 10, paddingLeft: 10, display: 'flex', alignItems: 'center', gap: '.1em' }} className={styles.logo_icon}>
                         <div className={styles.icon_menu}>
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649946541/FIICODE/list-6225_kdxr8j.svg' alt='Menu' width={30} height={30} onClick={() => {  setMenu(!menu); if(subSec !== null) { setTimeout(() => setSubSec(false), 300); } }} />
+                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1649946541/FIICODE/list-6225_kdxr8j.svg' alt='Menu' width={30} height={30} onClick={() => {  setPpBox(false); setMenu(!menu); if(subSec !== null) { setTimeout(() => setSubSec(false), 300); } }} />
                         </div>
                         <span id='#title'>Dashboard ROMDIG</span>
                     <div className={styles.profile_picture}>
                         <Image id='#profile-picture' src={(user.profilePicture === '/' || !user.profilePicture) ? 'https://res.cloudinary.com/multimediarog/image/upload/v1651419562/FIICODE/skill-8804_ibppuw.svg' : user.profilePicture } width={40} height={40} onBlur={() => setPpBox(false)} onClick={() => setPpBox(!ppBox) } alt='Profile Pciture' />
-                            <div className={`${styles.pp_box} ${ppBox ? styles.open_box : styles.close_box } ${!showBox ? styles.nodisplay : ''}`}>
-                                <h3>Bună, {user.name}!</h3>
-                                <div style={{ marginInline: 10}} className={styles.info_admin}>
-                                    <h5>Autorizatie: <div>{user.type}</div></h5>
-                                    <h5>Judet: <div>{user.county}</div></h5>
+                            {!menu &&
+                                <div className={`${styles.pp_box} ${ppBox ? styles.open_box : styles.close_box } ${!showBox ? styles.nodisplay : ''}`}>
+                                    <h3>Bună, {user.name}!</h3>
+                                    <div style={{ marginInline: 10}} className={styles.info_admin}>
+                                        <h5>Autorizatie: <div>{user.type}</div></h5>
+                                        <h5>Judet: <div>{user.county}</div></h5>
+                                    </div>
+                                    <div className={styles.logout}>
+                                        <button onClick={(e) => Logout(e)}>Deconectează-te</button>
+                                    </div>
                                 </div>
-                                <div className={styles.logout}>
-                                    <button onClick={(e) => Logout(e)}>Deconectează-te</button>
-                                </div>
-                            </div>
+                            }
                     </div>
                 </div>
 
@@ -129,8 +131,8 @@ const Header = () => {
                 <div className={`${styles.sidemenu} ${menu ? styles.open_menu : styles.close_menu} ${border ? styles.bb_none : ''}`}>
                     <ul>
                         <Link href='/statistics'><a onClick={() => setMenu(false)}><li>Statistici</li></a></Link>
-                        <Link href='/manage-mod'><a onClick={() => setMenu(false)}><li>Gestionare moderatori</li></a></Link>
-                        <Link href='/create-mod'><a onClick={() => setMenu(false)}><li>Creare moderatori</li></a></Link>
+                        <Link href='/manage-mod'><a onClick={() => setMenu(false)}><li>Gestionare moderatori*</li></a></Link>
+                        <Link href='/create-mod'><a onClick={() => setMenu(false)}><li>Creare moderatori*</li></a></Link>
                         <li onClick={() => { if(!disabledLink) { setSubSec(!subSec) } }} style={{ display: 'flex', alignItems: 'center', gap: '.3em'}}>
                             <span>Postări Utilizatori</span>
                             <Image src={ !subSec ? 'https://res.cloudinary.com/multimediarog/image/upload/v1649594121/FIICODE/arrow-down-3101_hgf5ei.svg' : 'https://res.cloudinary.com/multimediarog/image/upload/v1649594123/FIICODE/arro-up-3100_otqmq5.svg' } alt='Icon' width={15} height={15} priority/>

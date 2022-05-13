@@ -125,3 +125,27 @@
         margin-inline: 5vw;
     }
 }
+
+@media screen and (min-width: 0px) and (max-width: 650px) {
+    .unauthorized {
+        flex-flow: column wrap;
+        text-align: center;
+        margin-top: 50px;
+        gap: 1em !important;
+
+        h3 {
+            width: 80vw !important;
+        }
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 730px) {
+    .no_content {
+        flex-flow: column wrap !important;
+
+        h3 {
+            width: 80vw !important; 
+            text-align: center;
+        }
+    }
+}

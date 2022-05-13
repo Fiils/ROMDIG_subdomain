@@ -6,7 +6,6 @@ import axios from 'axios'
 import styles from '../../styles/scss/RegistrationForms/Form.module.scss'
 import { server } from '../../config/server'
 import useWindowSize from '../../utils/useWindowSize'
-import { NoSSR } from '../../utils/NoSsr'
 import { useAuth } from '../../utils/useAuth'
                             
 

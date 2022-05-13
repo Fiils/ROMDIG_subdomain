@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import styles from '../../styles/scss/ReportedPosts/RContainer.module.scss'
 import { useAuth } from '../../utils/useAuth'
 import { server } from '../../config/server'
-import GoogleInput from '../../components/CreateMod/GoogleInput'
+import GoogleInput from '../../components/Posts/GoogleInput'
 import ReportedPost from '../../components/ReportedPosts/ReportedPost'
 import { NoSSR } from '../../utils/NoSsr'
 
@@ -171,7 +171,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
 
                 setUrl(`${server}/api/sd/post/get-reported-posts?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setLoading(false)
-                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
+                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
             setComing(result.coming)
@@ -192,7 +192,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                     <div className={styles.tools}>
                         <h2>Postări: {posts ? posts.length : 0}</h2>
                         <div className={styles.search_tool}>
-                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>
                                 <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
                             </div>
@@ -218,7 +218,7 @@ const ReportedPosts: NextPage<Posts> = ({ _posts, _coming }) => {
                             </div>
                             :
                             <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }} className={styles.no_content}>
                                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
                                     <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsită nicio postare semnalată ca fiind neadecvată</h3>
                                 </div>

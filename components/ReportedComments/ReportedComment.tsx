@@ -54,9 +54,9 @@ const Post: FC<Post> = ({ setSearch, index, setIsLocationChanged, search, _id, t
                     <span>Comment #{index + 1}</span>
                     </div>
                     <div className={styles.profile}>
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648486559/FIICODE/user-4250_psd62d_xrxxhu_urnb0i.svg' width={50} height={50} />
-                            <div style={{ display: 'flex', flexFlow: 'column wrap' }}>
-                                <span>{nameAuthor} {firstNameAuthor}</span>
+                            <Image src={(!authorProfilePicture || authorProfilePicture === '/') ? 'https://res.cloudinary.com/multimediarog/image/upload/v1648486559/FIICODE/user-4250_psd62d_xrxxhu_urnb0i.svg' : authorProfilePicture} width={50} height={50} />
+                            <div style={{ display: 'flex', flexFlow: 'column wrap' }} className={styles.p_info}>
+                                <span id='#name'>{nameAuthor} {firstNameAuthor}</span>
                                 <span>{formatDate(creationDate)}</span>
                             </div>
                     </div>

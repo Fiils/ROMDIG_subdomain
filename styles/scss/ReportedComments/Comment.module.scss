@@ -33,6 +33,25 @@
     display: flex;
     gap: 1em;
     font-family: 'Baloo Bhai 2';
+
+    img {
+        border-radius: 7px !important;
+    }
+}
+
+.p_info {
+    span:first-child {
+        white-space: nowrap;
+        overflow-x: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        height: 1.5em;
+        width: min(300px, 55vw);
+    
+        &::-webkit-scrollbar { 
+            display: none; 
+        }
+    }
 }
 
 .comment_wrapper {

@@ -87,7 +87,7 @@ const Post: FC<Post> = ({ _id, title, description, downVoted, upVoted, firstName
             setMenu(false)
             setStatusPost(statusChange)
         } else {
-            setError(false)
+            setError(true)
             setLoading(false)
         }
     }
@@ -185,7 +185,7 @@ const Post: FC<Post> = ({ _id, title, description, downVoted, upVoted, firstName
                     {!loading ?
                     <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', gap: '.3em', color: 'red', fontFamily: 'Baloo Bhai 2' }}>
                         <button onClick={e => changeStatus(e)}>Schimbă status</button>
-                        {error && <div>Eroare</div>}
+                        {error && <div style={{ color: 'red' }}>Eroare</div>}
                     </div>
                     :
                         <Image style={{ marginTop: 10 }} src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />

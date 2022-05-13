@@ -1,10 +1,8 @@
 import type { NextPage, GetServerSideProps } from 'next'
 import axios from 'axios'
 import { useState } from 'react'
-import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as cookie from 'cookie'
-import Cookies from 'js-cookie'
 
 import { server } from '../../../config/server'
 import styles from '../../../styles/scss/Posts/PostsContainer.module.scss'
@@ -23,8 +21,6 @@ interface Posts {
 
 
 const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
-    const router = useRouter()
-
     const [ posts, setPosts ] = useState(_posts || [])
     const [ pages, setPages ] = useState(numberOfPages || 1)
 
@@ -57,7 +53,7 @@ const Posts: NextPage<Posts> = ({ _posts, numberOfPages }) => {
                     : 
                     <> 
                         {!loading &&
-                            <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', justifyContent: 'center', mixBlendMode: 'multiply', marginTop: 200 }}>
+                            <div style={{ display: 'flex', flexFlow: 'column wrap', alignItems: 'center', justifyContent: 'center', mixBlendMode: 'multiply', marginTop: 'min(10vh, 200px)'  }}>
                                 <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1648493816/FIICODE/photos-10608_1_ewgru0.svg' alt='Fara Postari' width={200} height={200} />
                                 <h2 style={{ width: '100%', color: '#808080', textAlign: 'center' }}>Nicio postare nu a fost găsită.</h2>
                             </div>

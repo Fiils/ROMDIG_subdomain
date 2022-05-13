@@ -111,3 +111,14 @@
         padding-bottom: 0;
     }
 }
+
+@media screen and (min-width: 0px) and (max-width: 730px) {
+    .no_content {
+        flex-flow: column wrap !important;
+
+        h3 {
+            width: 80vw !important; 
+            text-align: center;
+        }
+    }
+}

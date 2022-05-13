@@ -20,6 +20,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 
 import styles from '../../styles/scss/CreateMod/CreateModContainer.module.scss'
 import GoogleInput from './GoogleInput'
+import UserGoogleInput from './UserGoogleInput'
 import { server } from '../../config/server'
 import { useAuth } from '../../utils/useAuth'
 
@@ -51,6 +52,11 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     const [ fullExactPosition, setFullExactPosition ] = useState<any>()
     const [ isComuna, setIsComuna ] = useState(false)
 
+
+    const [ userFullExactPosition, setUserFullExactPosition ] = useState<any>()
+    const [ userLocation, setUserLocation ] = useState('')
+
+
     const [ error, setError ] = useState({
         firstName: false,
         lastName: false,
@@ -59,6 +65,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
         password: false,
         userPassword: false,
         location: false,
+        userLocation: false,
         gender: false,
         cnp: false,
         street: false, 
@@ -79,10 +86,37 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
 
     const [ fullError, setFullError ] = useState(false)
 
-    const handleDeleteImage = (e: any) => {
-        e.preventDefault();
-        setImage('')
-    }
+    const [ callCallback, setCallCallback ] = useState(false)
+
+    useEffect(() => {
+        const loadScript = () => {
+            const url = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`
+          let script = document.createElement("script");
+          script.type = "text/javascript";
+      
+          let scripts = Array.from(document.querySelectorAll('script')).map(scr => scr.src);
+      
+      
+      
+          if ((script as any).readyState) {
+            (script as any).onreadystatechange = function() {
+              if ((script as any).readyState === "loaded" || (script as any).readyState === "complete") {
+                (script as any).onreadystatechange = null;
+                setCallCallback(true)
+              }
+            };
+          } else {
+            script.onload = () => setCallCallback(true)
+          }
+      
+          script.src = url;  
+          document.getElementsByTagName("head")[0].appendChild(script);
+      };
+
+      loadScript()
+    }, [])
+
+
 
     const convertToBase64 = (file: any): any => {
         return new Promise((resolve, reject) => {
@@ -130,6 +164,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             gender: false,
             cnp: false,
             street: false, 
+            userLocation: false 
         })
     
         setErrorMessages({
@@ -145,88 +180,146 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             street: '', 
         })
         
+
+        // Verifying the validity of the GoogleInput for the admin
         let locationError = false
-
-        if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location) {
-            setError({ ...error, location: true })
-            setErrorMessages({ ...errorMessages, location: 'Localitate invalidă'})
-            locationError = true
-            setLoading(false)
-            return;
-        }
-        
         let county: any = [];
-        if(fullExactPosition && fullExactPosition.address_components) {
-            for(let i = 0; i < fullExactPosition.address_components.length; i++) {
-                if(fullExactPosition.address_components[i].types.includes('administrative_area_level_1')) {
-                    for(let j = 0; j < (fullExactPosition.address_components[i].long_name.split(' ').length > 1 ? fullExactPosition.address_components[i].long_name.split(' ').length - 1 :  fullExactPosition.address_components[i].long_name.split(' ').length); j++){
-                        county = [ ...county, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
-                    }
+        let comuna: any = [], ok = 0;
+        let rural = true
+        let city = location, isWithoutCity = false;
+        if(true) {
 
-                    county = county.join(" ")
-                    break;
+            if(!fullExactPosition || (fullExactPosition.address_components && fullExactPosition.address_components.length <= 0) || fullExactPosition.name !== location || !fullExactPosition.address_components) {
+                setError({ ...error, location: true })
+                setErrorMessages({ ...errorMessages, location: 'Localitate invalidă'})
+                locationError = true
+                setLoading(false)
+                return;
+            }
+            
+            if(fullExactPosition && fullExactPosition.address_components) {
+                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
+                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_1')) {
+                        for(let j = 0; j < (fullExactPosition.address_components[i].long_name.split(' ').length > 1 ? fullExactPosition.address_components[i].long_name.split(' ').length - 1 :  fullExactPosition.address_components[i].long_name.split(' ').length); j++){
+                            county = [ ...county, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+                        }
+
+                        county = county.join(" ")
+                        break;
+                    }
+                    if(i === fullExactPosition.address_components.length - 1) {
+                        setError({ ...error, location: true })
+                        setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
+                        locationError = true
+                    }
                 }
-                if(i === fullExactPosition.address_components.length - 1) {
-                    setError({ ...error, location: true })
-                    setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
-                    locationError = true
+            } else {
+                setError({ ...error, location: true })
+                setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
+                locationError = true
+            }
+        
+            if(fullExactPosition && fullExactPosition.address_components) {
+                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
+                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_2')) {
+                        for(let j = 0; j < fullExactPosition.address_components[i].long_name.split(' ').length; j++){
+                            comuna = [ ...comuna, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+                        }
+                        comuna = comuna.join(" ")
+                        break;
+                    }
                 }
             }
-        } else {
-            setError({ ...error, location: true })
-            setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
-            locationError = true
-        }
-    
-        let comuna: any = [], ok = 0;
-        if(fullExactPosition && fullExactPosition.address_components) {
+            
+            if(Array.isArray(comuna)) {
+                comuna = ''
+                rural = false
+            }
+
+            if(ok === 1 && !comuna){
+                setError({ ...error, location: true })
+                setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
+                locationError = true
+            }
+
+            if(isComuna && comuna === '') {
+                setError({ ...error, location: true })
+                setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
+                locationError = true
+                setLoading(false)
+                return;
+            }
+        
             for(let i = 0; i < fullExactPosition.address_components.length; i++) {
-                if(fullExactPosition.address_components[i].types.includes('administrative_area_level_2')) {
-                    for(let j = 0; j < fullExactPosition.address_components[i].long_name.split(' ').length; j++){
-                        comuna = [ ...comuna, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
-                    }
-                    comuna = comuna.join(" ")
+                if(fullExactPosition.address_components[i].types.includes('locality')) {
+                    city = location
                     break;
+                } else if(i === fullExactPosition.address_components.length - 1) {
+                    city = ''
+                    isWithoutCity = true
                 }
+            }
+        }
+
+        let userLocationError = false
+        let userCounty: any = [];
+        let userComuna: any = [], userOk = 0;
+        let userRural = true
+
+        // Verifying the validity of the GoogleInput for the user of admin
+        if(true) {
+
+            if(fullExactPosition && fullExactPosition.address_components) {
+                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
+                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_1')) {
+                        for(let j = 0; j < (fullExactPosition.address_components[i].long_name.split(' ').length > 1 ? fullExactPosition.address_components[i].long_name.split(' ').length - 1 :  fullExactPosition.address_components[i].long_name.split(' ').length); j++){
+                            userCounty = [ ...userCounty, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+                        }
+                        userCounty = userCounty.join(" ")
+                        break;
+                    }
+                    if(i === fullExactPosition.address_components.length - 1) {
+                        setError({ ...error, userLocation: true })
+                        userLocationError = true
+                    }
+                }
+            } else {
+                setError({ ...error, userLocation: true })
+                userLocationError = true
+            }
+    
+            if(fullExactPosition && fullExactPosition.address_components) {
+                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
+                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_2')) {
+                        userOk = 1;
+                        for(let j = 0; j < fullExactPosition.address_components[i].long_name.split(' ').length; j++){
+                            userComuna = [ ...userComuna, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+                        }
+                        userComuna = userComuna.join(" ")
+                        break;
+                    }
+                }
+            }
+    
+            if(Array.isArray(userComuna)) {
+                userComuna = ''
+            }
+            
+            if(userOk === 1 && !userComuna){
+                setError({ ...error, userLocation: true })
+                userLocationError = true
+            }
+
+            if(userComuna && userComuna !== '') {
+                userRural = true
             }
         }
         
-        let rural = true
-        if(Array.isArray(comuna)) {
-            comuna = ''
-            rural = false
-        }
-
-        if(ok === 1 && !comuna){
-            setError({ ...error, location: true })
-            setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
-            locationError = true
-        }
-
-        if(isComuna && comuna === '') {
-            setError({ ...error, location: true })
-            setErrorMessages({ ...errorMessages, location: 'Localitate invalidă' })
-            locationError = true
-            setLoading(false)
-            return;
-        }
-    
-        let city = location, isWithoutCity = false;
-        for(let i = 0; i < fullExactPosition.address_components.length; i++) {
-            if(fullExactPosition.address_components[i].types.includes('locality')) {
-                city = location
-                break;
-            } else if(i === fullExactPosition.address_components.length - 1) {
-                city = ''
-                isWithoutCity = true
-            }
-        }
-
 
 
         const profilePicture = image
         const type = (comuna === '' && isWithoutCity) ? 'Judetean' : ((comuna != '' && comuna === location) ? 'Comunal' : ((comuna === '' && location !== '') ? 'Orasesc' : (comuna !== '' && location !== '' ? 'Satesc' : '')))
-        const user = { firstName, lastName, id, email, password, userPassword, type, profilePicture, city, county, comuna, gender, cnp, rural, street }
+        const user = { firstName, lastName, id, email, password, userPassword, type, profilePicture, city, county, comuna, gender, cnp, rural, street, userCounty, userComuna, userLocation, userRural }
         const regex = /^(?:[0-9]+[a-z]|[a-z]+[0-9])[a-z0-9]*$/i
         const cnpRegex = /^\d+$/
         const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
@@ -241,7 +334,8 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             cnp: !cnp.length ? !cnp.length : (!cnpRegex.test(cnp) ? true : (cnp.length !== 13 ? true : false )),
             location: !location.length,
             street: !street.length,
-            id: id.length !== 20
+            id: id.length !== 20,
+            userLocation: !userLocation.length,
         })
 
         setErrorMessages({
@@ -257,7 +351,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             userPassword: !userPassword.length ? 'Spațiul nu poate fi gol' : (userPassword.length < 8 ? 'Parolă prea scurtă' : (!regex.test(userPassword) ? 'Parola trebuie să conțină caractere alfanumerice' : '' )),
         })
         
-        if(!lastName.length || !firstName.length || !userPassword.length || userPassword.length < 8 || !regex.test(userPassword) || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError){
+        if(!lastName.length || !firstName.length || !userPassword.length || userPassword.length < 8 || !regex.test(userPassword) || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError || userLocationError || error.userLocation){
             setLoading(false);
             return;
         } 
@@ -285,7 +379,9 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
                                     } else if(err.response && err.response.data && err.response.data.type === 'location') {
                                         setError({ ...error, location: true })
                                         setErrorMessages({ ...errorMessages, location: 'Locație neautorizată' })
-                                    } else setFullError(true)
+                                    } else if(err.response && err.response.data && err.response.data.type === 'userLocation') {
+                                        setError({ ...error, userLocation: true })
+                                    }else setFullError(true)
 
                                     setLoading(false)
                                 })
@@ -301,6 +397,8 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             setLocation('')
             setGender('Bărbat')
             setCnp('')
+            setUserLocation('')
+            setUserFullExactPosition(null)
             setStreet('')
             setFullExactPosition(null)
             setLoading(false)
@@ -375,7 +473,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
                                 <FormHelperText>{errorMessages.password}</FormHelperText>
                             </FormControl>
 
-                            {(auth.type === 'General' || auth.type === 'Judetean') && <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={1} setLocation={setLocation} error={error} setError={setError} errorMessages={errorMessages} setErrorMessages={setErrorMessages} location={location} setFullExactPosition={setFullExactPosition} /> }
+                            {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') && <GoogleInput callCallback={callCallback} isComuna={isComuna} setIsComuna={setIsComuna} index={1} setLocation={setLocation} error={error} setError={setError} errorMessages={errorMessages} setErrorMessages={setErrorMessages} location={location} setFullExactPosition={setFullExactPosition} /> }
 
                         </div>
                     </div>
@@ -421,6 +519,8 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
                             </FormControl>
 
                             <TextField id='cnp' inputProps={{ maxLength: 13 }} label='Cod Numeric Personal' error={error.cnp} variant='standard' value={cnp} onChange={e => { setError({ ...error, cnp: false}); setErrorMessages({ ...errorMessages, cnp: '' }); setCnp(e.target.value) } } helperText={errorMessages.cnp} />
+
+                            {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') && <UserGoogleInput callCallback={callCallback} setLocation={setUserLocation} error={error} setError={setError} location={userLocation} setFullExactPosition={setUserFullExactPosition} /> }
 
                             <TextField id='street' label='Stradă' variant='standard' error={error.street} value={street} onChange={e => { setError({ ...error, street: false}); setErrorMessages({ ...errorMessages, street: '' }); setStreet(e.target.value) } } helperText={errorMessages.street} />
                         </div>

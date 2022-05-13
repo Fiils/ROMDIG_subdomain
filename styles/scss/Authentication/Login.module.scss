@@ -9,6 +9,7 @@ $primary-color: #A71D31;
     background-image: linear-gradient(315deg, #3f0d12 0%, #a71d31 74%);
     width: 100vw;
     height: 100vh;
+    min-height: 634px;
 }
 
 .form {
@@ -107,26 +108,30 @@ $primary-color: #A71D31;
 
 .copyright {
     position: relative;
-    top: calc(50vh - 295px);
     text-align: center;
     font-family: 'Libre Baskerville';
     opacity: .4; 
     padding-top: 20px;
     color: white;
     font-size: clamp(.6rem, 4vw,.9rem);
+    top: calc(max(317px, 50vh) - 300px);    
 
     &::before {
         content: '';
         position: absolute;
-        width: 50%;
-        height: 2px;
-        top: 10px;
-        left: 25%;
+        width: 120%;
+        height: 1.5px;
+        top: 15px;
+        left: -10%;
         background: rgb(200, 200, 200);
     }
 }
 
 .wrong_input {
+    label[id='#error'] {
+        font-size: clamp(.6rem, 2.5vw, .8rem);
+    }
+
     input {
         border-color: red;
         outline-color: red;
@@ -135,8 +140,4 @@ $primary-color: #A71D31;
             outline-color: red !important;
         }
     }
-}
-
-@media screen and (min-width: 0px) and (max-width: 500px) {
-    
 }

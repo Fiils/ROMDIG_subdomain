@@ -90,6 +90,13 @@
     gap: 1em;
     position: relative;
     @include Flex_Item;
+    
+    img {
+        object-fit: contain;
+        border-radius: 7px !important;
+        min-width: 0px;
+        margin-left: calc(70% - 80px);
+    }
 }
 
 .profile_info {
@@ -99,7 +106,7 @@
     font-size: 1rem;
     overflow: hidden;
     position: absolute;
-    bottom: 20px;
+    bottom: 10px;
     left: 10px;
 
     span {
@@ -119,6 +126,22 @@
         &::-webkit-scrollbar { 
             display: none; 
         }
+    }
+}
+
+.name_profile {
+    white-space: nowrap;
+    font-size: inherit;
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    height: 1.5em;
+    width: min(200px, 55vw);
+    margin-left: calc(90% - min(200px, 55vw));
+    font-weight: bolder;
+    
+    &::-webkit-scrollbar { 
+        display: none; 
     }
 }
 
@@ -291,5 +314,18 @@
 @media screen and (min-width: 1075px) and (max-width: 1405px) {
     .fcontainer {
         padding: 30px 10vw 40px 10vw;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 650px) {
+    .unauthorized {
+        flex-flow: column wrap;
+        text-align: center;
+        margin-top: 50px;
+        gap: 1em !important;
+
+        h3 {
+            width: 80vw !important;
+        }
     }
 }

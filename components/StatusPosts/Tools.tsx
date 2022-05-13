@@ -401,12 +401,14 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             <Status status={status} handleChange={handleChange} />
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1em' }} className={styles.search_inp}>
                 {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') &&
-                    <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
-                                isComuna={isComuna} setIsComuna={setIsComuna} />
+                    <>
+                        <GoogleInput error={errorLocation} setError={setErrorLocation} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation}
+                                    isComuna={isComuna} setIsComuna={setIsComuna} />
+                        <div className={styles.button_search}>
+                            <button onClick={() => { setOnlyLocation(true); setSearch(!search); } }>Caută</button>
+                        </div>
+                    </>
                 }
-                <div className={styles.button_search}>
-                    <button onClick={() => { setOnlyLocation(true); setSearch(!search); } }>Caută</button>
-                </div>
             </div>
         </div>
     )

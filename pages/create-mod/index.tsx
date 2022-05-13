@@ -8,7 +8,7 @@ import styles from '../../styles/scss/CreateMod/Preview.module.scss'
 import CreateModSection from '../../components/CreateMod/CreateMod'
 import { server } from '../../config/server'
 import formatDate from '../../utils/formatDate'
-import GoogleInput from '../../components/CreateMod/GoogleInput'
+import GoogleInput from '../../components/Posts/GoogleInput'
 import { useAuth } from '../../utils/useAuth'
 
 
@@ -54,18 +54,19 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
     const [ coming, setComing ] = useState(_coming)
 
+    
     const [ moderators, setModerators ] = useState<any>(_moderators || [])
     const [ createMod, setCreateMod ] = useState(false)
     const [ error, setError ] = useState(false)
     const [ fullExactPosition, setFullExactPosition ] = useState<any>(null)
     const [ location, setLocation ] = useState('')
-    const [ search, setSearch ] = useState(false)
+    const [ search, setSearch ] = useState<null | boolean>(null)
     const [ searchedName, setSearchedName ] = useState('Toate')
     const [ loading, setLoading ] = useState(false)
 
     const [ more, setMore ] = useState(0)
     const [ pages, setPages ] = useState(numberOfPages)
-    const [ isLocationChanged, setIsLocationChanged ] = useState(false)
+    const [ isLocationChanged, setIsLocationChanged ] = useState(true)
 
     const [ isComuna, setIsComuna ] = useState(false)
     const [ isComunaName, setIsComunaName ] = useState(false)
@@ -74,7 +75,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
         return (
             <div className={styles.flex_item_profile}>
                 <Image src={profilePicture} width={80} height={80} priority/>
-                <div style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: 'center' }} className={styles.name_profile}>
                     <span>{name}</span>
                 </div>  
                 <div className={styles.profile_info}>
@@ -100,6 +101,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
+        if(search === null) return;
         let locationError = false;
         setError(false)
         setLoading(true)
@@ -228,7 +230,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
                 setComing(result.coming)
                 setLoading(false)
-                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
+                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
             setIsLocationChanged(false)
@@ -244,68 +246,63 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
     return (
         <>
-            {!createMod ?
-                <div className={styles.fcontainer}>
-                    <div className={styles.tools}>
-                        <h2>Moderatori: {moderators.length}</h2>
-                        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) &&
+        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
+            <>
+                {!createMod ?
+                    <div className={styles.fcontainer}>
+                        <div className={styles.tools}>
+                            <h2>Moderatori: {moderators.length}</h2>
                             <div className={styles.search_tool}>
-                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
+                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
                                 <div className={styles.button_search}>
                                     <button onClick={() => { setIsLocationChanged(true); setSearch(!search) } }>Caută</button>
                                 </div>
                             </div>
-                        }
                     </div>
                     <div className={styles.results_headline}>
                         <h1>Rezultate pentru: {searchedName}</h1>
                     </div>
                     {!loading ?
-                        <div className={styles.profile_grid}>
-                            {!(moderators.length > 0) &&
-                                <div className={styles.flex_item_none}>
-                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                                    <p>Niciun moderator creat</p>
-                                </div>
-                            }
+                            <div className={styles.profile_grid}>
+                                {!(moderators.length > 0) &&
+                                    <div className={styles.flex_item_none}>
+                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                        <p>Niciun moderator creat</p>
+                                    </div>
+                                }
 
-                            <>
-                                {moderators.map((value: any, key: number) => {
-                                    return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
-                                                        authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
-                                                        comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
-                                })}
-                            </>
-                            
-                            <div className={styles.flex_item_create}>
-                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                                <p>Creează un nou moderator</p>
+                                <>
+                                    {moderators.map((value: any, key: number) => {
+                                        return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
+                                                            authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
+                                                            comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
+                                    })}
+                                </>
+                                
+                                <div className={styles.flex_item_create}>
+                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                    <p>Creează un nou moderator</p>
+                                </div>
                             </div>
-                        </div>
-                    :
-                        <div className={styles.loader}></div>
+                             :
+                            <div className={styles.loader}></div>
                     }
                 </div>
-            :
-                <>
-                    {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
-
-                        <CreateModSection setCreateMod={setCreateMod} />
-                        
-                        :
-
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }}>
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
-                            <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
-                        </div>
-                    }
-                </>
-             }
+                :
+                    <CreateModSection setCreateMod={setCreateMod} />
+                }
                 {coming &&
                     <div className={styles.more}>
-                        <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
+                        <button onClick={() => { setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
                     </div>
                 } 
+            </>
+            :
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }} className={styles.unauthorized}>
+                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
+                    <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
+                </div>
+            }
         </>
     )
 }
@@ -345,7 +342,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
         }
     }
 
-    const moderators = await axios.get(`${server}/api/sd/mod/get-all-per-region?skip=0`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
+    const moderators = await axios.get(`${server}/api/sd/mod/get-all-per-region?skip=0&all=true`, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' }})
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err)

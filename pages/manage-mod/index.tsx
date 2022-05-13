@@ -4,7 +4,7 @@ import axios from 'axios'
 import Image from 'next/image'
 
 import styles from '../../styles/scss/ManageMod/ManageModContainer.module.scss'
-import GoogleInput from '../../components/CreateMod/GoogleInput'
+import GoogleInput from '../../components/Posts/GoogleInput'
 import { server } from '../../config/server'
 import { useAuth } from '../../utils/useAuth'
 import Moderator from '../../components/ManageMod/Moderator'
@@ -51,7 +51,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
     const [ coming, setComing ] = useState(_coming)
 
     const [ more, setMore ] = useState(0)
-    const [ isLocationChanged, setIsLocationChanged ] = useState(false) 
+    const [ isLocationChanged, setIsLocationChanged ] = useState(true) 
 
     const auth = useAuth()
 
@@ -209,7 +209,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                 setComing(result.coming)
                 setLoading(false)
                 setUrl(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
-                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
+                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
             setIsLocationChanged(false)
@@ -230,7 +230,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                     <div className={styles.tools}>
                         <h2>Moderatori: {moderators.length}</h2>
                         <div className={styles.search_tool}>
-                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                             <div className={styles.button_search}>
                                 <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
                             </div>
@@ -256,7 +256,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                                 </>
                                 :
                                 <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }} className={styles.no_content}>
                                         <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
                                         <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
                                     </div>
@@ -270,12 +270,12 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
 
                 {coming &&
                     <div className={styles.more}>
-                        <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
+                        <button onClick={() => { setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
                     </div>
                 }
             </div>
         :
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }} className={styles.unauthorized}>
                 <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
                 <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
             </div>

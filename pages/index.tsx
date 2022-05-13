@@ -84,7 +84,7 @@ const Home: NextPage = () => {
               <div className={styles.svg_container}>
                   {!showPassword ? <LockOutlinedIcon style={{ color: 'rgb(150, 150, 150)'}} id='pass' onClick={() => setShowPassword(!showPassword)}/> : <LockOpenOutlinedIcon style={{ color: 'rgb(150, 150, 150)'}} id='pass' onClick={() => setShowPassword(!showPassword)}/> }
               </div>
-              {error && <label style={{ color: 'red' }}>Parola, emailul sau ID-ul este incorect</label> }
+              {error && <label id='#error' style={{ color: 'red' }}>Parola, emailul sau ID-ul este incorect</label> }
             </div>
 
             <div className={styles.submit_button}>

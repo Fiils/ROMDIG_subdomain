@@ -81,6 +81,7 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
         height: 1.5em;
+        width: min(360px, 70vw);
     
         &::-webkit-scrollbar { 
             display: none; 
@@ -233,3 +234,11 @@
     }
 }
 
+
+
+@media screen and (min-width: 500px) and (max-width: 1250px) {
+    .info h2 {
+            width: 70vw;
+            max-width: 630px;
+    }
+}

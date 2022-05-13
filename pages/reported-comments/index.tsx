@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import styles from '../../styles/scss/ReportedPosts/RContainer.module.scss'
 import { useAuth } from '../../utils/useAuth'
 import { server } from '../../config/server'
-import GoogleInput from '../../components/CreateMod/GoogleInput'
+import GoogleInput from '../../components/Posts/GoogleInput'
 import ReportedComment from '../../components/ReportedComments/ReportedComment'
 
 interface Posts {
@@ -170,7 +170,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
 
                 setUrl(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setLoading(false)
-                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!isComunaName && !specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
+                setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
             setComing(result.coming)
@@ -191,7 +191,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                         <div className={styles.tools}>
                             <h2>Comentarii: {comments ? comments.length : 0}</h2>
                             <div className={styles.search_tool}>
-                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} index={2} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
                                 <div className={styles.button_search}>
                                     <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
                                 </div>
@@ -216,7 +216,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                             </div>
                             :
                             <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', flexFlow: 'row nowrap', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }} className={styles.no_content}>
                                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
                                     <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsită niciun comentariu semnalat ca fiind neadecvat</h3>
                                 </div>

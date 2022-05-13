@@ -26,26 +26,8 @@ interface Props {
     index: number
     isComuna: boolean;
     setIsComuna: any;
+    callCallback: boolean;
 }
-
-const loadScript = (url: any, callback: any, index: number) => {
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-
-    if ((script as any).readyState) {
-      (script as any).onreadystatechange = function() {
-        if ((script as any).readyState === "loaded" || (script as any).readyState === "complete") {
-          (script as any).onreadystatechange = null;
-          callback();
-        }
-      };
-    } else {
-      script.onload = () => callback();
-    }
-
-    script.src = url;
-    document.getElementsByTagName("head")[0].appendChild(script);
-};
 
 function handleScriptLoad(updateQuery: any, autoCompleteRef: any, setFullExactPosition: any) {
   autoComplete = new window.google.maps.places.Autocomplete(
@@ -65,17 +47,16 @@ async function handlePlaceSelect(updateQuery: any, setFullExactPosition: any) {
   updateQuery(query);
 }
 
-const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPosition, error, errorMessages, setError, setErrorMessages, index, isComuna, setIsComuna }) => {
+const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPosition, error, errorMessages, setError, setErrorMessages, index, isComuna, setIsComuna, callCallback }) => {
   const autoCompleteRef = useRef(null);
 
   const auth = useAuth()
 
   useEffect(() => {
-    loadScript(
-      `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`,
-      () => handleScriptLoad(setLocation, autoCompleteRef, setFullExactPosition,), index
-    );
-  }, []);
+    if(callCallback) {
+      handleScriptLoad(setLocation, autoCompleteRef, setFullExactPosition,), index
+    }
+  }, [callCallback]);
 
   return (
     <div style={{ position: 'relative' }}>

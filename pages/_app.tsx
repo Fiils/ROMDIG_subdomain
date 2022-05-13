@@ -23,25 +23,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   useEffect(() => {
-    // if(router.pathname !== '/posts/[page]') {
-    //   Cookies.set('url', `?page=0&level=all&category=popular`)
-    //   Cookies.remove('url_location')
-    //   Cookies.remove('url_fex')
-    //   Cookies.remove('url_status')
-    //   Cookies.remove('url_comuna')
-    //   Cookies.remove('url_cat')
-    // }
-    // if(router.pathname !== '/set-status/[page]') {
-    //   Cookies.set('url_s', `?page=0&level=all&category=popular`)
-    //   Cookies.remove('url_location_s')
-    //   Cookies.remove('url_fex_s')
-    //   Cookies.remove('url_status_s')
-    //   Cookies.remove('url_comuna_s')
-    //   Cookies.remove('url_cat_s')
-    // }
-  }, [router.pathname])
-
-  useEffect(() => {
     const verifyUser = async () => {
       let error = false;
 

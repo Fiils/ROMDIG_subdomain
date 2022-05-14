@@ -264,21 +264,21 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
         let userLocationError = false
         let userCounty: any = [];
         let userComuna: any = [], userOk = 0;
-        let userRural = true
-
+        let userRural = false
+        let userCity = userLocation, userIsWithoutCity = false;
         // Verifying the validity of the GoogleInput for the user of admin
         if(true) {
 
-            if(fullExactPosition && fullExactPosition.address_components) {
-                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
-                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_1')) {
-                        for(let j = 0; j < (fullExactPosition.address_components[i].long_name.split(' ').length > 1 ? fullExactPosition.address_components[i].long_name.split(' ').length - 1 :  fullExactPosition.address_components[i].long_name.split(' ').length); j++){
-                            userCounty = [ ...userCounty, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+            if(userFullExactPosition && userFullExactPosition.address_components) {
+                for(let i = 0; i < userFullExactPosition.address_components.length; i++) {
+                    if(userFullExactPosition.address_components[i].types.includes('administrative_area_level_1')) {
+                        for(let j = 0; j < (userFullExactPosition.address_components[i].long_name.split(' ').length > 1 ? userFullExactPosition.address_components[i].long_name.split(' ').length - 1 :  userFullExactPosition.address_components[i].long_name.split(' ').length); j++){
+                            userCounty = [ ...userCounty, userFullExactPosition.address_components[i].long_name.split(' ')[j] ]
                         }
                         userCounty = userCounty.join(" ")
                         break;
                     }
-                    if(i === fullExactPosition.address_components.length - 1) {
+                    if(i === userFullExactPosition.address_components.length - 1) {
                         setError({ ...error, userLocation: true })
                         userLocationError = true
                     }
@@ -288,12 +288,12 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
                 userLocationError = true
             }
     
-            if(fullExactPosition && fullExactPosition.address_components) {
-                for(let i = 0; i < fullExactPosition.address_components.length; i++) {
-                    if(fullExactPosition.address_components[i].types.includes('administrative_area_level_2')) {
+            if(userFullExactPosition && userFullExactPosition.address_components) {
+                for(let i = 0; i < userFullExactPosition.address_components.length; i++) {
+                    if(userFullExactPosition.address_components[i].types.includes('administrative_area_level_2')) {
                         userOk = 1;
-                        for(let j = 0; j < fullExactPosition.address_components[i].long_name.split(' ').length; j++){
-                            userComuna = [ ...userComuna, fullExactPosition.address_components[i].long_name.split(' ')[j] ]
+                        for(let j = 0; j < userFullExactPosition.address_components[i].long_name.split(' ').length; j++){
+                            userComuna = [ ...userComuna, userFullExactPosition.address_components[i].long_name.split(' ')[j] ]
                         }
                         userComuna = userComuna.join(" ")
                         break;
@@ -303,6 +303,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
     
             if(Array.isArray(userComuna)) {
                 userComuna = ''
+                userRural = false
             }
             
             if(userOk === 1 && !userComuna){
@@ -313,16 +314,27 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             if(userComuna && userComuna !== '') {
                 userRural = true
             }
+
+            for(let i = 0; i < userFullExactPosition.address_components.length; i++) {
+                if(userFullExactPosition.address_components[i].types.includes('locality')) {
+                    userCity = location
+                    break;
+                } else if(i === userFullExactPosition.address_components.length - 1) {
+                    userCity = ''
+                    userIsWithoutCity = true
+                    setError({ ...error, userLocation: true })
+                }
+            }
         }
         
-
-
+        console.log(userFullExactPosition.address_components)
         const profilePicture = image
         const type = (comuna === '' && isWithoutCity) ? 'Judetean' : ((comuna != '' && comuna === location) ? 'Comunal' : ((comuna === '' && location !== '') ? 'Orasesc' : (comuna !== '' && location !== '' ? 'Satesc' : '')))
-        const user = { firstName, lastName, id, email, password, userPassword, type, profilePicture, city, county, comuna, gender, cnp, rural, street, userCounty, userComuna, userLocation, userRural }
+        const user = { firstName, lastName, id, email, password, userPassword, type, profilePicture, city, county, comuna, gender, cnp, rural, street, userCounty, userComuna, userLocation, userRural, userIsWithoutCity }
         const regex = /^(?:[0-9]+[a-z]|[a-z]+[0-9])[a-z0-9]*$/i
         const cnpRegex = /^\d+$/
         const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+        
 
         setError({ 
             lastName: !lastName.length,
@@ -335,7 +347,7 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             location: !location.length,
             street: !street.length,
             id: id.length !== 20,
-            userLocation: !userLocation.length,
+            userLocation: !userLocation.length || userIsWithoutCity,
         })
 
         setErrorMessages({
@@ -351,13 +363,13 @@ const CreateMod: FC<InitialProps> = ({ setCreateMod }) => {
             userPassword: !userPassword.length ? 'Spațiul nu poate fi gol' : (userPassword.length < 8 ? 'Parolă prea scurtă' : (!regex.test(userPassword) ? 'Parola trebuie să conțină caractere alfanumerice' : '' )),
         })
         
-        if(!lastName.length || !firstName.length || !userPassword.length || userPassword.length < 8 || !regex.test(userPassword) || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError || userLocationError || error.userLocation){
+        if(!lastName.length || !firstName.length || !userPassword.length || userPassword.length < 8 || !regex.test(userPassword) || !email.length || !password.length || !gender.length || !cnp.length || (!city.length &&  !isWithoutCity) || !location.length || !county.length || !street.length || id.length !== 20 || !email.match(emailRegex) || password.length < 8 || !cnpRegex.test(cnp) || !regex.test(password) || cnp.length !== 13 || locationError || userLocationError || error.userLocation || userIsWithoutCity){
             setLoading(false);
             return;
         } 
 
         if(user.type !== 'General') {
-            if(type === 'Judetean' || (type === 'Comunal' && user.type !== 'Judetean') || (type === 'Orasesc' && user.type !== 'Judetean') || (type === 'Comunal' && user.type !== 'Comunal' && user.type !== 'Judetean') ) {
+            if(type === 'Judetean' || (type === 'Comunal' && user.type !== 'Judetean') || (type === 'Orasesc' && user.type !== 'Judetean') ) {
                 setError({ ...error, location: true })
                 setErrorMessages({ ...errorMessages, location: 'Locație neautorizată' })
             }

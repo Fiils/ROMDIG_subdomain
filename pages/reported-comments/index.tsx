@@ -12,11 +12,13 @@ import ReportedComment from '../../components/ReportedComments/ReportedComment'
 interface Posts {
     _comments: any;
     _coming: boolean;
+    _total: number;
 }
 
-const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
+const ReportedPosts: NextPage<Posts> = ({ _comments, _coming, _total }) => {
     const auth = useAuth()
 
+    const [ total, setTotal ] = useState(_total)
     const [ coming, setComing ] = useState(_coming)
     const [ isLocationChanged, setIsLocationChanged ] = useState(false)
     const [ isComuna, setIsComuna ] = useState(false)
@@ -27,6 +29,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
     const [ errorLocation, setErrorLocation ] = useState(false)
     const [ loading, setLoading ] = useState(false)
     const [ more, setMore ] = useState(0)
+    const [ loadingForMore, setLoadingForMore ] = useState(false)
     const [ isComunaName, setIsComunaName ] = useState(false)
     const [ searchedName, setSearchedName ] = useState('Toate')
 
@@ -34,7 +37,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
-        if(search === null) return;
+        if(search === null && more === 0) return;
         let locationError = false;
         setErrorLocation(false)
         setLoading(true)
@@ -47,6 +50,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
             if(isComuna) {
                 setErrorLocation(true)
                 setLoading(false)
+                setLoadingForMore(false)
                 return;
             }
             
@@ -57,6 +61,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                                             console.log(err)
                                             setErrorLocation(true)
                                             setLoading(false)
+                                            setLoadingForMore(false)
                                         })
     
                 if(result) {                            
@@ -67,12 +72,16 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                         setComments(newComments)
                     }
 
+                    setTotal(result.total)
                     setComing(result.coming)
                     setLoading(false)
+                    setLoadingForMore(false)
                     setSearchedName('Toate')
                     setUrl(`${server}/api/sd/post/get-reported-comments?level=all&skip=0`)
                 }
 
+                setLoading(false)
+                setLoadingForMore(false)
                 setIsComunaName(false)
                 setIsLocationChanged(false)
             }
@@ -85,6 +94,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
             setErrorLocation(true)
             locationError = true
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -138,6 +148,7 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
         if(comuna === '' && isComuna) {
             setErrorLocation(true)
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -152,58 +163,72 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                 specialName = true
             } else setIsComunaName(false)
 
-            const result = await axios.get(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
+            if(isWithoutCity && (auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc')) {
+                setLoading(false)
+                setLoadingForMore(false)
+                setErrorLocation(true)
+                return;
+            }
+
+            const result = await axios.get(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }&isWithoutCity=${isWithoutCity ? 'true' : 'false'}`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
                                         setErrorLocation(true)
                                         setLoading(false)
+                                        setLoadingForMore(false)
                                     })
 
             if(result) {
                 if(isLocationChanged) {
-                    setComments(result.posts)
+                    setComments(result.comments)
                 } else {
                     const newComments: any = [...comments, ...result.comments]
                     setComments(newComments)
                 }
 
+                setTotal(result.total)
                 setUrl(`${server}/api/sd/post/get-reported-comments?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setLoading(false)
+                setLoadingForMore(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
+                setComing(result.coming)
             }
             
-            setComing(result.coming)
+            setLoading(false)
+            setLoadingForMore(false)
             setIsLocationChanged(false)
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
-        } else setLoading(false)
-
+        }
+        
+        setLoading(false)
+        setLoadingForMore(false)
         setIsLocationChanged(false)
     }, [search, more])
 
     return (
         <>
-                {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc') || !auth.done) &&
                     <div className={styles.fcontainer}>
                         <div className={styles.tools}>
-                            <h2>Comentarii: {comments ? comments.length : 0}</h2>
-                            <div className={styles.search_tool}>
-                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
-                                <div className={styles.button_search}>
-                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                            <h2>Comentarii: {total}</h2>
+                            {((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) &&
+                                <div className={styles.search_tool}>
+                                    <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                                    <div className={styles.button_search}>
+                                        <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>  
                     </div>
-                }
                 <div className={styles.results_headline}>
                     <h1>Rezultate pentru: {searchedName}</h1>
                 </div>
 
-            {!loading ?
+            {(!loading || (loading && loadingForMore)) ?
                     <>
                         {(comments.length > 0) ?
                             <div className={styles.container_moderators}>
@@ -227,10 +252,18 @@ const ReportedPosts: NextPage<Posts> = ({ _comments, _coming }) => {
                     <div className={styles.loader}></div>
             }
 
-            {coming &&
-                <div className={styles.more}>
-                    <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
-                </div>
+            {(coming && !loading) &&
+                <>
+                {!loadingForMore ?
+                    <div className={styles.more} style={{ marginBottom: 15 }}>
+                        <button onClick={() => { setLoadingForMore(true); setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
+                    </div>
+                :
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 15 }}>
+                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} priority/>
+                    </div>
+                }
+                </>
             } 
         </>
     )
@@ -275,23 +308,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
                          .then(res => res.data)
                          .catch(err => {
                             console.log(err);
-                            redirect = true
                         })
 
-    if(redirect)  {
-        return {    
-            redirect: {
-                permanent: false,
-                destination: '/statistics'
-            },
-            props: {}
-        }
-    }
 
     return {
         props: {
-            _comments: result.comments,
-            _coming: result.coming
+            _comments: result ? result.comments : [],
+            _coming: result ? result.coming : false,
+            _total: result ? result.total : 0,
         }
     }
 }

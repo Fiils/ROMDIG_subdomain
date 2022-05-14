@@ -14,6 +14,7 @@ import { NoSSR } from '../../utils/NoSsr'
 interface Forms {
     _forms: any;
     _coming: boolean;
+    _total: number;
 }
 
 const UserForm = dynamic(() => import('../../components/RegistrationForms/ReqForm'),
@@ -21,13 +22,15 @@ const UserForm = dynamic(() => import('../../components/RegistrationForms/ReqFor
 )
 
 
-const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
+const RegistrationForms: NextPage<Forms> = ({ _forms, _coming, _total  }) => {
     const auth = useAuth()
 
+    const [ total, setTotal ] = useState(_total)
     const [ forms, setForms ] = useState<any>(_forms || [])
     const [ coming, setComing ] = useState(_coming)
 
     const [ more, setMore ] = useState(0)
+    const [ loadingForMore, setLoadingForMore ] = useState(false)
     const [ isLocationChanged, setIsLocationChanged ] = useState(false) 
 
 
@@ -45,7 +48,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
-        if(search === null) return;
+        if(search === null && more === 0) return;
         let locationError = false;
         setErrorLocation(false)
         setLoading(true)
@@ -58,6 +61,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
             if(isComuna) {
                 setErrorLocation(true)
                 setLoading(false)
+                setLoadingForMore(false)
                 return;
             }
             
@@ -68,6 +72,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                                             console.log(err)
                                             setErrorLocation(true)
                                             setLoading(false)
+                                            setLoadingForMore(false)
                                         })
     
                 if(result) {
@@ -79,11 +84,15 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                         setForms(newForms)
                     }
 
+                    setTotal(result.total)
                     setComing(result.coming)
                     setLoading(false)
+                    setLoadingForMore(false)
                     setSearchedName('Toate')
                 }
 
+                setLoading(false)
+                setLoadingForMore(false)
                 setIsComunaName(false)
                 setIsLocationChanged(false)
             }
@@ -96,6 +105,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
             setErrorLocation(true)
             locationError = true
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -149,12 +159,20 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
         if(comuna === '' && isComuna) {
             setErrorLocation(true)
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
         const getNewModerators = async (county: string, comuna: string, location: string, city: string) => {
             if(isLocationChanged) {
                 setMore(0)
+            }
+
+            if(isWithoutCity && (auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc')) {
+                setLoading(false)
+                setLoadingForMore(false)
+                setErrorLocation(true)
+                return;
             }
             
             let specialName = false
@@ -163,12 +181,13 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                 specialName = true
             } else setIsComunaName(false)
 
-            const result = await axios.get(`${server}/api/sd/normal-user/get-requests-registration?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
+            const result = await axios.get(`${server}/api/sd/normal-user/get-requests-registration?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }&isWithoutCity=${isWithoutCity ? 'true' : 'false'}`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
                                         setErrorLocation(true)
                                         setLoading(false)
+                                        setLoadingForMore(false)
                                     })
 
             if(result) {
@@ -179,18 +198,24 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                     setForms(newForms)
                 }
 
+                setTotal(result.total)
                 setComing(result.coming)
                 setLoading(false)
+                setLoadingForMore(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
+            setLoading(false)
+            setLoadingForMore(false)
             setIsLocationChanged(false)
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
-        } else setLoading(false)
-
+        } 
+        
+        setLoading(false)
+        setLoadingForMore(false)
         setIsLocationChanged(false)
     }, [search, more])
 
@@ -201,13 +226,17 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
             <div style={{ paddingBottom: 50 }}>
                 <div className={styles.fcontainer}>
                     <div className={styles.tools}>
-                        <h2>Formulare: {forms ? forms.length : 0}</h2>
-                        <div className={styles.search_tool}>
-                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
-                            <div className={styles.button_search}>
-                                <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                        <h2>Formulare: {total}</h2>
+                        {(!(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) ?
+                            <></>
+                        :
+                            <div className={styles.search_tool}>
+                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                                <div className={styles.button_search}>
+                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
                 
@@ -216,7 +245,7 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                         <h1>Rezultate pentru: {searchedName}</h1>
                     </div>
 
-                    {!loading ?
+                    {(!loading || (loading && loadingForMore)) ?
                         <div className={styles.container_forms}>
                             {(forms && forms.length > 0) ?
                                 <>
@@ -236,11 +265,19 @@ const RegistrationForms: NextPage<Forms> = ({ _forms, _coming  }) => {
                     }
                 </div>
 
-                {coming &&
-                    <div className={styles.more}>
-                        <button onClick={() => setMore(prev => prev + 15)}>Mai mult...</button>
-                    </div>
-                }
+                {(coming && !loading) &&
+                    <>
+                    {!loadingForMore ?
+                        <div className={styles.more} style={{ marginBottom: 15 }}>
+                            <button onClick={() => { setLoadingForMore(true); setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
+                        </div>
+                    :
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 15 }}>
+                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} priority/>
+                        </div>
+                    }
+                    </>
+                } 
             </div>
         :
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }}  className={styles.unauthorized}>
@@ -292,23 +329,13 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
                          .then(res => res.data)
                          .catch(err => {
                             console.log(err);
-                            redirect = true
                         })
-
-    if(redirect)  {
-        return {    
-            redirect: {
-                permanent: false,
-                destination: '/statistics'
-            },
-            props: {}
-        }
-    }
 
     return {
         props: {
-            _forms: result.inactiveAccounts,
-            _coming: result.coming
+            _forms: result ? result.inactiveAccounts : [],
+            _coming: result ? result.coming : false,
+            _total: result ? result.total : 0,
         }
     }
 }

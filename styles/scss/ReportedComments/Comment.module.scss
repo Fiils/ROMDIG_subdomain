@@ -65,6 +65,8 @@
     overflow-y: scroll;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    // word-break: break-all;
+    word-wrap: break-word;
 
     &::-webkit-scrollbar { 
         display: none; 

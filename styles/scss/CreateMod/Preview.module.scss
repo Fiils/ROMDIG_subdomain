@@ -93,6 +93,12 @@
     
     img {
         object-fit: contain;
+        width: 80px !important;
+        height: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        max-height: 80px !important;
         border-radius: 7px !important;
         min-width: 0px;
         margin-left: calc(70% - 80px);

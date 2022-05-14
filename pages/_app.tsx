@@ -53,13 +53,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <noscript>
         <h2>Please enable JavaScript to view this page</h2>
-        {/* <style jsx global>
-        {`
-          body { 
-            display: none 
-          }
-        `}
-        </style> */}
       </noscript>
       {layout && <Header /> }
       <Component {...pageProps} />

@@ -52,6 +52,8 @@
     max-height: 3em;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-all;
+    word-wrap: break-word;
 }
 
 .image {

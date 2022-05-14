@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
     const user = await axios.post(`${server}/api/sd/authentication/login-status`, {}, { withCredentials: true, headers: { Cookie: req.headers.cookie || 'a' } })
                         .then(res => res.data)
                         .catch(err => {
-                            console.log(err.response);
+                            console.log(err);
                             redirect = true
                         })
   

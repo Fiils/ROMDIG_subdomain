@@ -46,7 +46,7 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                                     setLoading(false)
                                 })
 
-        if(result.message === 'User accepted') {
+        if(result && result.message === 'User accepted') {
             setLoading(false)
             setSearch(!search)
             setIsLocationChanged(true)
@@ -82,25 +82,25 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                 {width > 1250 &&
                         <div className={styles.image}>
                             <h3>Buletin</h3>
-                            <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
+                            <Image src={user.buletin !== 'none' ? user.buletin : '/'} layout='fill' onClick={() => { setPhoto(user.buletin !== 'none' ? user.buletin : '/'); setPhotoSelect(true) } } />
                         </div>
                 }
                 {width > 1250 &&
                     <div className={styles.image}>
                         <h3>Domiciliu</h3>
-                        <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
+                        <Image src={user.domiciliu !== 'none' ? user.domiciliu : '/'} layout='fill' onClick={() => { setPhoto(user.domiciliu !== 'none' ? user.domiciliu : '/'); setPhotoSelect(true) } } />
                     </div>
                 }
                 {width <= 1250 &&
                     <div className={styles.image_container}>
                         <div className={styles.image}>
                             <h3>Buletin</h3>
-                            <Image src={user.buletin} layout='fill' onClick={() => { setPhoto(user.buletin); setPhotoSelect(true) } } />
+                            <Image src={user.buletin !== 'none' ? user.buletin : '/'} layout='fill' onClick={() => { setPhoto(user.buletin !== 'none' ? user.buletin : '/'); setPhotoSelect(true) } } />
                         </div>
 
                         <div className={styles.image}>
                             <h3>Domiciliu</h3>
-                            <Image src={user.domiciliu} layout='fill' onClick={() => { setPhoto(user.domiciliu); setPhotoSelect(true) } } />
+                            <Image src={user.domiciliu !== 'none' ? user.domiciliu : '/'} layout='fill' onClick={() => { setPhoto(user.domiciliu !== 'none' ? user.domiciliu : '/'); setPhotoSelect(true) } } />
                         </div>
                     </div>
                 }
@@ -134,7 +134,9 @@ const ReqForm: FC<User> = ({ form, setSearch, setIsLocationChanged, search}) => 
                                 <button className={styles.refuse} onClick={e => refuseAccount(e)}>Refuză contul</button>
                             </>
                         :
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
+                            <div style={{ marginInline: 'auto' }}>
+                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
+                            </div>
                         }
                     </div>
                 </div>

@@ -99,6 +99,13 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             })
 
             if(location === '') {
+                if(isComuna) {
+                    setErrorLocation(true)
+                    setLoading(false)
+                    setOnlyLocation(false)
+                    return;
+                }
+
                 const getNewModerators = async () => {
                     const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`, { withCredentials: true })
                                             .then(res => res.data)
@@ -113,14 +120,15 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                         setPosts(result.posts)
                         setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
                         setLoading(false)
-                    } else {
-                        setLoading(false)
-                    }
+                        setStatus([])
                         Cookies.set('url', `?page=0&page_size=14&level=all&category=${chooseCategoryServer(category)}`)
                         Cookies.set('url_status', [])
                         Cookies.set('url_fex', '')
                         Cookies.set('url_location', '')
                         Cookies.set('url_comuna', 'false')
+                    } else {
+                        setLoading(false)
+                    }
                 }
         
                 getNewModerators()
@@ -153,6 +161,8 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             } else {
                 setErrorLocation(true)
                 errorLocation = true;
+                setLoading(false)
+                setOnlyLocation(false)
                 return;
             }
         
@@ -191,7 +201,14 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
             }
 
             const getNewModerators = async (county: string, comuna: string, location: string) => {
-                const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`, { withCredentials: true })
+                if(isWithoutCity && (auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc')) {
+                    setLoading(false)
+                    setErrorLocation(true)
+                    setOnlyLocation(false)
+                    return;
+                }
+
+                const result = await axios.get(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}&isWithoutCity=${isWithoutCity ? 'true' : 'false'}`, { withCredentials: true })
                                         .then(res => res.data)
                                         .catch(err => {
                                             console.log(err)
@@ -204,6 +221,7 @@ const Tools: FC<Tools> = ({ errorLocation, setErrorLocation, setPosts, setPages,
                     setPosts(result.posts)
                     setLoading(false)
                     setUrl(`${server}/api/sd/post/get-posts?page=0&page_size=14&county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&isComuna=${isComuna ? 'true': 'false'}&category=${chooseCategoryServer(category)}`)
+                    setStatus([])
                     Cookies.set('url_status', [])
                     Cookies.set('url_location', location)
                     Cookies.set('url_comuna', isComuna.toString())

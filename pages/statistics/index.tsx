@@ -28,7 +28,7 @@ const Statistics: NextPage<Statistics> = ({ _statistics }) => {
         <div style={{ paddingBottom: 40}}>
             <div className={styles.grid}>
                 <div className={styles.basic_info}>
-                    <h1>Statistici sumative</h1>
+                    <h1>Statistici sumative (utilizatori)</h1>
                     <div>
                         <PieChart 
                             data={[

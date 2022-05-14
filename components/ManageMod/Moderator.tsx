@@ -40,10 +40,12 @@ interface Moderator {
     setLoading_: Dispatch<SetStateAction<boolean>>
     setUsers: Dispatch<SetStateAction<any>>
     setModerators: Dispatch<SetStateAction<any>>
+    setTotal: Dispatch<SetStateAction<number>>;
+    setComing: Dispatch<SetStateAction<boolean>>
 }
 
 
-const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture, _asId, _email, _type, _county, _city, _comuna, _cnp, _street, url, setLoading_, setUsers, setModerators }) => {
+const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture, _asId, _email, _type, _county, _city, _comuna, _cnp, _street, url, setLoading_, setUsers, setModerators, setTotal, setComing }) => {
     
     const [ showPassword, setShowPassword ] = useState(false)
     const [ showAdminPassword, setShowAdminPassword ] = useState(false)
@@ -185,7 +187,7 @@ const Moderator: FC<Moderator> = ({ _id, _lastName, _firstName, _profilePicture,
 
     return (
         <>
-            {(deleted && !updated) && <ModalDelete url={url} _name={_lastName} setModal={setDeleted} _id={_id} _asId={_asId} setLoading_={setLoading_} setUsers={setUsers} setModerators={setModerators} /> }
+            {(deleted && !updated) && <ModalDelete setComing={setComing} setTotal={setTotal} url={url} _name={_lastName} setModal={setDeleted} _id={_id} _asId={_asId} setLoading_={setLoading_} setUsers={setUsers} setModerators={setModerators} /> }
             {(updated && !deleted) && <ModalUpdate setError={setErrorUpdateModal} loading={loadingUpdateModal} _name={_lastName} error={errorUpdateModal} setModal={setUpdated} setStartUpdating={setStartUpdating} /> 
             }
             <div className={styles.moderator_wrapper}>

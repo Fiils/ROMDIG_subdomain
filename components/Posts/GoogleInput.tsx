@@ -82,7 +82,7 @@ const SearchLocationInput: FC<Props> = ({ location, setLocation, setFullExactPos
           <Input id='location' type='text' name='location' inputProps={{ ref: autoCompleteRef, value: location, onChange: (e: any) => { setIsComuna(false); setError(false); setLocation(e.target.value) }, placeholder: '' }} />
       </FormControl>
 
-      {(auth.type === 'General' || auth.type === 'Judetean') &&
+      {(auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') &&
           <FormHelperText sx={{ position: 'absolute', bottom: -33, left: -1.2 }}>
               <FormControlLabel
                   control={

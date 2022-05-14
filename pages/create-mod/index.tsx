@@ -47,14 +47,15 @@ interface Moderators {
     load: boolean;
     numberOfPages: number;
     _coming: boolean;
+    _total: number;
 }
 
-const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages, _coming = false }) => {
+const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPages, _coming = false, _total }) => {
     const auth = useAuth()
 
     const [ coming, setComing ] = useState(_coming)
 
-    
+    const [ total, setTotal ] = useState(_total)
     const [ moderators, setModerators ] = useState<any>(_moderators || [])
     const [ createMod, setCreateMod ] = useState(false)
     const [ error, setError ] = useState(false)
@@ -65,6 +66,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
     const [ loading, setLoading ] = useState(false)
 
     const [ more, setMore ] = useState(0)
+    const [ loadingForMore, setLoadingForMore ] = useState(false)
     const [ pages, setPages ] = useState(numberOfPages)
     const [ isLocationChanged, setIsLocationChanged ] = useState(true)
 
@@ -101,7 +103,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
-        if(search === null) return;
+        if(search === null && more === 0) return;
         let locationError = false;
         setError(false)
         setLoading(true)
@@ -110,6 +112,15 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
             if(isLocationChanged) {
                 setMore(0)
             }
+
+            
+            if(isComuna) {
+                setError(true)
+                setLoading(false)
+                setLoadingForMore(false)
+                return;
+            }
+
             const getNewModerators = async () => {
                 const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?all=true&skip=${isLocationChanged ? 0 : more}`, { withCredentials: true })
                                         .then(res => res.data)
@@ -117,6 +128,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                                             console.log(err)
                                             setError(true)
                                             setLoading(false)
+                                            setLoadingForMore(false)
                                         })
     
                 if(result) {
@@ -129,11 +141,15 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                         setModerators(newModerators)
                     }
 
+                    setTotal(result.total)
                     setComing(result.coming)
                     setLoading(false)
+                    setLoadingForMore(false)
                     setSearchedName('Toate')
                 }
 
+                setLoading(false)
+                setLoadingForMore(false)
                 setIsLocationChanged(false)
             }
     
@@ -145,6 +161,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
             setError(true)
             locationError = true
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -198,6 +215,7 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
         if(comuna === '' && isComuna) {
             setError(true)
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -206,18 +224,26 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                 setMore(0)
             }
 
+            if(isWithoutCity && (auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc')) {
+                setLoading(false)
+                setLoadingForMore(false)
+                setError(true)
+                return;
+            }
+
             let specialName = false
             if(isComuna) {
                 setIsComunaName(true)
                 specialName = true
             } else setIsComunaName(false)
 
-            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
+            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }&isWithoutCity=${isWithoutCity ? 'true' : 'false'}`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
                                         setError(true)
                                         setLoading(false)
+                                        setLoadingForMore(false)
                                     })
 
             if(result) {
@@ -228,75 +254,94 @@ const CreateMod: NextPage<Moderators> = ({ _moderators, load = false, numberOfPa
                     setModerators(newModerators)
                 }
 
+                setTotal(result.total)
+                setLoadingForMore(false)
                 setComing(result.coming)
                 setLoading(false)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
+            setLoading(false)
+            setLoadingForMore(false)
             setIsLocationChanged(false)
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
-        } else setLoading(false)
-
+        } 
+        
+        setLoading(false)
+        setLoadingForMore(false)
         setIsLocationChanged(false)
     }, [search, more])
 
 
     return (
         <>
-        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
+            {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
             <>
-                {!createMod ?
-                    <div className={styles.fcontainer}>
-                        <div className={styles.tools}>
-                            <h2>Moderatori: {moderators.length}</h2>
-                            <div className={styles.search_tool}>
-                                <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
-                                <div className={styles.button_search}>
-                                    <button onClick={() => { setIsLocationChanged(true); setSearch(!search) } }>Caută</button>
-                                </div>
-                            </div>
-                    </div>
-                    <div className={styles.results_headline}>
-                        <h1>Rezultate pentru: {searchedName}</h1>
-                    </div>
-                    {!loading ?
-                            <div className={styles.profile_grid}>
-                                {!(moderators.length > 0) &&
-                                    <div className={styles.flex_item_none}>
-                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                                        <p>Niciun moderator creat</p>
+                {auth.done &&
+                    <>
+                        {!createMod ?
+                            <div className={styles.fcontainer}>
+                                <div className={styles.tools}>
+                                <h2>Moderatori: {total}</h2>
+                                <div className={styles.search_tool}>
+                                    <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={error} setError={setError} />
+                                    <div className={styles.button_search}>
+                                        <button onClick={() => { setIsLocationChanged(true); setSearch(!search) } }>Caută</button>
                                     </div>
-                                }
-
-                                <>
-                                    {moderators.map((value: any, key: number) => {
-                                        return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
-                                                            authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
-                                                            comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
-                                    })}
-                                </>
-                                
-                                <div className={styles.flex_item_create}>
-                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
-                                    <p>Creează un nou moderator</p>
                                 </div>
                             </div>
-                             :
-                            <div className={styles.loader}></div>
+                            <div className={styles.results_headline}>
+                                <h1>Rezultate pentru: {searchedName}</h1>
+                            </div>
+                            {(!loading || (loading && loadingForMore)) ?
+                                <div className={styles.profile_grid}>
+                                    <div className={styles.flex_item_create}>
+                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650265407/FIICODE/green-add-button-12023_oesrh1.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                        <p>Creează un nou moderator</p>
+                                    </div>
+
+                                    {!(moderators.length > 0) &&
+                                        <div className={styles.flex_item_none}>
+                                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650267008/FIICODE/warning-3092_2_en7rba.svg' width={100} height={100} onClick={() => setCreateMod(true)} />
+                                            <p>Niciun moderator creat</p>
+                                        </div>
+                                    }
+
+                                    <>
+                                        {moderators.map((value: any, key: number) => {
+                                            return <FlexItemProfile key={key} name={`${value.lastName} ${value.firstName}`} profilePicture={value.profilePicture} 
+                                                                authorization={value.authorization.type} county={value.authorization.location.county} city={value.authorization.location.city} 
+                                                                comuna={value.authorization.location.comuna} created={formatDate(value.creationDate)} />
+                                        })}
+                                    </>
+                                    
+                                </div>
+                            :
+                                <div className={styles.loader}></div>
+                            }
+                            </div>
+                        :
+                            <CreateModSection setCreateMod={setCreateMod} />
+                        }
+                        {(coming && !loading) &&
+                            <>
+                            {!loadingForMore ?
+                                <div className={styles.more} style={{ marginBottom: 15 }}>
+                                    <button onClick={() => { setLoadingForMore(true); setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
+                                </div>
+                            :
+                                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 15 }}>
+                                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} priority/>
+                                </div>
+                            }
+                            </>
+                        } 
+                    </>
                     }
-                </div>
-                :
-                    <CreateModSection setCreateMod={setCreateMod} />
-                }
-                {coming &&
-                    <div className={styles.more}>
-                        <button onClick={() => { setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
-                    </div>
-                } 
-            </>
+                </>
             :
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }} className={styles.unauthorized}>
                     <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
@@ -350,10 +395,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
 
     return { 
         props: {
-            _moderators: moderators.moderators,
-            load: !moderators.low,
-            numberOfPages: moderators.numberOfPages,
-            _coming: moderators.coming,
+            _moderators: (moderators && !moderators.low && moderators.moderators) ? moderators.moderators : [],
+            load: (moderators && !moderators.low) ? true : false,
+            numberOfPages: (moderators && moderators.numberOfPages) ? moderators.numberOfPages : 0,
+            _coming: (moderators &&  moderators.coming) ? moderators.coming : false,
+            _total: (moderators && moderators.total) ? moderators.total : 0,
         }
     }
 }   

@@ -40,17 +40,21 @@ interface Moderators {
     load: boolean;
     numberOfPages: number;
     _coming: boolean;
+    _total: number;
 }
 
 
 
-const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, numberOfPages, _coming = false }) => {    
+const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, numberOfPages, _coming = false, _total }) => {    
     const [ moderators, setModerators ] = useState<any>(_moderators || [])
     const [ users, setUsers ] = useState<any>(_users || [])
     const [ pages, setPages ] = useState(numberOfPages)
     const [ coming, setComing ] = useState(_coming)
+    const [ total, setTotal ] = useState(_total)
+
 
     const [ more, setMore ] = useState(0)
+    const [ loadingForMore, setLoadingForMore ] = useState(false)
     const [ isLocationChanged, setIsLocationChanged ] = useState(true) 
 
     const auth = useAuth()
@@ -70,10 +74,10 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
 
     //For changing location and for managing the addition of other mods when there are too many to show at once
     useEffect(() => {
-        if(search === null) return;
+        if(search === null && more === 0) return;
+        setLoading(true)
         let locationError = false;
         setErrorLocation(false)
-        setLoading(true)
 
         if(location === '') {
             if(isLocationChanged) {
@@ -83,6 +87,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
             if(isComuna) {
                 setErrorLocation(true)
                 setLoading(false)
+                setLoadingForMore(false)
                 return;
             }
             
@@ -93,6 +98,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                                             console.log(err)
                                             setErrorLocation(true)
                                             setLoading(false)
+                                            setLoadingForMore(false)
                                         })
     
                 if(result) {
@@ -100,17 +106,24 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                         
                     if(isLocationChanged) {
                         setModerators(result.moderators)
+                        setUsers(result.users)
                     } else {
                         const newModerators: any = [...moderators, ...result.moderators]
+                        const newUsers: any = [...users, ...result.users]
                         setModerators(newModerators)
+                        setUsers(newUsers)
                     }
 
+                    setTotal(result.total)
                     setComing(result.coming)
                     setUrl(`${server}/api/sd/mod/get-all-per-region?all=true&skip=0`)
                     setLoading(false)
+                    setLoadingForMore(false)
                     setSearchedName('Toate')
                 }
 
+                setLoading(false)
+                setLoadingForMore(false)
                 setIsComunaName(false)
                 setIsLocationChanged(false)
             }
@@ -123,6 +136,7 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
             setErrorLocation(true)
             locationError = true
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
@@ -176,12 +190,20 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
         if(comuna === '' && isComuna) {
             setErrorLocation(true)
             setLoading(false)
+            setLoadingForMore(false)
             return;
         }
 
         const getNewModerators = async (county: string, comuna: string, location: string, city: string) => {
             if(isLocationChanged) {
                 setMore(0)
+            }
+
+            if(isWithoutCity && (auth.type === 'Comunal' || auth.type === 'Satesc' || auth.type === 'Orasesc')) {
+                setLoading(false)
+                setLoadingForMore(false)
+                setErrorLocation(true)
+                return;
             }
             
             let specialName = false
@@ -190,97 +212,122 @@ const ManageMod: NextPage<Moderators> = ({ _moderators, _users, load = false, nu
                 specialName = true
             } else setIsComunaName(false)
 
-            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }`, { withCredentials: true })
+            const result = await axios.get(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=${ isLocationChanged ? 0 : more }&isWithoutCity=${isWithoutCity ? 'true' : 'false'}`, { withCredentials: true })
                                     .then(res => res.data)
                                     .catch(err => {
                                         console.log(err)
                                         setErrorLocation(true)
                                         setLoading(false)
+                                        setLoadingForMore(false)
                                     })
 
             if(result) {
                 if(isLocationChanged) {
+                    setUsers(result.users)
                     setModerators(result.moderators)
                 } else {
                     const newModerators: any = [...moderators, ...result.moderators]
+                    const newUsers: any = [...users, result.users]
                     setModerators(newModerators)
+                    setUsers(newUsers)
                 }
 
+                setTotal(result.total)
                 setComing(result.coming)
                 setLoading(false)
+                setLoadingForMore(false)
                 setUrl(`${server}/api/sd/mod/get-all-per-region?county=${county}&comuna=${comuna}&location=${isWithoutCity ? '' : location}&all=false&isComuna=${isComuna ? 'true' : 'false'}&skip=0`)
                 setSearchedName(`${county} County${comuna !== '' ? `, ${comuna}${(!specialName) ? `, ${city}` : ''}` : ((city !== '' && !isComunaName && !specialName) ?  `, ${city}` : '')}`)
             }
             
+            setLoading(false)
+            setLoadingForMore(false)
             setIsLocationChanged(false)
         }
 
         if(!locationError) {
             getNewModerators(county, comuna, location, city)
-        } else setLoading(false)
+        } 
 
+        setLoading(false)
+        setLoadingForMore(false)
         setIsLocationChanged(false)
     }, [search, more])
 
+
     return (
         <>
-        {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
-            <div style={{ paddingBottom: 50 }}>
-                <div className={styles.fcontainer}>
-                    <div className={styles.tools}>
-                        <h2>Moderatori: {moderators.length}</h2>
-                        <div className={styles.search_tool}>
-                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
-                            <div className={styles.button_search}>
-                                <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-
-                <div className={styles.full_wrapper}>
-                    <div className={styles.results_headline}>
-                        <h1>Rezultate pentru: {searchedName}</h1>
-                    </div>
-                    {!loading ?
-                        <div className={styles.container_moderators}>
-                            {(moderators.length > 0) ?
-                                <>
-                                    {moderators.map((moderator: any, index: number) => {
-                                        return <Moderator key={moderator._id} _id={moderator._id} _lastName={moderator.lastName} _firstName={moderator.firstName} _profilePicture={moderator.profilePicture}
-                                                        _asId={moderator.asId} _email={moderator.email} _type={moderator.authorization.type} _county={moderator.authorization.location.county} 
-                                                        _comuna={moderator.authorization.location.comuna} _city={moderator.authorization.location.city} _gender={users[index].gender}
-                                                        _cnp={users[index].cnp} _street={users[index].street} url={url} setLoading_={setLoading} setModerators={setModerators} setUsers={setUsers} />
-                                    })}
-                                </>
-                                :
-                                <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }} className={styles.no_content}>
-                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
-                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
+            {(((auth.type === 'General' || auth.type === 'Judetean' || auth.type === 'Comunal') || !auth.done) && load) ?
+                <>
+                    {auth.done &&
+                        <>
+                            <div style={{ paddingBottom: 50 }}>
+                                <div className={styles.fcontainer}>
+                                    <div className={styles.tools}>
+                                        <h2>Moderatori: {total}</h2>
+                                        <div className={styles.search_tool}>
+                                            <GoogleInput isComuna={isComuna} setIsComuna={setIsComuna} setFullExactPosition={setFullExactPosition} location={location} setLocation={setLocation} error={errorLocation} setError={setErrorLocation} />
+                                            <div className={styles.button_search}>
+                                                <button onClick={() => { setIsLocationChanged(true); setSearch(!search); } }>Caută</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            }
-                        </div>
-                    :
-                        <div className={styles.loader}></div>
-                    }
-                </div>
+                                
 
-                {coming &&
-                    <div className={styles.more}>
-                        <button onClick={() => { setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
-                    </div>
-                }
-            </div>
-        :
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }} className={styles.unauthorized}>
-                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
-                <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
-            </div>
-        }
-            
+                                <div className={styles.full_wrapper}>
+                                    <div className={styles.results_headline}>
+                                        <h1>Rezultate pentru: {searchedName}</h1>
+                                    </div>
+                                    {(!loading || (loadingForMore && loading)) ?
+                                        <div className={styles.container_moderators}>
+                                            {(moderators.length > 0 && users && users[0] && users[0].gender) ?
+                                                <>
+                                                    {moderators.map((moderator: any, index: number) => {
+                                                        return <Moderator key={moderator._id} _id={moderator._id} _lastName={moderator.lastName} _firstName={moderator.firstName} _profilePicture={moderator.profilePicture}
+                                                                        _asId={moderator.asId} _email={moderator.email} _type={moderator.authorization.type} _county={moderator.authorization.location.county} 
+                                                                        _comuna={moderator.authorization.location.comuna} _city={moderator.authorization.location.city} _gender={users[index].gender}
+                                                                        _cnp={users[index].cnp} _street={users[index].street} url={url} setLoading_={setLoading} setModerators={setModerators} setUsers={setUsers} setTotal={setTotal} setComing={setComing} />
+                                                    })}
+                                                </>
+                                                :
+                                                <div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '2em', marginTop: 50 }} className={styles.no_content}>
+                                                        <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650708973/FIICODE/no-data-7713_1_s16twd.svg' width={150} height={150} />
+                                                        <h3 style={{ width: 400, color: 'rgb(200, 200, 200)' }}>Nu a fost găsit niciun moderator conform cerințelor</h3>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    :
+                                        <div className={styles.loader}></div>
+                                    }
+                                </div>
+
+                                {(coming && !loading) &&
+                                    <>
+                                    {!loadingForMore ?
+                                        <div className={styles.more} style={{ marginBottom: 15 }}>
+                                            <button onClick={() => { setLoadingForMore(true); setIsLocationChanged(false); setMore(prev => prev + 15) } }>Mai mult...</button>
+                                        </div>
+                                    :
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 15 }}>
+                                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={100} height={100} priority/>
+                                        </div>
+                                    }
+                                    </>
+                                } 
+                            </div>
+
+                        </>
+                    }
+                </>
+                :
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'calc(100vh - 207px)', gap: '2em' }} className={styles.unauthorized}>
+                    <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650705631/FIICODE/warning-sign-9762_bt1ag6.svg' width={150} height={150} />
+                    <h3 style={{ width: 400 }}>Acces neautorizat. Nu aveți un nivel destul de înalt pentru accesarea acestei secțiuni</h3>
+                </div>
+            }
         </>
     )   
 }
@@ -325,26 +372,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx: any) => {
                                 .then(res => res.data)
                                 .catch(err => {
                                     console.log(err)
-                                    redirect = true
                                 })
-
-    if(redirect)  {
-        return {
-            redirect: {
-                permanent: false,
-                destination: '/'
-            },
-            props: {}
-        }
-    }
-
     return { 
         props: {
-            _moderators: !moderators.low ? moderators.moderators : [],
-            _users: !moderators.low ? moderators.users : [],
-            load: !moderators.low,
-            numberOfPages: moderators.numberOfPages,
-            _coming: moderators.coming,
+            _users: (moderators && !moderators.low && moderators.users) ? moderators.users : [],
+            _moderators: (moderators && !moderators.low && moderators.moderators) ? moderators.moderators : [],
+            load: (moderators && !moderators.low) ? true : false,
+            numberOfPages: (moderators && moderators.numberOfPages) ? moderators.numberOfPages : 0,
+            _coming: (moderators &&  moderators.coming) ? moderators.coming : false,
+            _total: (moderators && moderators.total) ? moderators.total : 0,
         }
     }
 }   

@@ -116,7 +116,9 @@ const ReqForm: FC<User> = ({ _user, setSearch, setIsLocationChanged, search}) =>
                                 <button style={{ borderColor: 'green', color: 'green' }} onClick={e => deleteAccount(e)} disabled={auth.type !== 'General' && auth.type !== 'Judetean'}>Șterge contul (Admin Județean/General)</button>
                             </>
                         :
-                            <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
+                            <div style={{ marginInline: 'auto' }}>
+                                <Image src='https://res.cloudinary.com/multimediarog/image/upload/v1650311259/FIICODE/Spinner-1s-200px_2_tjhrmw.svg' width={80} height={80} />
+                            </div>
                         }
                     </div>
                 </div>

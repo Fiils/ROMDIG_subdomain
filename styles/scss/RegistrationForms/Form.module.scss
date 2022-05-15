@@ -50,9 +50,9 @@
 .fullscreen_image {
     position: fixed;
     top: 10vh;
-    left: max(calc(50vw - 250px), 5vw);
+    left: max(calc(50vw - 275px), 5vw);
     z-index: 102;
-    width: 500px;
+    width: 550px;
     height: 80vh;
     max-width: 90vw;
     border: 1px solid gray;

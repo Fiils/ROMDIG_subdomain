@@ -72,6 +72,14 @@ Responsiveness: 100%
 &nbsp;
 &nbsp;
 
+### Admini
+
+1. General: fiicode.testadmi@gmail.com; 65FzF8nj1ZDW5ziYo9ZT (id); cerepere1234 (pass)
+2. Judetean: potcoava.petru@romdig.com; 3f4bMIHB66QP135B9ymk (id); fiicode2022 (pass)
+3. Comunal: lora.florin@romdig.com; tPNmFo0cHB6u1PE8Ffc8 (id); fiicode2022 (pass)
+4. Satesc: montan.aurel@romdig.com; 87Xuic04ov2pKkG94S4X (id); fiicode2022 (pass)
+5. Orasesc: corneliu.marian@romdig.com; H3wUHd0s7xQn2o120nf7 (id); fiicode2022 (pass)
+
 ## Tehnologii folosite
 1. Typescript
 2. ReactJS

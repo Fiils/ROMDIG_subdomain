@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import NextNProgress from 'nextjs-progressbar'
 
 import Header from '../components/Layout/Header'
 import '../styles/scss/globals.scss'
@@ -54,6 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <noscript>
         <h2>Please enable JavaScript to view this page</h2>
       </noscript>
+      <NextNProgress color="#F5F5F5" />
       {layout && <Header /> }
       <Component {...pageProps} />
     </AuthProvider>
